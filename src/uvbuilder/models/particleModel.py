@@ -269,8 +269,11 @@ class ParticleModel:
                                        br=vertex.br)
             newVertices.append(newVertex)
         
-        # Create a new ParticleModel
-        newModel = ParticleModel(vertices=newVertices)
+        # Create a new ParticleModel, keeping the vertex order (explodeQuantityHelper
+        # walks the vertices by index)
+        newModel = ParticleModel()
+        newModel.vertices = newVertices
+        newModel.pdgDict = newDict
         if self._parent is None:  
             newModel._parent = self
         else:

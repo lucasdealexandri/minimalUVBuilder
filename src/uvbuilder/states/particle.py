@@ -265,8 +265,12 @@ class Particle(object):
         Whether the particle is its own anti-particle. Derived from the rep:
         a particle is self-conjugate iff the rep equals its conjugate
         (rep.conjRep == rep), i.e. all charges (including the additional UQNs)
-        are real.
+        are real. While a charge (eCharge, colordim or globalU1s) is unset, the
+        particle is not self-conjugate: its anti-particle stays a distinct state
+        until the charges are known.
         """
+        if any(getattr(self._rep, q) is None for q in ('eCharge', 'colordim', 'globalU1s')):
+            return False
         return self._rep.conjRep == self._rep
 
     @property

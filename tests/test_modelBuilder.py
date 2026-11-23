@@ -8,7 +8,7 @@ from uvbuilder.models.particleModel import ParticleModel
 from uvbuilder.states.finalState import FinalState
 from uvbuilder.states.particle import Particle
 from uvbuilder.states.physicsUnits import GeV
-from uvbuilder.tools.reps import GlobalU1s
+from uvbuilder.tools.reps import DIRAC_SPINOR, GlobalU1s
 from uvbuilder.tools.reps import SCALAR, SU3Rep, U1Rep, UnbrokenRep
 from uvbuilder.vertices.particleVertex import ParticleVertex
 
@@ -207,3 +207,75 @@ def test_invalid_model_name_is_rejected():
         warnings.simplefilter('ignore')
         with pytest.raises(ValueError, match='invalid model name'):
             next(_sddm_builder().generateFeynRulesModels(name='3-6-8'))
+
+
+# -- electric charges from the decay vertices --
+
+def _charges(decays, masses, globalU1s=GlobalU1s(), labels=None):
+    data = {'masses': masses, 'decays': decays, **({'labels': labels} if labels else {})}
+    builder = ModelBuilder(modelData=data, possible_dm_reps={'spin': [DIRAC_SPINOR],
+                                                             'globalU1s': [globalU1s]})
+    return [{p.pdg: p.eCharge for p in pm.bsm_particles} for pm in builder.generateParticleModels()]
+
+
+_EWINO_MASSES = {1000022: 100., 1000024: 200., 1000023: 300.}
+
+
+@pytest.mark.parametrize('z2_decays', [
+    {(-1000024, 24): 1.0},                           # conjugated BSM daughter
+    {(-1000024, 24): 0.5, (1000024, -24): 0.5},      # both charge states
+])
+def test_charge_of_a_neutral_mother_of_a_conjugated_daughter(z2_decays):
+    charges = _charges({1000022: {}, 1000024: {(1000022, 24): 1.0}, 1000023: z2_decays},
+                       _EWINO_MASSES)
+    assert charges == [{1000022: U1Rep(0), 1000024: U1Rep(1), 1000023: U1Rep(0)}]
+
+
+def test_charge_of_a_doubly_charged_mother():
+    charges = _charges({1000022: {}, 1000024: {(1000022, 24): 1.0}, 1000023: {(1000024, 24): 1.0}},
+                       _EWINO_MASSES)
+    assert charges == [{1000022: U1Rep(0), 1000024: U1Rep(1), 1000023: U1Rep(2)}]
+
+
+def test_charges_with_standard_pdgs_not_ordered_by_mass():
+    # gluino -> stop2 tbar with stop2 = 2000006 (Z2 vertex visited after a copy of the model)
+    charges = _charges({1000022: {}, 2000006: {(1000022, 6): 1.0}, 1000021: {(2000006, -6): 1.0}},
+                       {1000022: 100., 2000006: 800., 1000021: 1400.}, globalU1s=GlobalU1s(B=0))
+    assert charges and all(c == {1000022: U1Rep(0), 2000006: U1Rep(2, 3), 1000021: U1Rep(0)}
+                           for c in charges)
+
+
+def test_charges_of_a_two_step_chain_against_pdg_order():
+    charges = _charges({1000022: {}, 1000025: {(1000022, 23): 1.0}, 1000023: {(1000025, 25): 1.0}},
+                       {1000022: 100., 1000025: 200., 1000023: 400.})
+    assert charges == [{1000022: U1Rep(0), 1000025: U1Rep(0), 1000023: U1Rep(0)}]
+
+
+def test_charges_of_a_three_step_chain_against_pdg_order():
+    charges = _charges({1000022: {}, 1000035: {(1000022, 25): 1.0},
+                        1000025: {(1000035, 25): 1.0}, 1000023: {(1000025, 25): 1.0}},
+                       {1000022: 100., 1000035: 200., 1000025: 300., 1000023: 400.})
+    assert charges == [{pdg: U1Rep(0) for pdg in (1000022, 1000035, 1000025, 1000023)}]
+
+
+def test_conjugated_daughters_give_the_same_multiplet_models():
+    def models(z1, z3):
+        data = {'masses': {1000022: 109.3, 1000023: 289.8, 1000024: 200., 1000025: 430.6},
+                'decays': {1000022: {}, 1000024: {(1000022, 24): 1.0},
+                           1000023: {(z1, 23): 0.8, (1000022, 25): 0.2}, 1000025: z3}}
+        builder = ModelBuilder(modelData=data, possible_dm_reps={'spin': [DIRAC_SPINOR],
+                                                                 'globalU1s': [GlobalU1s()]})
+        return sorted(str(m) for m in builder.generateMultipletModels())
+    reference = models(1000022, {(1000024, -24): 1.0})
+    assert len(reference) == 1
+    assert models(-1000022, {(1000024, -24): 1.0}) == reference                         # neutral
+    assert models(1000022, {(-1000024, 24): 0.5, (1000024, -24): 0.5}) == reference    # charged
+
+
+def test_protomodel_labels_and_masses_do_not_change_sm_particles():
+    from uvbuilder.states.SMparticles import SMparticlesDict
+    w = SMparticlesDict[24]
+    label, mass = w.label, w.mass
+    _charges({1000022: {}, 1000024: {(1000022, 24): 1.0}}, {1000022: 100., 1000024: 200., 24: 1.0},
+             labels={24: 'Wboson'})
+    assert (w.label, w.mass) == (label, mass)

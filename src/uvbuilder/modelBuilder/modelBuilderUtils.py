@@ -78,13 +78,17 @@ def explodeQuantityHelper(
     Iterates through the vertices one by one recursively, increments
     `vertex_number` at each step. Should be called only through
     `explodeQuantity` since this sorts the list (in reverse order) first.
-
+    The remaining vertices are re-sorted at each step, so the next vertex is
+    always one with the most known values.
     """
 
     # Recursive base case
     if vertex_number == len(model.vertices):
         yield model
     else:
+        # Re-sort the remaining vertices: the next one has the most known values
+        model.vertices[vertex_number:] = sorted(model.vertices[vertex_number:],
+            key=lambda v: v.knownQuantumNumbers(qnumber=qnumber), reverse=True)
         # The vertex being exploded (or checked)
         vertex : ParticleVertex = model.vertices[vertex_number]
 

@@ -448,7 +448,9 @@ class MultipletModel:
         valid = []
 
         for vertex in self.particle_model.vertices:
-            bsm_particles = [p for p in vertex.getParticles() if not p.isSM]
+            # the model's particle for a conjugated daughter (the mixing is keyed by particles)
+            bsm_particles = [self.particle_model.pdgDict[abs(p.pdg)]
+                             for p in vertex.getParticles() if not p.isSM]
 
             if len(bsm_particles) < 2: continue
 

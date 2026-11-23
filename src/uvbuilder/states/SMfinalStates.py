@@ -12,9 +12,7 @@ from uvbuilder.states.stateDict import StateDict
 
 # SM particles
 #--------------------------------
-#  Charged leptons:
-pdgs = [11,13,15]
-lm = FinalState(label='l-',particleList=[SMparticlesDict[pdg] for pdg in pdgs])
+#  Charged leptons are not grouped: e, mu and tau lead to distinct final states in the detector
 
 
 # Jet:
@@ -25,7 +23,7 @@ jet = FinalState(label='jet',particleList=[SMparticlesDict[pdg] for pdg in pdgs]
 pdgs = [12,14,16,-12,-14,-16]
 nu = FinalState(label='nu',particleList=[SMparticlesDict[pdg] for pdg in pdgs])
 
-finalStates = [lm,jet,nu]
+finalStates = [jet,nu]
 
 # Use a StateDict to store the final states, which only stores particles/final states, 
 # but allows to #retrieve the conjugate of a particle/final state if needed.

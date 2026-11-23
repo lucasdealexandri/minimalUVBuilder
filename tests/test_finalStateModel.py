@@ -275,7 +275,7 @@ class TestFinalStateModelPdgDict(unittest.TestCase):
         
         for pdg in bsm_pdgs:
             particle = self.fs.pdgDict[pdg]
-            if not particle.selfConjugate and particle.antiParticle is not None:
+            if not particle.selfConjugate and particle.antiFinalState is not None:
                 # The negative PDG should be in the dict
                 self.assertIn(-pdg, self.fs.pdgDict)
 

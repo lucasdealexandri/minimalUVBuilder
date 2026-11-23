@@ -165,6 +165,8 @@ class FinalStateModel(object):
                 raise ValueError(f"Error creating FinalStateModel from {modelDict}. Object for pdg {pdg} is not a FinalState.")
             
             for ptc in finalState.getParticles():
+                if ptc.isSM:
+                    continue
                 if ptc.pdg in masses:
                     ptc.mass = masses[ptc.pdg]*GeV
                 if ptc.pdg in labels:
