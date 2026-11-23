@@ -150,6 +150,26 @@ def test_decays_need_a_direct_coupling():
     assert all(any(dim == 2 for dim, _ in s) for s in scalars if s)
 
 
+def test_model_builder_reads_an_slha_file():
+    from pathlib import Path
+    slha = str(Path(__file__).resolve().parent / 'data' / 'slhaFiles' / 'stopR.slha')
+    from_file = list(ModelBuilder(modelData=slha).generateMultipletModels())
+    from_model = list(ModelBuilder(modelData=FinalStateModel.fromFile(slha)).generateMultipletModels())
+    assert from_file
+    assert [_multiplet_symbols(mm) for mm in from_file] == [_multiplet_symbols(mm) for mm in from_model]
+
+
+def test_mixing_columns_follow_the_mass_order():
+    data = {"masses": {1000022: 100., 1000023: 400., 1000024: 200., 1000025: 300.},
+            "decays": {1000022: {}, 1000023: {(1000022, 23): 1.0}, 1000024: {(1000022, 24): 1.0},
+                       1000025: {(1000022, 25): 1.0}},
+            "labels": {1000022: 'Z1', 1000023: 'Z2', 1000024: 'W1', 1000025: 'Z3'}}
+    multipletModel = next(ModelBuilder(modelData=data).generateMultipletModels())
+    columns = {m.standard_symbol: [p.pdg for p in m.particles]
+               for m in multipletModel.possible_mixings[0].get_mixing_matrices()}
+    assert columns['UMixRZ1Z3Z2'] == [1000022, 1000025, 1000023]
+
+
 def test_generate_feynrules_models():
     import warnings
     from uvbuilder.models.feynrulesmodel import FeynRulesModel

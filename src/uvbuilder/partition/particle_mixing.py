@@ -21,7 +21,7 @@ class MixingMatrix:
         
         self.p_components = p_components
         self.f_components = f_components
-        self.particles = tuple(particles)   # mass eigenstates, PDG order
+        self.particles = tuple(particles)   # mass eigenstates, mass order (family index)
 
         self.validation()
 

@@ -42,13 +42,11 @@ class ModelBuilder(object):
                  dm_pdg : int = 1000022,
                  possible_dm_reps: Dict[str,List[AllReps]] = {}, 
                  labels: Dict[int,str] = {},
-                 selfConjugate: Dict[int,bool] = {},
                  SMpdgDict: StateDict = SMfinalStatesDict,
                  ) -> None:
         
         
         self.labels :  Dict[int,str] = labels # Optional dictionary to assign custom labels to the particles. Keys should be PDGs and values should be the corresponding labels.
-        self.selfConjugate : Dict[int,bool] = selfConjugate # Optional dictionary to specify whether a particle is its own antiparticle. Keys should be PDGs and values should be boolean values.
         self.pdgDict : StateDict = StateDict(dict(SMpdgDict.items()))
         self.finalStateModel : Union[FinalStateModel,None] = None
         dm_default_reps = {'spin': [SCALAR, DIRAC_SPINOR],
@@ -81,7 +79,6 @@ class ModelBuilder(object):
 
         if isinstance(modelData,str):
             self.finalStateModel = FinalStateModel.fromFile(modelData,labels=self.labels,
-                                                            selfConjugate=self.selfConjugate,
                                                             pdgDict=self.pdgDict)            
             
         elif isinstance(modelData,dict):

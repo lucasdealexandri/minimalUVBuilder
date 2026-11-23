@@ -62,7 +62,7 @@ class FinalStateModel(object):
         import os    
 
         if not os.path.isfile(slhaFile):
-            FileNotFoundError(f"Model file {slhaFile} not found.")
+            raise FileNotFoundError(f"Model file {slhaFile} not found.")
 
         slhaData = pyslha.readSLHAFile(slhaFile)
         if slhaData is None:
