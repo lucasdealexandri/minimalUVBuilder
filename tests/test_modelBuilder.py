@@ -116,6 +116,40 @@ def test_generate_multiplet_models_matches_partitions_builder():
     assert all(mm.particle_model is not None for mm in generated)
 
 
+def test_labeler_is_applied_to_valid_models_only():
+    from uvbuilder.models.multipletModel import default_component_label
+    def labeler(rep, i3=None, family_index=None):
+        # charged singlets appear only in the invalid partitions
+        if rep.isospin.dim == 1 and rep.hypercharge != U1Rep(0):
+            raise ValueError(f'no label for {rep}')
+        return 'S' + default_component_label(rep, i3, family_index)
+    builder = _sddm_builder()
+    valid = list(builder.generateMultipletModels(labeler=labeler))
+    unfiltered = list(builder.generateMultipletModels(labeler=labeler, validOnly=False))
+    assert valid and all(s.startswith('S') for mm in valid for s in _multiplet_symbols(mm))
+    assert len(unfiltered) > len(valid)
+    assert [_multiplet_symbols(mm) for mm in unfiltered if mm.is_valid] == \
+           [_multiplet_symbols(mm) for mm in valid]
+
+
+def test_decays_need_a_direct_coupling():
+    # coloured MSSM: b1 -> t1 W needs the W coupling of a squark doublet; SU(2)-singlet
+    # squarks are joined only through the gluino Yukawas (loop level)
+    T1, T2, B1, GO, DM = 1000006, 2000006, 1000005, 1000021, 1000022
+    data = {'masses': {DM: 100., T1: 540., T2: 790., B1: 750., GO: 1400.},
+            'decays': {DM: {}, T1: {(DM, 6): 1.0},
+                       T2: {(T1, 25): 0.4, (T1, 23): 0.3, (DM, 6): 0.3},
+                       B1: {(DM, 5): 0.3, (T1, -24): 0.7},
+                       GO: {(T1, -6): 0.5, (T2, -6): 0.3, (B1, -5): 0.2}},
+            'labels': {DM: 'X1', T1: 'T1', T2: 'T2', B1: 'S1', GO: 'G1'}}
+    builder = ModelBuilder(modelData=data, possible_dm_reps={'globalU1s': [GlobalU1s(B=0)]})
+    scalars = [sorted((m.rep.isospin.dim, m.rep.hypercharge) for m in mm.non_conjugated_multiplets
+                      if m.rep.spin == SCALAR and m.rep.hypercharge != U1Rep(0))
+               for mm in builder.generateMultipletModels()]
+    assert [(1, U1Rep(2, 3)), (2, U1Rep(1, 6))] in scalars
+    assert all(any(dim == 2 for dim, _ in s) for s in scalars if s)
+
+
 def test_generate_feynrules_models():
     import warnings
     from uvbuilder.models.feynrulesmodel import FeynRulesModel

@@ -14,7 +14,8 @@ from uvbuilder.vertices.particleVertex import ParticleVertex
 
 from uvbuilder.models.finalStateModel import FinalStateModel
 from uvbuilder.models.particleModel import ParticleModel
-from uvbuilder.models.multipletModel import MultipletModel, default_component_label
+from uvbuilder.models.multipletModel import (MultipletModel, default_component_label,
+                                            multiplet_model_from_partition)
 from uvbuilder.models.feynrulesmodel import FeynRulesModel
 from uvbuilder.partition.partitions_builder import PartitionsBuilder
 
@@ -284,14 +285,20 @@ class ModelBuilder(object):
         one for each partition of the BSM particles into gauge multiplets.
         The ParticleModel of each result is stored in its particle_model attribute.
 
-        :param labeler: function naming the gauge fields of each multiplet
+        :param labeler: function naming the gauge fields of each multiplet, applied to
+                        the valid models only (the others keep the default labels)
         :param validOnly: if True, yields only the models that reproduce all decay vertices
         """
 
         for particleModel in self.generateParticleModels(finalStateModel, uniqueReps=uniqueReps):
-            for multipletModel in PartitionsBuilder(particleModel).get_multipletModels(labeler=labeler):
-                if validOnly and not multipletModel.is_valid:
+            for partition in PartitionsBuilder(particleModel).get_partitions():
+                multipletModel = multiplet_model_from_partition(partition, particle_model=particleModel)
+                valid = multipletModel.is_valid
+                if validOnly and not valid:
                     continue
+                if valid and labeler is not default_component_label:
+                    multipletModel = multiplet_model_from_partition(partition, labeler=labeler,
+                                                                    particle_model=particleModel)
                 yield multipletModel
 
     def generateFeynRulesModels(self, finalStateModel: Union[FinalStateModel, None] = None,

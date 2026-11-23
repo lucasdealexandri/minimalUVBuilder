@@ -439,8 +439,10 @@ class MultipletModel:
 
 
     def valid_decays(self, mixing: ParticleMixing) -> List[ParticleVertex]:
-        '''Decay vertices realised by `mixing`: all BSM particles of the vertex
-        mix into fields of one interaction cluster. Vertices with fewer than two
+        '''Decay vertices realised by `mixing`. A vertex with two BSM particles
+        needs a gauge coupling or an operator joining a field of each (tree level);
+        one with more BSM particles needs them all in one interaction cluster.
+        The emitted SM particles are not checked. Vertices with fewer than two
         BSM particles (X -> SM SM) are never realised: every operator contains a
         pair of BSM fields (implicit Z2), so they are skipped here and rejected
         explicitly in `valid_mixing`.'''
@@ -453,6 +455,12 @@ class MultipletModel:
                              for p in vertex.getParticles() if not p.isSM]
 
             if len(bsm_particles) < 2: continue
+
+            if len(bsm_particles) == 2:
+                mother, daughter = (mixing[p] for p in bsm_particles)
+                if any(self.interactions_graph.has_edge(f, g) for f in mother for g in daughter):
+                    valid.append(vertex)
+                continue
 
             for cluster in self.interaction_clusters:
                 if all(mixing[p].issubset(cluster) for p in bsm_particles):
