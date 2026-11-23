@@ -24,7 +24,7 @@ from uvbuilder.tools.fr_utils import (formatClassBlock, LEFT_SUFFIX, RIGHT_SUFFI
 from uvbuilder.states.field import Field
 from uvbuilder.states.physicsUnits import GeV
 
-fTerm = namedtuple('fieldTerm',['coeff','field'])
+fTerm = namedtuple('fTerm',['coeff','field'])
 
 
 class Particle(object):

@@ -63,6 +63,10 @@ class FRIndex(object):
         else:
             self.style = 'a'
 
+    def __getnewargs_ex__(self):
+        # unpickling goes through __new__, which keeps one instance per name
+        return (self.name,), {'range': self.range, 'index_type': self.index_type}
+
     def __repr__(self) -> str:
         return self.full_name
 

@@ -170,6 +170,18 @@ def test_mixing_columns_follow_the_mass_order():
     assert columns['UMixRZ1Z3Z2'] == [1000022, 1000025, 1000023]
 
 
+def test_feynrules_model_survives_pickling(tmp_path):
+    import pickle, subprocess, sys
+    model = next(_sddm_builder().generateFeynRulesModels())
+    path = tmp_path / 'model.pkl'
+    path.write_bytes(pickle.dumps(model))
+    # a fresh interpreter, so no FeynRules index is cached
+    loaded = subprocess.run([sys.executable, '-c',
+                             f'import pickle; print(pickle.load(open({str(path)!r}, "rb")).to_feynrules(), end="")'],
+                            capture_output=True, text=True, check=True).stdout
+    assert loaded == model.to_feynrules()
+
+
 def test_generate_feynrules_models():
     import warnings
     from uvbuilder.models.feynrulesmodel import FeynRulesModel
