@@ -1,6 +1,6 @@
 % UV Builder logo -- standalone TikZ building blocks.
 % Compile with: pdflatex UVBuilderLogo.tex  (one page per tikzpicture)
-\documentclass[tikz,border=4pt]{standalone}
+\documentclass[tikz,border=24pt]{standalone}
 \usepackage[T1]{fontenc}
 \usepackage{tgpagella} % Palatino (TeX Gyre Pagella), scalable, for the logo text
 \usepackage{mathrsfs}  % \mathscr: curly script L for the Lagrangians
@@ -8,31 +8,6 @@
 
 \definecolor{photon}{RGB}{230,120,20}
 \definecolor{uvpurple}{RGB}{118,40,200}
-\definecolor{uvneon}{RGB}{150,70,255}     % saturated violet for the light
-\definecolor{uvhot}{RGB}{238,214,255}     % near-white lavender: hot core of the light
-
-% ---------------------------------------------------------------------------
-% Light fall-off: \uvbDeclareFalloff{name}{c}{R} declares a radial fading `name`
-% of radius R (a length), centred on the origin, with opacity
-%   o(r) = 1 / (1 + (r/(c R))^2) * (1 - (r/R)^2)
-% i.e. inverse-square, softened near the source (c sets how wide the bright
-% centre is, as a fraction of R) and brought smoothly to zero at r = R.
-% White = opaque, black = transparent. The fading is built at its final size
-% (scaling a small fading up makes PDF viewers render it in visible rings).
-% ---------------------------------------------------------------------------
-\newcommand\uvbDeclareFalloff[3]{%
-  \gdef\uvbStops{}%
-  \foreach \f [count=\i] in {0,0.01,0.02,0.03,0.04,0.06,0.08,0.1,0.12,0.15,0.18,0.22,
-                             0.26,0.3,0.35,0.4,0.46,0.52,0.6,0.7,0.8,0.9,1} {%
-    \pgfmathsetmacro\uvbO{100/(1+(\f/#2)^2)*(1-\f^2)}%
-    \pgfmathsetlengthmacro\uvbR{\f*#3}%
-    \ifnum\i=1 \xdef\uvbStops{color(\uvbR)=(white!\uvbO!black)}%
-    \else      \xdef\uvbStops{\uvbStops; color(\uvbR)=(white!\uvbO!black)}\fi
-  }%
-  \edef\uvbTmp{\noexpand\pgfdeclareradialshading{#1shade}{\noexpand\pgfpointorigin}{\uvbStops}}%
-  \uvbTmp
-  \pgfdeclarefading{#1}{\pgfuseshading{#1shade}}%
-}
 
 % ---------------------------------------------------------------------------
 % Template parameters (set them as options of a \pic, e.g. \pic[box size=3cm] {box};)
@@ -203,7 +178,7 @@
 \def\cabBottom{0.75}    % bottom width as a fraction of the top width
 \def\cabHeight{0.9}
 % --- trolley, hook and load ----------------------------------------------------
-\def\trolleyBox{9}      % jib box the trolley hangs under (must be > \rowStart)
+\def\trolleyBox{8}      % jib box the trolley hangs under (must be > \rowStart)
 \def\trolleyWidth{0.8}  % in box sizes
 \def\trolleyHeight{0.16}
 \def\cableLength{0.5}   % hoist cable length, trolley to hook block, in box sizes
@@ -211,9 +186,9 @@
 \def\slingDrop{2.6}     % vertical drop of the slings from the hook to the diagram
 % load = Feynman diagram (e+ e- -> gamma -> e+ e-); the slings hold the two
 % vertices at the ends of the photon line
-\def\loadWidth{9.2}     % diagram width, in box sizes
+\def\loadWidth{8.4}     % diagram width, in box sizes
 \def\loadLineWidth{13pt}
-\def\loadPhotonWidth{16pt}  % the photon line only
+\def\loadPhotonWidth{13pt}  % the photon line only
 \def\loadPhotonColor{uvpurple}
 % curly Ls (Lagrangians) under the photon, between the two lower legs
 \def\lagCount{3}
@@ -222,38 +197,22 @@
 \def\lagDrop{0.17}       % how far below the photon line, in diagram widths
 \def\lagDip{0.3}         % extra drop of the middle L(s), in box sizes (they sit on an arc)
 \def\lagColor{black}
-% UV spotlight: cone from the trolley down to the bottom of the circle. Its
-% intensity falls off radially from the source like 1/(1 + (r/c)^2), see the
-% fadings in the preamble; a hot core and soft (layered) edges give the glow.
-\def\lightColor{uvneon}
-\def\lightCoreColor{uvhot}
-\def\lightAngle{32}      % half opening angle of the cone, in degrees
-\def\lightOpacity{0.9}   % opacity at the source (main beam)
-\def\lightCoreOpacity{0.85}
-\def\lightLayers{6}      % >1 stacks cones of decreasing width for softer edges, but
-                         % PDF viewers then show the fall-off in visible rings
-\def\lightSoftness{0.3}  % the narrowest layer is this much narrower (fraction)
-\def\lightCenter{0.3}    % size of the bright part of the beam, as a fraction of its length
-\def\lightCore{0.08}     % same, for the hot core
-\def\lightHalo{1.6}      % radius of the glow around the source, in box sizes
+% UV spotlight: cone from the trolley down past the diagram, purple fading out
+\def\lightColor{uvpurple}
+\def\lightOpacity{0.55}  % opacity at the top of the cone
+\def\lightSpread{1.1}    % width at the bottom, as a fraction of the diagram width
+\def\lightReach{0.35}    % how far below the diagram's centre the cone ends, in diagram widths
 % --- frame circle and logo text --------------------------------------------------
-\def\circleX{5.95}       % centre of the circle, in box sizes (tower centre = origin)
+\def\circleX{4.95}       % centre of the circle, in box sizes (tower centre = origin)
 \def\circleY{0.4}
-\def\circleR{7.2}        % radius, in box sizes
+\def\circleR{6.6}        % radius, in box sizes
 \def\circleWidth{30pt}
-\def\circleGap{0.12}     % blank margin where the circle meets the crane, in box sizes
-\def\towerGap{0.5}       % blank margin between the bottom of the tower and the circle
+\def\circleGap{0.15}     % blank margin where the circle meets the crane, in box sizes
+\def\towerGap{0.2}       % blank margin between the bottom of the tower and the circle
 \def\logoText{|\uvbLogoFont\color{uvpurple}|UV |\uvbLogoFont\color{black}|Builder}
 \def\logoTextSize{1.3}   % font size, in box sizes
 \def\logoTextGap{0.3}    % space between the circle and the text (inside), in box sizes
 \def\logoTextSpan{60}    % half of the angle (degrees) the text may spread over
-
-% the light's fadings have to be declared outside the picture, at their final size:
-% radius = distance from the source (halfway up the trolley) to the bottom of the circle
-\pgfmathsetlengthmacro\uvbLightL{(\stackCount/2-0.5*\trolleyHeight-\circleY+\circleR)*\uvbBoxSize}
-\uvbDeclareFalloff{uvfalloff}{\lightCenter}{\uvbLightL}
-\uvbDeclareFalloff{uvcore}{\lightCore}{\uvbLightL}
-\uvbDeclareFalloff{uvhalo}{\lightCore}{\lightHalo*\uvbBoxSize}
 
 \begin{tikzpicture}[line join=round]
   % ---- key positions (the tower is centred on the origin) --------------------
@@ -281,6 +240,8 @@
   \coordinate (cc) at ({\circleX*\s},{\circleY*\s});
   \pgfmathsetlengthmacro\g{\circleGap*\s}
   \draw[line width=\circleWidth] (cc) circle[radius=\circleR*\s];
+  % the bounding box ignores line widths: make room for the outer half of the stroke
+  \path (cc) circle[radius=\circleR*\s+0.5*\circleWidth];
   \begin{scope}[white]
     % one silhouette around counterweight, jib, nose, triangle on top and both
     % pendant cables, so the circle gets a single continuous gap there
@@ -367,34 +328,15 @@
 
   % ---- UV spotlight (drawn before the trolley, hoist and diagram, which sit on top
   % of it); it starts halfway up the trolley so it comes out from behind it ---------
-  \coordinate (src) at (\trolleyX,{\jibBot-0.5*\trolleyHeight*\s});
-  % distance from the source to the bottom of the circle = radius of the fall-off
-  \pgfmathsetlengthmacro\lightL{\jibBot-0.5*\trolleyHeight*\s-(\circleY-\circleR)*\s}
-  \pgfmathsetlengthmacro\lightTopW{0.45*\trolleyWidth*\s}
-  \pgfmathsetlengthmacro\lightBotW{\lightTopW+\lightL*tan(\lightAngle)}
   \begin{scope}
-    \clip (cc) circle[radius=\circleR*\s-0.5*\circleWidth];
-    % main beam: several cones of decreasing width, each with the radial fall-off,
-    % so the edges are soft and the middle is brightest
-    \pgfmathsetmacro\layerOpacity{1-(1-\lightOpacity)^(1/\lightLayers)}
-    \foreach \k in {1,...,\lightLayers} {
-      \pgfmathsetlengthmacro\w{\lightBotW*(1-\lightSoftness*(\k-1)/max(\lightLayers-1,1))}
-      \fill[\lightColor, fill opacity=\layerOpacity, path fading=uvfalloff,
-            fit fading=false, fading transform={shift={(src)}}]
-        ($(src)+(-\lightTopW,0)$) -- ($(src)+(\lightTopW,0)$)
-        -- ($(src)+(\w,-\lightL)$) -- ($(src)+(-\w,-\lightL)$) -- cycle;
-    }
-    % hot core right under the trolley
-    \fill[\lightCoreColor, fill opacity=\lightCoreOpacity, path fading=uvcore,
-          fit fading=false, fading transform={shift={(src)}}]
-      ($(src)+(-\lightTopW,0)$) -- ($(src)+(\lightTopW,0)$)
-      -- ($(src)+(\lightBotW,-\lightL)$) -- ($(src)+(-\lightBotW,-\lightL)$) -- cycle;
+  \clip (cc) circle[radius=\circleR*\s-0.5*\circleWidth];
+  \fill[\lightColor, fill opacity=\lightOpacity, path fading=south]
+    ({\trolleyX-0.45*\trolleyWidth*\s},{\jibBot-0.5*\trolleyHeight*\s})
+    -- ({\trolleyX+0.45*\trolleyWidth*\s},{\jibBot-0.5*\trolleyHeight*\s})
+    -- ({\trolleyX+0.5*\lightSpread*\loadW},{\fdY-\lightReach*\loadW})
+    -- ({\trolleyX-0.5*\lightSpread*\loadW},{\fdY-\lightReach*\loadW})
+    -- cycle;
   \end{scope}
-  % a faint halo around the source itself (also above the beam), like a lamp
-  \pgfmathsetlengthmacro\haloR{\lightHalo*\s}
-  \fill[\lightColor, fill opacity=0.45, path fading=uvhalo,
-        fit fading=false, fading transform={shift={(src)}}]
-    (src) circle[radius=\haloR];
 
   % ---- trolley (centred under its jib box, slightly rounded bottom) --------------
   \fill ({\trolleyX-0.5*\trolleyWidth*\s},\jibBot)
