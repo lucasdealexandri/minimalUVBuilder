@@ -1,9 +1,8 @@
-'''SLHA builder: input template and reader for the Lagrangian parameters of a FeynRules
-model, the mass matrices of its mixing blocks, their spectrum and the MG5 parameter card.'''
+'''SLHA builder: the input parameters of a FeynRules model, the mass matrices of its
+mixing blocks, their spectrum and the MG5 parameter card.'''
 
 import math
 import re
-from datetime import date
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -18,7 +17,6 @@ from uvbuilder.tools.reps import WeylSpinor
 # Sectors whose External parameters are Lagrangian inputs (mixing matrices,
 # phases and CG tensors are derived)
 INPUT_SECTORS = {key for key, _, block in SECTORS if block is not None}
-_UNITS = {'Mass': 'GeV', 'Trilinear': 'GeV'}
 
 
 def input_parameters(fr_model) -> List[FRParameter]:
@@ -26,51 +24,6 @@ def input_parameters(fr_model) -> List[FRParameter]:
     (real and imaginary parts of a complex coupling as separate entries).'''
     return [p for p in fr_model.parameters()
             if p.kind == 'External' and p.sector in INPUT_SECTORS]
-
-
-def write_input_template(fr_model, path, overwrite=False) -> List[FRParameter]:
-    '''Text file with one "name value # [unit] description (block index)" line per
-    input parameter, filled with the model's default values.'''
-    path = Path(path)
-    if path.exists() and not overwrite:
-        raise FileExistsError(f'{path} exists (overwrite=True replaces it)')
-    entries = input_parameters(fr_model)
-    width = max((len(p.name) for p in entries), default=0)
-    lines = [f'# SLHA builder input: {fr_model.name}  (generated {date.today()})',
-             '# Edit the values; keep the names. Units in brackets.',
-             f'# {"name":<{width - 2}} {"value":>14}   # [unit] description (block index)']
-    for p in entries:
-        unit = _UNITS.get(p.sector, '1')
-        lines.append(f'{p.name:<{width}} {float(p.value):>14.6e}   '
-                     f'# [{unit}] {p.description} ({p.block} {p.order_block})')
-    path.write_text('\n'.join(lines) + '\n')
-    return entries
-
-
-def read_input(path) -> Dict[str, float]:
-    '''{name: value} from a filled input template, in file order. Lines are "name value",
-    anything after # is ignored. Raises ValueError listing every problem: lines that are
-    not two fields, values that are not finite numbers, names given twice. Whether the
-    names are the model's inputs is checked where the values are used (evaluate).'''
-    values, problems = {}, []
-    for number, line in enumerate(Path(path).read_text().splitlines(), 1):
-        fields = line.split('#', 1)[0].split()
-        if not fields:
-            continue
-        if len(fields) != 2:
-            problems.append(f'line {number}: expected "name value", got {line.strip()!r}')
-            continue
-        name, text = fields
-        value = _number(text)
-        if value is None or not math.isfinite(value):
-            problems.append(f'line {number}: {name} = {text!r} is not a finite number')
-        elif name in values:
-            problems.append(f'line {number}: {name} given twice')
-        else:
-            values[name] = value
-    if problems:
-        raise ValueError(f'{path}:\n  ' + '\n  '.join(problems))
-    return values
 
 
 def _number(text):
@@ -189,7 +142,7 @@ VEV = 246.220569073486
 
 def numeric_mass_matrices(fr_model):
     '''evaluate(values) -> {U block symbol: numpy matrix}, with values {name: value} of
-    exactly the model's inputs (input_parameters), e.g. from read_input; raises
+    exactly the model's inputs (input_parameters), e.g. from a param_card; raises
     ValueError listing missing and unknown names and values that are not finite numbers.
     A complex coupling y takes R<y> + i I<y>; v = VEV. Each matrix of mass_matrices is
     lambdified once (conjugate -> numpy.conj).'''
@@ -224,7 +177,7 @@ _DIAGONALIZE = {'RealScalar': diagonalize_real_scalar, 'ComplexScalar': diagonal
 
 
 def numeric_spectrum(fr_model):
-    '''compute(values) -> (masses, mixings) for read_input's values:
+    '''compute(values) -> (masses, mixings) for the input values (as in evaluate):
     masses   {pdg: mass} of every BSM state of the mixing blocks;
     mixings  {matrix symbol: numpy matrix} of the blocks with more than one state (the
              mixing matrices of the FeynRules model): U, and V for Dirac pairs.

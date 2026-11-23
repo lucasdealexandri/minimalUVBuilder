@@ -1,4 +1,4 @@
-"""SLHA builder input template (models/slhaBuilder.py)."""
+"""SLHA builder (models/slhaBuilder.py)."""
 
 import pytest
 
@@ -7,7 +7,7 @@ import sympy as sp
 import numpy as np
 
 from uvbuilder.models.slhaBuilder import (VEV, input_parameters, mass_matrices, numeric_mass_matrices,
-                                 numeric_spectrum, read_input, write_card, write_input_template)
+                                          numeric_spectrum, write_card)
 from tests.test_conjugation import _sddm_model
 
 MAJORANA = {'ChiI1Y0Lw', 'ChiI2Y3Lw', 'ChiI2Ym3Lw'}
@@ -17,64 +17,6 @@ def test_input_parameters_are_the_external_lagrangian_entries():
     names = [p.name for p in input_parameters(_sddm_model(MAJORANA))]
     assert names == ['MChiI1Y0', 'MChiI2Y3ChiI2Ym3', 'RyChiI1Y0ChiI2Y3', 'IyChiI1Y0ChiI2Y3',
                      'RyChiI1Y0ChiI2Ym3', 'IyChiI1Y0ChiI2Ym3']
-
-
-def test_template_has_one_line_per_input(tmp_path):
-    path = tmp_path / 'input.txt'
-    write_input_template(_sddm_model(MAJORANA), path)
-    lines = [l for l in path.read_text().splitlines() if not l.startswith('#')]
-    assert [l.split()[:2] for l in lines] == [
-        ['MChiI1Y0', '1.000000e+00'], ['MChiI2Y3ChiI2Ym3', '1.000000e+00'],
-        ['RyChiI1Y0ChiI2Y3', '1.000000e+00'], ['IyChiI1Y0ChiI2Y3', '0.000000e+00'],
-        ['RyChiI1Y0ChiI2Ym3', '1.000000e+00'], ['IyChiI1Y0ChiI2Ym3', '0.000000e+00']]
-    assert lines[0].endswith('# [GeV] Majorana mass of ChiI1Y0 (BSMMASS 1)')
-    assert lines[3].endswith('(imaginary part) (IMBSMYUKAWA 1)')
-
-
-def test_template_is_not_overwritten_by_default(tmp_path):
-    path = tmp_path / 'input.txt'
-    model = _sddm_model(MAJORANA)
-    write_input_template(model, path)
-    with pytest.raises(FileExistsError):
-        write_input_template(model, path)
-    write_input_template(model, path, overwrite=True)
-
-
-def test_template_reads_back_to_the_defaults(tmp_path):
-    path = tmp_path / 'input.txt'
-    model = _sddm_model(MAJORANA)
-    write_input_template(model, path)
-    assert read_input(path) == {
-        'MChiI1Y0': 1.0, 'MChiI2Y3ChiI2Ym3': 1.0, 'RyChiI1Y0ChiI2Y3': 1.0,
-        'IyChiI1Y0ChiI2Y3': 0.0, 'RyChiI1Y0ChiI2Ym3': 1.0, 'IyChiI1Y0ChiI2Ym3': 0.0}
-
-
-def test_edited_values_are_read(tmp_path):
-    path = tmp_path / 'input.txt'
-    model = _sddm_model(MAJORANA)
-    write_input_template(model, path)
-    text = path.read_text().replace('MChiI1Y0            1.000000e+00', 'MChiI1Y0 2.5e2')
-    text = text.replace('MChiI2Y3ChiI2Ym3    1.000000e+00', 'MChiI2Y3ChiI2Ym3 1.0d3')
-    path.write_text(text)
-    values = read_input(path)
-    assert (values['MChiI1Y0'], values['MChiI2Y3ChiI2Ym3']) == (250.0, 1000.0)
-
-
-def test_all_input_problems_are_reported_together(tmp_path):
-    path = tmp_path / 'input.txt'
-    path.write_text('MChiI1Y0 100   # ok\n'
-                    'MChiI1Y0 200\n'
-                    'RyChiI1Y0ChiI2Y3 abc\n'
-                    'RyChiI1Y0ChiI2Ym3 nan\n'
-                    'IyChiI1Y0ChiI2Y3 0 extra\n')
-    with pytest.raises(ValueError) as error:
-        read_input(path)
-    message = str(error.value)
-    for problem in ('MChiI1Y0 given twice',
-                    "RyChiI1Y0ChiI2Y3 = 'abc' is not a finite number",
-                    "RyChiI1Y0ChiI2Ym3 = 'nan' is not a finite number",
-                    'expected "name value"'):
-        assert problem in message
 
 
 def test_evaluate_reports_missing_and_unknown_names():
@@ -177,11 +119,10 @@ def test_numeric_real_block_is_real_for_complex_couplings():
     assert np.isclose(real_block[0, 2].real, VEV * 20.0)              # S - phi_I = v Im(mu)
 
 
-def test_numeric_matrices_from_the_input_file(tmp_path):
-    path = tmp_path / 'input.txt'
+def test_numeric_matrices_at_the_default_values():
     frm = _sddm_model(MAJORANA)
-    write_input_template(frm, path)
-    matrices = numeric_mass_matrices(frm)(read_input(path))
+    values = {p.name: float(p.value) for p in input_parameters(frm)}
+    matrices = numeric_mass_matrices(frm)(values)
     assert np.allclose(matrices['UMixDW1'], [[-1]])
 
 
