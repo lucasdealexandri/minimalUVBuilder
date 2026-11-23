@@ -1,0 +1,236 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\diag}{\operatorname{diag}}
+
+\title{SLHA builder: conventions for mass matrices, mixing matrices\\ and their diagonalisation}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent This note fixes the conventions used by \code{models/slhaBuilder.py} and
+\code{tools/spectrum.py}. They are the conventions of the FeynRules model file written by
+\code{FeynRulesModel}, so that masses and mixing matrices computed in Python can be inserted
+in the parameter card of the corresponding UFO model.
+
+%----------------------------------------------------------------------------------------
+\section{Mass terms}
+
+\paragraph{Lagrangian.} Every operator of the model (\code{MultipletModel.lagrangian\_operators}:
+one of each pair $\mathcal O$, $\mathcal O^\dagger$) enters the FeynRules Lagrangian as
+\begin{equation}
+  \mathcal L \supset -\,\mathcal O - \text{h.c.}
+  \quad\text{(non-Hermitian $\mathcal O$)},\qquad
+  \mathcal L \supset -\,\mathcal O \quad\text{(Hermitian $\mathcal O$)} .
+\end{equation}
+The mass terms are the two-field terms after electroweak symmetry breaking, with the neutral
+component of the Higgs doublet replaced by $v/\sqrt2$ and the charged one by $0$. We collect
+them in
+\begin{equation}
+  \mathcal L_{\rm mass} = -V - \text{h.c.}\ (\text{fermions}), \qquad
+  \mathcal L_{\rm mass} = -V \ (\text{scalars}),
+\end{equation}
+where for scalars $V$ already contains the Hermitian conjugate of every non-Hermitian
+operator (with $v$ real), and for fermions $V$ contains only the terms in the fields
+themselves, $\psi_i\psi_j$, never $\bar\psi_i\bar\psi_j$.
+
+\paragraph{Vacuum expectation value.} $v$ is the value used by \code{SMMod.fr} and MG5,
+$v = 2 M_W s_W/e$, taken as the FeynRules numerical constant
+\begin{equation}
+  v = 246.220569073486~\text{GeV} \qquad (\code{slhaBuilder.VEV}).
+\end{equation}
+
+\paragraph{Scalar mass terms.} The mass operator of a scalar multiplet $X$ is taken as written
+in the FeynRules file (\code{Operator.fr\_mass\_term}):
+\begin{equation}
+  M^2 X^*_i X_i \ (\text{complex}),\qquad
+  \tfrac12 M^2 X^*_i X_i \ (\text{real, isospin dimension} > 1),\qquad
+  \tfrac12 M^2 X X \ (\text{real singlet}).
+\end{equation}
+For real multiplets with isospin dimension $> 1$ this differs in sign from the SU(2) singlet
+built from Clebsch--Gordan coefficients (for a real triplet
+$(T\otimes T)_0 = -\tfrac{1}{\sqrt3}\,T^aT^a$); all other operators use the Clebsch--Gordan
+singlet, in the FeynRules file and in the mass matrices alike.
+
+\paragraph{Real multiplets.} For a real multiplet of integer isospin $j$ the components obey
+\begin{equation}
+  \psi_{-m} = (-1)^m\, \psi_m^* ,
+\end{equation}
+(\code{tools.reps.su2\_reality\_phase}, \code{Multiplet.conjugate\_component}); e.g.\
+$T^- = -(T^+)^*$, $T^0$ real. In $V$ the components $\psi_{-m}$, $m>0$, are replaced
+accordingly.
+
+%----------------------------------------------------------------------------------------
+\section{Mass matrices}
+
+Each mixing block (\code{MixingMatrix}) has rows $x_i$, the gauge fields
+\code{f\_components}, in a fixed order. The mass matrices are second derivatives of $V$
+(\code{slhaBuilder.mass\_matrices}):
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+block & Lagrangian & matrix \\ \midrule
+real scalar     & $-\mathcal L = \tfrac12\, x^T M^2 x$          & $M^2_{ij} = \partial^2 V/\partial x_i\partial x_j$ \\
+complex scalar  & $-\mathcal L = \phi^\dagger M^2 \phi$         & $M^2_{ij} = \partial^2 V/\partial \phi^*_i\partial \phi_j$ \\
+Majorana fermion& $-\mathcal L = \tfrac12\, \psi^T M \psi + \text{h.c.}$ & $M_{ij} = \partial^2 V/\partial \psi_i\partial \psi_j$ \\
+Dirac fermion   & $-\mathcal L = u^T M w + \text{h.c.}$         & $M_{ij} = \partial^2 V/\partial u_i\partial w_j$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent For a Dirac pair, $u$ are the left-handed fields (block \code{UMix\ldots}) and $w$ the
+conjugates of the right-handed ones (block \code{VMix\ldots}).
+
+\paragraph{Complex components in real blocks.} If a real scalar block contains a complex
+component $X$ together with its conjugate $\bar X$ (e.g.\ the neutral component of a
+$Y=1/2$ doublet mixing with a real singlet), they are replaced by real fields,
+\begin{equation}
+  X = \frac{\phi_R + i\phi_I}{\sqrt2},\qquad \bar X = \frac{\phi_R - i\phi_I}{\sqrt2},
+\end{equation}
+$\phi_R$ on the row of $X$ and $\phi_I$ on the row of $\bar X$, $X$ being the component of
+the declared (non-conjugated) multiplet. This is the parametrisation of the FeynRules
+definitions (\code{fr\_utils.getGaugeDefinitions}),
+\code{X :> (UMix[$r_X$, j] + I UMix[$r_{\bar X}$, j])/Sqrt[2] S[j]}. The resulting $M^2$ is
+real and symmetric for any complex couplings.
+
+%----------------------------------------------------------------------------------------
+\section{Mixing matrices}
+
+\paragraph{Orientation.} The FeynRules definitions express the gauge fields through the
+mass eigenstates,
+\begin{equation}
+  x_i = \sum_j U_{ij}\, \chi_j ,
+\end{equation}
+rows $i$ = gauge fields (\code{f\_components}), columns $j$ = mass eigenstates. This is the
+inverse of the SLHA convention $\chi = N x$: $U = N^\dagger$ ($N^T$ if real). Cards written
+with these blocks must not be compared with SLHA spectrum generators without this
+transposition.
+
+\paragraph{Columns.} Column $j$ is the $j$-th lightest state of the block: the family index of
+the physical FeynRules class is the mass rank (\code{states.particle.family\_key}). The PDG
+code is the label carried by that index.
+
+\paragraph{Conditions.} With $x = U\chi$ (and $w = V\chi^c$ for Dirac pairs) the mass terms
+are diagonal when
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+block & condition & masses \\ \midrule
+real scalar     & $O^T M^2 O = \diag(m_k^2)$, $O$ real orthogonal & $m_k = \sqrt{m_k^2}$ \\
+complex scalar  & $U^\dagger M^2 U = \diag(m_k^2)$, $U$ unitary   & $m_k = \sqrt{m_k^2}$ \\
+Majorana fermion& $U^T M U = \diag(m_k)$, $m_k\ge0$, $U$ unitary & \\
+Dirac fermion   & $U^T M V = \diag(m_k)$, $m_k\ge0$, $U,V$ unitary & \\
+\bottomrule
+\end{tabular}
+\end{center}
+with $m_1 < m_2 < \dots$. The Majorana condition is the Takagi factorisation
+$U^TMU = M_D$ of Haber~\cite{Haber} (eq.~122): the $m_k$ are the singular values of $M$, and
+the columns $v_k$ of $U$ (Takagi vectors) satisfy $M v_k = m_k v_k^*$. Masses are positive;
+for blocks of dimension $> 1$ the phases needed for this are carried by $U$ (and $V$), so
+$U$ is complex in general. For fermions alone in their block the sign of the Lagrangian mass
+is carried by the phase parameter \code{P<particle>} of the FeynRules file instead.
+
+\paragraph{Phase convention.} The conditions fix each column up to
+a phase (complex scalars), a sign (real scalars, Majorana fermions: a phase $e^{i\alpha}$ on
+a Takagi vector would make its mass complex~\cite{Haber}), or a phase $e^{i\alpha}$ on column
+$k$ of $U$ together with $e^{-i\alpha}$ on column $k$ of $V$ (Dirac). It is fixed by:
+\begin{itemize}
+  \item the entry of largest modulus of each column of $U$ is real and positive (complex
+        scalars, Dirac; $V$ follows with the opposite phase);
+  \item where only a sign is free, that entry has a positive real part, or a positive
+        imaginary part if its real part vanishes (real scalars, Majorana).
+\end{itemize}
+Among entries of numerically equal modulus the first is used. The convention changes no
+physical quantity; it makes the cards reproducible.
+
+%----------------------------------------------------------------------------------------
+\section{Algorithms (\code{tools/spectrum.py})}
+
+\paragraph{Scalars.} \code{numpy.linalg.eigh} (LAPACK), eigenvalues in ascending order. A
+real block must have a vanishing imaginary part (relative to the largest entry); its real part
+is diagonalised, so $O$ is real orthogonal.
+
+\paragraph{Dirac fermions.} \code{numpy.linalg.svd}: $M = A\,\diag(m)\,B^\dagger$, hence
+$U = A^*$, $V = B$, columns reordered to ascending $m$.
+
+\paragraph{Majorana fermions: Takagi factorisation by Jacobi rotations.} We follow Hahn's
+Jacobi algorithm~\cite{Hahn} (sec.~4.2), written in his convention
+$W^* M W^\dagger = \diag(\sigma)$, which is ours with $U = W^\dagger$. Starting from $A = M$
+and $W = 1$, cyclic sweeps over the pairs $p<q$ annihilate $A_{pq}$ with the $2\times2$
+rotation
+\begin{equation}
+  R = \begin{pmatrix} c & t\,c\,e^{i\varphi} \\ -t\,c\,e^{-i\varphi} & c \end{pmatrix},
+  \qquad c = \frac{1}{\sqrt{1+t^2}},\quad t\in\mathbb R,
+\end{equation}
+acting on rows and columns $p,q$, with (Hahn eqs.~24--31, $a_{11}=A_{pp}$, $a_{22}=A_{qq}$,
+$a_{12}=A_{pq}$)
+\begin{gather}
+  e^{i\varphi} = \frac{a_{11}^* a_{12} + a_{22} a_{12}^*}{\left|a_{11}^* a_{12} + a_{22} a_{12}^*\right|},
+  \qquad
+  \tilde\Delta = \tfrac12\left(e^{i\varphi} a_{11} - e^{-i\varphi} a_{22}\right),\\
+  t = \frac{a_{12}}{\tilde\Delta + \tilde D},\qquad
+  \tilde D = \pm\sqrt{\tilde\Delta^2 + a_{12}^2}.
+\end{gather}
+The phase $\varphi$ makes $\tilde\Delta/a_{12} \equiv r$ real, so $t = 1/(r\pm\sqrt{r^2+1})$
+is real; the sign is chosen to give the larger denominator (smaller rotation angle). If the
+numerator of $e^{i\varphi}$ vanishes, $e^{i\varphi}=1$. Each rotation updates
+\begin{equation}
+  A \to R^* A R^\dagger, \qquad W \to R\,W ,
+\end{equation}
+until the off-diagonal part of $A$ is below $10^{-15}\|M\|$ (at most 50 sweeps). Then
+$W^* M W^\dagger = \diag(\sigma_k)$ with complex $\sigma_k$; the phases are moved into $W$,
+\begin{equation}
+  W \to \diag\!\left(e^{i\arg\sigma_k/2}\right) W
+  \quad\Rightarrow\quad W^* M W^\dagger = \diag(|\sigma_k|),
+\end{equation}
+and $U = W^\dagger$, $m_k = |\sigma_k|$, columns sorted by ascending $m_k$. Finally the sign
+convention above is applied.
+
+\paragraph{Checks.} All diagonalisations raise an error if
+\begin{itemize}
+  \item a physical mass squared is negative;
+  \item a mass vanishes, $m_1 \le 10^{-8}\max(m_{\max}, 1~\text{GeV})$: protomodel states are
+        massive, and a zero singular value leaves its Takagi vector undetermined up to an
+        arbitrary phase~\cite{Haber};
+  \item two masses of a block coincide, $m_{k+1}-m_k \le 10^{-8}\max(m_{\max},1~\text{GeV})$:
+        protomodel states are distinct, and for degenerate masses $U$ is determined only up to
+        a rotation within the degenerate subspace (real orthogonal for Takagi~\cite{Haber}),
+        which would make the couplings of the individual states arbitrary;
+  \item a real scalar block has an imaginary part, or a Majorana matrix is not symmetric.
+\end{itemize}
+Near-degenerate masses are accepted; their mixing is determined, though sensitive to the
+inputs.
+
+%----------------------------------------------------------------------------------------
+\section{Code map}
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+\code{models/slhaBuilder.py} & \code{input\_parameters}, \code{write\_input\_template}, \code{read\_input}, \\
+                             & \code{mass\_matrices} (symbolic), \code{numeric\_mass\_matrices}, \code{VEV} \\
+\code{tools/spectrum.py}     & \code{diagonalize\_real\_scalar}, \code{diagonalize\_complex\_scalar}, \\
+                             & \code{diagonalize\_dirac}, \code{takagi} \\
+\code{partition/particle\_mixing.py} & \code{MixingMatrix} (rows, columns, block type, names) \\
+\code{tools/fr\_utils.py}    & \code{getGaugeDefinitions} (FeynRules definitions $x = U\chi$) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{thebibliography}{9}
+\bibitem{Hahn} T.~Hahn, \emph{Routines for the diagonalization of complex matrices},
+  \href{https://arxiv.org/abs/physics/0607103}{physics/0607103}.
+\bibitem{Haber} H.~E.~Haber, \emph{A tale of three diagonalizations},
+  Int.\ J.\ Mod.\ Phys.\ A \textbf{36} (2021), doi:10.1142/S0217751X21300027,
+  \href{https://arxiv.org/abs/2009.03990}{arXiv:2009.03990}.
+\bibitem{SLHA2} B.~Allanach \emph{et al.}, \emph{SUSY Les Houches Accord 2},
+  \href{https://arxiv.org/abs/0801.0045}{arXiv:0801.0045}.
+\end{thebibliography}
+
+\end{document}

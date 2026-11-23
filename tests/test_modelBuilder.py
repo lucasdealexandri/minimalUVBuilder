@@ -1,0 +1,209 @@
+#!/usr/bin/env python3
+
+import pytest
+
+from uvbuilder.modelBuilder.modelBuilder import ModelBuilder
+from uvbuilder.models.finalStateModel import FinalStateModel
+from uvbuilder.models.particleModel import ParticleModel
+from uvbuilder.states.finalState import FinalState
+from uvbuilder.states.particle import Particle
+from uvbuilder.states.physicsUnits import GeV
+from uvbuilder.tools.reps import GlobalU1s
+from uvbuilder.tools.reps import SCALAR, SU3Rep, U1Rep, UnbrokenRep
+from uvbuilder.vertices.particleVertex import ParticleVertex
+
+
+def _final_state_model_with_dm():
+    model = FinalStateModel(vertices=[])
+    dm = Particle(pdg=1000022, label='DM')
+    dm.mass = 100*GeV   # every protomodel particle has a mass
+    model.pdgDict[1000022] = FinalState(label='DM', particleList=[dm])
+    return model
+
+
+def test_dm_particles_use_complete_unbroken_reps():
+    builder = ModelBuilder()
+    particles = builder.getDMParticles(_final_state_model_with_dm())
+
+    assert len(particles) == 4       # 2 spins x 2 dark-charge choices
+    assert all(isinstance(p.rep, UnbrokenRep) for p in particles)
+    assert {p.rep.spin for p in particles} == {SCALAR, builder.possible_dm_reps['spin'][1]}
+    assert {p.rep.globalU1s for p in particles} == {
+        GlobalU1s(), GlobalU1s(D=1)
+    }
+    assert all(p.selfConjugate == (p.rep.conjRep == p.rep) for p in particles)
+
+
+# -- global U(1)s: which charges are conserved is decided by the DM candidate --
+
+_STOP = {"masses": {1000022: 180.603, 1000006: 1164.264, 1000021: 1500.0},
+         "decays": {1000022: {}, 1000006: {(1000022, 6): 1.0}, 1000021: {(1000006, -6): 1.0}},
+         "labels": {1000022: 'B', 1000006: 'st', 1000021: 'Go'}}
+
+
+def _bsm_charges(dm_options):
+    from uvbuilder.tools.reps import GlobalU1s  # noqa: F401  (documents the type in use)
+    builder = ModelBuilder(modelData=_STOP, possible_dm_reps={'globalU1s': dm_options})
+    return [{p.label: p.globalU1s for p in pm.bsm_particles}
+            for pm in builder.generateParticleModels()]
+
+
+def test_nothing_conserved_fills_nothing():
+    from uvbuilder.tools.reps import GlobalU1s
+    models = _bsm_charges([GlobalU1s()])
+    assert models
+    assert all(q == GlobalU1s() for charges in models for q in charges.values())
+
+
+def test_baryon_number_conserved_is_propagated():
+    from uvbuilder.tools.reps import GlobalU1s
+    models = _bsm_charges([GlobalU1s(B=0)])        # B set (to 0) on the DM: B conserved
+    assert models
+    for charges in models:
+        assert charges['B'] == GlobalU1s(B=0)
+        assert charges['st'] == GlobalU1s(B=U1Rep(1, 3))   # st -> t B
+        assert charges['Go'] == GlobalU1s(B=0)             # Go -> st t~
+
+
+def test_untracked_charges_do_not_leak_from_sm():
+    from uvbuilder.tools.reps import GlobalU1s
+    # only L conserved: the top's B = 1/3 must not reach the stop
+    for charges in _bsm_charges([GlobalU1s(L=0)]):
+        assert all(q == GlobalU1s(L=0) for q in charges.values())
+
+
+def test_neutral_decay_to_charged_bsm_particle():
+    # Z2 -> W1+ W- together with W1+ -> Z1 W+: both W signs must be kept
+    data = {"masses": {1000022: 100., 1000023: 300., 1000024: 200.},
+            "decays": {1000022: {},
+                       1000023: {(1000022, 23): 0.9, (1000024, -24): 0.1},
+                       1000024: {(1000022, 24): 1.0}},
+            "labels": {1000022: 'Z1', 1000023: 'Z2', 1000024: 'W1'}}
+    models = [{p.label: p.eCharge for p in pm.bsm_particles}
+              for pm in ModelBuilder(modelData=data).generateParticleModels()]
+    assert models
+    assert all(charges == {'Z1': 0, 'Z2': 0, 'W1': 1} for charges in models)
+
+
+# -- multiplet and FeynRules models straight from the builder --
+
+def _sddm_builder():
+    data = {"masses": {1000022: 100., 1000023: 300., 1000024: 200., 1000025: 400.},
+            "decays": {1000022: {}, 1000023: {(1000022, 23): 1.0}, 1000024: {(1000022, 24): 1.0},
+                       1000025: {(1000023, 25): 1.0}},
+            "labels": {1000022: 'Z1', 1000023: 'Z2', 1000024: 'W1', 1000025: 'Z3'}}
+    return ModelBuilder(modelData=data)
+
+
+def _multiplet_symbols(multipletModel):
+    return sorted(m.fr_symbol() for m in multipletModel.non_conjugated_multiplets)
+
+
+def test_generate_multiplet_models_matches_partitions_builder():
+    import warnings
+    from uvbuilder.partition.partitions_builder import PartitionsBuilder
+    builder = _sddm_builder()
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        expected = [mm for pm in builder.generateParticleModels()
+                    for mm in PartitionsBuilder(pm).get_multipletModels()]
+        valid = [_multiplet_symbols(mm) for mm in expected if mm.is_valid]
+        generated = list(builder.generateMultipletModels())
+        unfiltered = list(builder.generateMultipletModels(validOnly=False))
+    assert valid and len(valid) < len(expected)
+    assert [_multiplet_symbols(mm) for mm in generated] == valid
+    assert [_multiplet_symbols(mm) for mm in unfiltered] == [_multiplet_symbols(mm) for mm in expected]
+    assert all(mm.particle_model is not None for mm in generated)
+
+
+def test_generate_feynrules_models():
+    import warnings
+    from uvbuilder.models.feynrulesmodel import FeynRulesModel
+    builder = _sddm_builder()
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        multipletModels = list(builder.generateMultipletModels())
+        models = list(builder.generateFeynRulesModels(outputFile='out/sddm.fr'))
+        first = multipletModels[0]
+        direct = FeynRulesModel(first, first.particle_model, first.possible_mixings[0], 'direct.fr')
+        assert models[0].to_feynrules() == direct.to_feynrules()
+    assert len(models) == sum(len(mm.possible_mixings) for mm in multipletModels)
+    assert [m.output_file for m in models] == [f'out/sddm_{n}.fr' for n in range(1, len(models) + 1)]
+
+
+def test_feynrules_model_is_saved_to_its_output_file(tmp_path):
+    import warnings
+    target = tmp_path / 'models' / 'sddm.fr'
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        model = next(_sddm_builder().generateFeynRulesModels(outputFile=str(target)))
+        model.save2file()
+        written = tmp_path / 'models' / 'sddm_1.fr'
+        assert written.read_text() == model.to_feynrules()
+
+
+# -- operators without an implemented colour contraction are dropped --
+
+_M368 = {"masses": {1000022: 100.0, 1000003: 400.0, 1000021: 800.0, 9000006: 1200.0},
+         "decays": {1000022: {}, 1000003: {(1000022, 6): 1.0}, 1000021: {(1000003, -6): 1.0},
+                    9000006: {(1000021, -6): 1.0}},
+         "labels": {1000022: 'X1', 1000003: 'S3', 1000021: 'O8', 9000006: 'P6'}}
+
+
+def test_unimplemented_colour_contraction_drops_operator_and_model():
+    '''P6 -> O8 tbar allows P6 in 3bar, 6 or 15. No colour contraction exists for (15, 8, 3bar),
+    so the 15 models lose their decay operator and are invalid; the 6 model keeps its Jbar operator.'''
+    import warnings
+    from uvbuilder.tools.reps import DIRAC_SPINOR
+    builder = ModelBuilder(modelData=_M368,
+                           possible_dm_reps={'spin': [DIRAC_SPINOR, SCALAR], 'eCharge': U1Rep(0),
+                                             'colordim': SU3Rep(0, 0), 'globalU1s': [GlobalU1s(B=0)]})
+    with pytest.warns(UserWarning, match='not implemented; operator dropped'):
+        with warnings.catch_warnings():
+            warnings.simplefilter('ignore')
+            warnings.filterwarnings('always', message='.*not implemented; operator dropped')
+            models = list(builder.generateMultipletModels())
+    contents = [{m.fr_symbol() for m in mm.non_conjugated_multiplets} for mm in models]
+    assert not any('C15' in name for names in contents for name in names)
+    target = {'ChiC8I1Y0Lw', 'ChiI1Y0Lw', 'PhiC3I1Y4B1', 'PhiC6I1Ym4Bm1'}
+    assert target in contents
+    m368 = models[contents.index(target)]
+    def has(op, prefix):    # the sextet may enter as PhiC6I1Ym4Bm1 or as its conjugate
+        return any(m.fr_symbol().startswith(prefix) for m in op.multiplets)
+    sextet_octet_ops = [op for op in m368.operators if has(op, 'PhiC6I1Ym4Bm1') and has(op, 'ChiC8I1Y0')]
+    assert len(sextet_octet_ops) == 3                     # u, c, t
+    assert len({op.su3_tensor.name for op in sextet_octet_ops} & {'J', 'Jbar'}) == 1   # 3-8-6 head
+
+
+def test_custom_name_author_and_version():
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        models = list(_sddm_builder().generateFeynRulesModels(name='SDDM', author='Me',
+                                                              version='2.0'))
+    assert len(models) > 1
+    assert [m.name for m in models] == [f'SDDM_{n}' for n in range(1, len(models) + 1)]
+    assert [m.output_file for m in models] == [f'SDDM_{n}.fr' for n in range(1, len(models) + 1)]
+    fr = models[0].to_feynrules()
+    assert 'M$ModelName = "SDDM_1";' in fr
+    assert 'Authors -> {"Me"}' in fr and 'Version -> "2.0"' in fr
+
+
+def test_single_model_is_unnumbered():
+    import warnings
+    from uvbuilder.tools.reps import DIRAC_SPINOR
+    from tests.test_particle_mixing import _PDG_NOT_MASS_ORDERED
+    builder = ModelBuilder(modelData=_PDG_NOT_MASS_ORDERED,
+                           possible_dm_reps={'spin': [DIRAC_SPINOR], 'globalU1s': [GlobalU1s()]})
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        (model,) = builder.generateFeynRulesModels(name='Single')
+    assert (model.name, model.output_file) == ('Single', 'Single.fr')
+
+
+def test_invalid_model_name_is_rejected():
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        with pytest.raises(ValueError, match='invalid model name'):
+            next(_sddm_builder().generateFeynRulesModels(name='3-6-8'))

@@ -1,0 +1,436 @@
+% UV Builder logo -- standalone TikZ building blocks.
+% Compile with: pdflatex UVBuilderLogo.tex  (one page per tikzpicture)
+\documentclass[tikz,border=4pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{tgpagella} % Palatino (TeX Gyre Pagella), scalable, for the logo text
+\usepackage{mathrsfs}  % \mathscr: curly script L for the Lagrangians
+\usetikzlibrary{arrows.meta,calc,fadings,decorations.pathmorphing,decorations.markings,decorations.text}
+
+\definecolor{photon}{RGB}{230,120,20}
+\definecolor{uvpurple}{RGB}{118,40,200}
+\definecolor{uvneon}{RGB}{150,70,255}     % saturated violet for the light
+\definecolor{uvhot}{RGB}{238,214,255}     % near-white lavender: hot core of the light
+
+% ---------------------------------------------------------------------------
+% Light fall-off: \uvbDeclareFalloff{name}{c}{R} declares a radial fading `name`
+% of radius R (a length), centred on the origin, with opacity
+%   o(r) = 1 / (1 + (r/(c R))^2) * (1 - (r/R)^2)
+% i.e. inverse-square, softened near the source (c sets how wide the bright
+% centre is, as a fraction of R) and brought smoothly to zero at r = R.
+% White = opaque, black = transparent. The fading is built at its final size
+% (scaling a small fading up makes PDF viewers render it in visible rings).
+% ---------------------------------------------------------------------------
+\newcommand\uvbDeclareFalloff[3]{%
+  \gdef\uvbStops{}%
+  \foreach \f [count=\i] in {0,0.01,0.02,0.03,0.04,0.06,0.08,0.1,0.12,0.15,0.18,0.22,
+                             0.26,0.3,0.35,0.4,0.46,0.52,0.6,0.7,0.8,0.9,1} {%
+    \pgfmathsetmacro\uvbO{100/(1+(\f/#2)^2)*(1-\f^2)}%
+    \pgfmathsetlengthmacro\uvbR{\f*#3}%
+    \ifnum\i=1 \xdef\uvbStops{color(\uvbR)=(white!\uvbO!black)}%
+    \else      \xdef\uvbStops{\uvbStops; color(\uvbR)=(white!\uvbO!black)}\fi
+  }%
+  \edef\uvbTmp{\noexpand\pgfdeclareradialshading{#1shade}{\noexpand\pgfpointorigin}{\uvbStops}}%
+  \uvbTmp
+  \pgfdeclarefading{#1}{\pgfuseshading{#1shade}}%
+}
+
+% ---------------------------------------------------------------------------
+% Template parameters (set them as options of a \pic, e.g. \pic[box size=3cm] {box};)
+% ---------------------------------------------------------------------------
+\tikzset{
+  box size/.store in=\uvbBoxSize,           box size=4cm,
+  box line width/.store in=\uvbBoxLineWidth, box line width=2pt,
+  diagram width/.store in=\uvbDiagramWidth, diagram width=4cm,
+  photon color/.store in=\uvbPhotonColor,   photon color=photon,
+  % photon line width; default: same as the other lines of the diagram
+  photon line width/.store in=\uvbPhotonWidth, photon line width=\pgflinewidth,
+  hook size/.store in=\uvbHookSize,         hook size=1cm,
+  % fermion line with an arrow along (fermion) or against (antifermion) the path
+  fermion/.style={postaction={decorate},
+    decoration={markings, mark=at position 0.55 with {\arrow{Stealth[scale=1.4]}}}},
+  antifermion/.style={postaction={decorate},
+    decoration={markings, mark=at position 0.55 with {\arrowreversed{Stealth[scale=1.4]}}}},
+}
+
+% ---------------------------------------------------------------------------
+% box: rectangle of width `box width` x `box size` and height `box height` x
+% `box size` (both fractions: 0 = flat, 1 = full size), drawn with
+% `box line width`, centred on the pic origin, with both diagonals
+% ---------------------------------------------------------------------------
+\tikzset{
+  box width/.store in=\uvbBoxWidth,   box width=1,
+  box height/.store in=\uvbBoxHeight, box height=1,
+  pics/box/.style={code={
+    \pgfmathsetlengthmacro\uvbW{0.5*\uvbBoxWidth*\uvbBoxSize}
+    \pgfmathsetlengthmacro\uvbH{0.5*\uvbBoxHeight*\uvbBoxSize}
+    \draw[line width=\uvbBoxLineWidth] (-\uvbW,-\uvbH) rectangle (\uvbW,\uvbH);
+    \draw[line width=\uvbBoxLineWidth] (-\uvbW,-\uvbH) -- (\uvbW,\uvbH);
+    \draw[line width=\uvbBoxLineWidth] (-\uvbW,\uvbH) -- (\uvbW,-\uvbH);
+  }},
+}
+
+% ---------------------------------------------------------------------------
+% box stack: `box count` boxes stacked vertically, `box gap` apart (0 = sharing
+% edges); the whole stack is centred on the pic origin
+% ---------------------------------------------------------------------------
+\tikzset{
+  box count/.store in=\uvbBoxCount, box count=3,
+  box gap/.store in=\uvbBoxGap,     box gap=0pt,
+  pics/box stack/.style={code={
+    \foreach \i in {1,...,\uvbBoxCount}
+      \pic at (0,{(\i-(\uvbBoxCount+1)/2)*(\uvbBoxHeight*\uvbBoxSize+\uvbBoxGap)}) {box};
+  }},
+  % box row: boxes laid out horizontally, edge to edge (plus `box gap`), the
+  % whole row centred on the pic origin. Box number `box joint` (0 = none) gets
+  % width `box joint width` instead of `box width`.
+  box joint/.store in=\uvbBoxJoint,            box joint=0,
+  box joint width/.store in=\uvbBoxJointWidth, box joint width=1,
+  pics/box row/.style={code={
+    % total row width, in units of box size (gaps excluded)
+    \pgfmathsetmacro\uvbRowT{\uvbBoxCount*\uvbBoxWidth
+      + (\uvbBoxJoint>0 ? \uvbBoxJointWidth-\uvbBoxWidth : 0)}
+    \foreach \i in {1,...,\uvbBoxCount}{
+      \pgfmathsetmacro\uvbRowW{\i==\uvbBoxJoint ? \uvbBoxJointWidth : \uvbBoxWidth}
+      % centre of box i: widths of the boxes before it + half its own width
+      \pgfmathsetlengthmacro\uvbRowX{((\i-1)*\uvbBoxWidth
+          + ((\uvbBoxJoint>0 && \i>\uvbBoxJoint) ? \uvbBoxJointWidth-\uvbBoxWidth : 0)
+          + \uvbRowW/2 - \uvbRowT/2)*\uvbBoxSize
+        + (\i-1-(\uvbBoxCount-1)/2)*\uvbBoxGap}
+      \pic[box width=\uvbRowW] at (\uvbRowX,0) {box};
+    }
+  }},
+}
+
+% ---------------------------------------------------------------------------
+% diagram: s-channel e+ e- -> gamma* -> e+ e-, total width `diagram width`,
+% photon drawn in `photon color`, no labels; centred on the pic origin
+% ---------------------------------------------------------------------------
+\tikzset{
+  pics/diagram/.style={code={
+    \coordinate (-in-e)  at (-0.5*\uvbDiagramWidth,-0.3*\uvbDiagramWidth);
+    \coordinate (-in-p)  at (-0.5*\uvbDiagramWidth, 0.3*\uvbDiagramWidth);
+    \coordinate (-out-e) at ( 0.5*\uvbDiagramWidth, 0.3*\uvbDiagramWidth);
+    \coordinate (-out-p) at ( 0.5*\uvbDiagramWidth,-0.3*\uvbDiagramWidth);
+    \coordinate (-v1)    at (-\uvbDiagramWidth/6,0);
+    \coordinate (-v2)    at ( \uvbDiagramWidth/6,0);
+    \draw[fermion]     (-in-e) -- (-v1);
+    \draw[antifermion] (-in-p) -- (-v1);
+    \draw[fermion]     (-v2) -- (-out-e);
+    \draw[antifermion] (-v2) -- (-out-p);
+    \draw[color=\uvbPhotonColor, line width=\uvbPhotonWidth, decorate,
+          decoration={snake, amplitude=0.025*\uvbDiagramWidth,
+                      segment length=\uvbDiagramWidth/18}]
+      (-v1) -- (-v2);
+  }},
+}
+
+% ---------------------------------------------------------------------------
+% hook: filled crane hook (ring on top, shank bending into a round bowl with a
+% pointed tip). Size set by `hook size` (total height ~ 1.5 x hook size).
+% Origin = top of the ring, so it can hang directly from a block or cable.
+% Defines the coordinate (<name>-throat): bottom of the bowl, where loads hang.
+% ---------------------------------------------------------------------------
+\tikzset{
+  pics/hook/.style={code={
+    \begin{scope}[x=\uvbHookSize,y=\uvbHookSize]
+      % ring
+      \fill[even odd rule] (0,-0.17) circle[radius=0.17] (0,-0.17) circle[radius=0.08];
+      % shank + bowl + tip, as a single filled outline
+      \fill
+        (-0.1,-0.3) -- (-0.1,-0.45)
+        to[out=-90, in=90] (0.3,-0.9)                 % shank bends into the bowl
+        arc[start angle=0, end angle=-210, radius=0.3] % inner edge of the bowl
+        -- (-0.42,-0.5)                               % up to the tip
+        -- (-0.47,-0.83)                              % back down the outside
+        arc[start angle=160, end angle=360, radius=0.5]
+        to[out=90, in=-90] (0.1,-0.45)
+        -- (0.1,-0.3) -- cycle;
+      \coordinate (-throat) at (0,-1.2);
+    \end{scope}
+  }},
+}
+
+% ---------------------------------------------------------------------------
+% peak: lattice triangle (the crane's top mast), base width `box width` x
+% `box size`, height `peak height` x `box size`, split in `peak levels`
+% sections with X bracing; drawn with `box line width`. Origin = base centre.
+% Defines the coordinate (<name>-apex).
+% ---------------------------------------------------------------------------
+\tikzset{
+  peak height/.store in=\uvbPeakHeight, peak height=1.5,
+  peak levels/.store in=\uvbPeakLevels, peak levels=3,
+  pics/peak/.style={code={
+    \pgfmathsetlengthmacro\uvbPW{0.5*\uvbBoxWidth*\uvbBoxSize}
+    \pgfmathsetlengthmacro\uvbPH{\uvbPeakHeight*\uvbBoxSize}
+    \begin{scope}[line width=\uvbBoxLineWidth, line join=round, line cap=round]
+      \draw (-\uvbPW,0) -- (0,\uvbPH) -- (\uvbPW,0);
+      \pgfmathtruncatemacro\uvbPN{\uvbPeakLevels-1}
+      \foreach \k in {1,...,\uvbPN}{
+        % section from level k-1 to level k: rung on top + X bracing
+        \pgfmathsetlengthmacro\uvbYa{(\k-1)/\uvbPeakLevels*\uvbPH}
+        \pgfmathsetlengthmacro\uvbYb{\k/\uvbPeakLevels*\uvbPH}
+        \pgfmathsetlengthmacro\uvbXa{(1-(\k-1)/\uvbPeakLevels)*\uvbPW}
+        \pgfmathsetlengthmacro\uvbXb{(1-\k/\uvbPeakLevels)*\uvbPW}
+        \draw (-\uvbXb,\uvbYb) -- (\uvbXb,\uvbYb);
+        \draw (-\uvbXa,\uvbYa) -- (\uvbXb,\uvbYb);
+        \draw (\uvbXa,\uvbYa) -- (-\uvbXb,\uvbYb);
+      }
+    \end{scope}
+    \coordinate (-apex) at (0,\uvbPH);
+  }},
+}
+
+\begin{document}
+
+% === crane ===================================================================
+% --- tower and jib --------------------------------------------------------------
+\def\stackCount{9}    % number of boxes in the vertical stack (tower)
+\def\stackWidth{0.9}  % width of the tower boxes: 0 = flat, 1 = square
+\def\rowCount{12}     % number of boxes in the horizontal row (jib)
+\def\rowStart{3}      % which jib box (1 = leftmost) sits on the tower
+\def\rowHeight{0.7}   % height of the jib boxes: 0 = flat, 1 = square
+\def\latticeWidth{7pt}
+% --- top of the crane -------------------------------------------------------------
+\def\peakHeight{1.6}  % height of the triangle on top, in box sizes
+\def\peakLevels{3}    % number of braced sections in the triangle
+\def\tipLength{1.2}   % length of the pointed nose at the end of the jib, in box sizes
+\def\cableWidth{4pt}  % line width of all cables (pendants, hoist, slings)
+% --- counterweight and cab (sizes in box sizes) ---------------------------------
+\def\weightWidth{0.8}   % counterweight, hanging past the short end of the jib
+\def\weightHeight{1.6}
+\def\weightGap{0.2}     % gap between the jib and the counterweight (bridged)
+\def\cabWidth{1.9}      % cab: trapezoid centred on the tower, under the jib
+\def\cabBottom{0.75}    % bottom width as a fraction of the top width
+\def\cabHeight{0.9}
+% --- trolley, hook and load ----------------------------------------------------
+\def\trolleyBox{9}      % jib box the trolley hangs under (must be > \rowStart)
+\def\trolleyWidth{0.8}  % in box sizes
+\def\trolleyHeight{0.16}
+\def\cableLength{0.5}   % hoist cable length, trolley to hook block, in box sizes
+\def\hookSize{0.6}      % in box sizes
+\def\slingDrop{2.6}     % vertical drop of the slings from the hook to the diagram
+% load = Feynman diagram (e+ e- -> gamma -> e+ e-); the slings hold the two
+% vertices at the ends of the photon line
+\def\loadWidth{9.2}     % diagram width, in box sizes
+\def\loadLineWidth{13pt}
+\def\loadPhotonWidth{16pt}  % the photon line only
+\def\loadPhotonColor{uvpurple}
+% curly Ls (Lagrangians) under the photon, between the two lower legs
+\def\lagCount{3}
+\def\lagSize{0.9}        % font size, in box sizes
+\def\lagSpacing{1.3}     % distance between neighbouring Ls, in box sizes
+\def\lagDrop{0.17}       % how far below the photon line, in diagram widths
+\def\lagDip{0.3}         % extra drop of the middle L(s), in box sizes (they sit on an arc)
+\def\lagColor{black}
+% UV spotlight: cone from the trolley down to the bottom of the circle. Its
+% intensity falls off radially from the source like 1/(1 + (r/c)^2), see the
+% fadings in the preamble; a hot core and soft (layered) edges give the glow.
+\def\lightColor{uvneon}
+\def\lightCoreColor{uvhot}
+\def\lightAngle{32}      % half opening angle of the cone, in degrees
+\def\lightOpacity{0.9}   % opacity at the source (main beam)
+\def\lightCoreOpacity{0.85}
+\def\lightLayers{6}      % >1 stacks cones of decreasing width for softer edges, but
+                         % PDF viewers then show the fall-off in visible rings
+\def\lightSoftness{0.3}  % the narrowest layer is this much narrower (fraction)
+\def\lightCenter{0.3}    % size of the bright part of the beam, as a fraction of its length
+\def\lightCore{0.08}     % same, for the hot core
+\def\lightHalo{1.6}      % radius of the glow around the source, in box sizes
+% --- frame circle and logo text --------------------------------------------------
+\def\circleX{5.95}       % centre of the circle, in box sizes (tower centre = origin)
+\def\circleY{0.4}
+\def\circleR{7.2}        % radius, in box sizes
+\def\circleWidth{30pt}
+\def\circleGap{0.12}     % blank margin where the circle meets the crane, in box sizes
+\def\towerGap{0.5}       % blank margin between the bottom of the tower and the circle
+\def\logoText{|\uvbLogoFont\color{uvpurple}|UV |\uvbLogoFont\color{black}|Builder}
+\def\logoTextSize{1.3}   % font size, in box sizes
+\def\logoTextGap{0.3}    % space between the circle and the text (inside), in box sizes
+\def\logoTextSpan{60}    % half of the angle (degrees) the text may spread over
+
+% the light's fadings have to be declared outside the picture, at their final size:
+% radius = distance from the source (halfway up the trolley) to the bottom of the circle
+\pgfmathsetlengthmacro\uvbLightL{(\stackCount/2-0.5*\trolleyHeight-\circleY+\circleR)*\uvbBoxSize}
+\uvbDeclareFalloff{uvfalloff}{\lightCenter}{\uvbLightL}
+\uvbDeclareFalloff{uvcore}{\lightCore}{\uvbLightL}
+\uvbDeclareFalloff{uvhalo}{\lightCore}{\lightHalo*\uvbBoxSize}
+
+\begin{tikzpicture}[line join=round]
+  % ---- key positions (the tower is centred on the origin) --------------------
+  \pgfmathsetlengthmacro\s{\uvbBoxSize}
+  \pgfmathsetlengthmacro\halfW{\stackWidth/2*\s}
+  \pgfmathsetlengthmacro\jibBot{\stackCount/2*\s}
+  \pgfmathsetlengthmacro\jibTop{(\stackCount/2+\rowHeight)*\s}
+  \pgfmathsetlengthmacro\jibLeft{-\halfW-(\rowStart-1)*\s}
+  \pgfmathsetlengthmacro\jibRight{\halfW+(\rowCount-\rowStart)*\s}
+  \pgfmathsetlengthmacro\trolleyX{\halfW+(\trolleyBox-\rowStart-0.5)*\s}
+  \pgfmathsetlengthmacro\trolleyBot{\jibBot-\trolleyHeight*\s}
+  \pgfmathsetlengthmacro\blockTop{\trolleyBot-\cableLength*\s}
+  \pgfmathsetlengthmacro\loadW{\loadWidth*\s}
+  \pgfmathsetlengthmacro\fdY{\blockTop-0.38*\s-1.2*\hookSize*\s-\slingDrop*\s} % diagram centre
+  \pgfmathsetlengthmacro\weightRight{\jibLeft-\weightGap*\s}
+  \pgfmathsetlengthmacro\weightLeft{\weightRight-\weightWidth*\s}
+  \pgfmathsetlengthmacro\weightTop{\jibTop+0.5*\latticeWidth}
+  \pgfmathsetlengthmacro\noseX{\jibRight+\tipLength*\s}
+  \pgfmathsetlengthmacro\apexY{\jibTop+\peakHeight*\s}
+
+  % ---- frame circle, with blanks where the crane crosses it ------------------------
+  % The circle is drawn first; then white "halo" shapes (crane parts, padded by
+  % \circleGap) erase it wherever it would touch the crane; the crane is drawn on
+  % top afterwards. The tower is instead cut off at the circle (see below).
+  \coordinate (cc) at ({\circleX*\s},{\circleY*\s});
+  \pgfmathsetlengthmacro\g{\circleGap*\s}
+  \draw[line width=\circleWidth] (cc) circle[radius=\circleR*\s];
+  \begin{scope}[white]
+    % one silhouette around counterweight, jib, nose, triangle on top and both
+    % pendant cables, so the circle gets a single continuous gap there
+    \fill ({\weightLeft-\g},{\weightTop-\weightHeight*\s-\g})
+      -- ({\weightLeft-\g},{\weightTop+\g})
+      -- ({\jibLeft-\g},{\jibTop+\g+\cableWidth})
+      -- (0,{\apexY+0.12*\s+\g})
+      -- ({\jibRight+\g},{\jibTop+\g+\cableWidth})
+      -- ({\noseX+2*\g},\jibBot)
+      -- ({\noseX},{\jibBot-\g})
+      -- ({\weightRight+\g},{\jibBot-\g})
+      -- ({\weightRight+\g},{\weightTop-\weightHeight*\s-\g})
+      -- cycle;
+    % upper half of the tower (the lower half is cut off inside the circle instead)
+    \fill ({-\halfW-\g},{\circleY*\s}) rectangle ({\halfW+\g},\jibBot);
+    % cab under the jib (it sticks out below the silhouette above)
+    \filldraw[line width=2*\g]
+      ({-0.5*\cabWidth*\s},\jibBot) -- ({-0.5*\cabBottom*\cabWidth*\s},{\jibBot-\cabHeight*\s})
+      -- ({0.5*\cabBottom*\cabWidth*\s},{\jibBot-\cabHeight*\s}) -- ({0.5*\cabWidth*\s},\jibBot)
+      -- cycle;
+    % the four outer legs of the diagram
+    \draw[line width=2*\g+\loadLineWidth, line cap=round]
+      ({\trolleyX-0.5*\loadW},{\fdY+0.3*\loadW}) -- ({\trolleyX-\loadW/6},\fdY)
+      -- ({\trolleyX-0.5*\loadW},{\fdY-0.3*\loadW})
+      ({\trolleyX+0.5*\loadW},{\fdY+0.3*\loadW}) -- ({\trolleyX+\loadW/6},\fdY)
+      -- ({\trolleyX+0.5*\loadW},{\fdY-0.3*\loadW});
+  \end{scope}
+
+  % ---- logo text, following the bottom of the circle --------------------------------
+  % The text sits inside the circle; its baseline runs left to right along an arc,
+  % so the letters stand upright with their tops towards the centre.
+  \pgfmathsetlengthmacro\fs{\logoTextSize*\s}
+  \def\uvbLogoFont{\rmfamily\bfseries\fontsize{\fs}{\fs}\selectfont}
+  \pgfmathsetlengthmacro\textR{\circleR*\s-0.5*\circleWidth-\logoTextGap*\s}
+  \path[decorate, decoration={text along path, text align=center,
+                              text={\logoText}}]
+    ($(cc)+({270-\logoTextSpan}:\textR)$)
+    arc[start angle={270-\logoTextSpan}, end angle={270+\logoTextSpan}, radius=\textR];
+
+  % ---- tower (cut off inside the circle, leaving the same gap) + jib ------------
+  \begin{scope}
+    % only the lower half of the tower is cut at the circle: clip to the circle
+    % plus everything above the circle's centre (both paths counter-clockwise, so
+    % the clip is their union)
+    \clip (cc) circle[radius=\circleR*\s-0.5*\circleWidth-\towerGap*\s]
+          ({-\halfW-\s},{\jibTop+\s}) rectangle ({\halfW+\s},{\circleY*\s});
+    \pic[box count=\stackCount, box width=\stackWidth, box line width=\latticeWidth]
+      {box stack};
+  \end{scope}
+  \pic[box count=\rowCount, box height=\rowHeight, box line width=\latticeWidth,
+       box joint=\rowStart, box joint width=\stackWidth]
+    at ({((\rowCount+1)/2-\rowStart)*\s},{(\stackCount+\rowHeight)/2*\s}) {box row};
+
+  % ---- triangle on top -----------------------------------------------------------
+  \pic (peak) [box width=\stackWidth, box line width=\latticeWidth,
+               peak height=\peakHeight, peak levels=\peakLevels]
+    at (0,\jibTop) {peak};
+
+  % ---- pointed nose at the end of the jib ----------------------------------------
+  \draw[line width=\latticeWidth]
+    (\jibRight,\jibTop) -- ({\jibRight+\tipLength*\s},\jibBot) -- (\jibRight,\jibBot);
+
+  % ---- pendant cables from the apex to both ends of the jib ----------------------
+  \draw[line width=\cableWidth] (\jibLeft,\jibTop) -- (peak-apex) -- (\jibRight,\jibTop);
+  \fill (peak-apex) circle[radius=0.12*\s];   % pulley at the apex
+
+  % ---- counterweight past the short end of the jib, bridged by the two chords ----
+  \draw[line width=\latticeWidth]
+    (\weightRight,\jibTop) -- (\jibLeft,\jibTop)
+    (\weightRight,\jibBot) -- (\jibLeft,\jibBot);
+  \fill[rounded corners=0.05*\s]
+    ({\weightRight-\weightWidth*\s},{\jibTop+0.5*\latticeWidth})
+    rectangle (\weightRight,{\jibTop+0.5*\latticeWidth-\weightHeight*\s});
+
+  % ---- cab under the jib, centred on the tower, rounded bottom corners ------------
+  \pgfmathsetlengthmacro\cabTop{0.5*\cabWidth*\s}
+  \pgfmathsetlengthmacro\cabBot{0.5*\cabBottom*\cabWidth*\s}
+  \fill (-\cabTop,\jibBot)
+        [rounded corners=0.15*\s]
+        -- (-\cabBot,{\jibBot-\cabHeight*\s})
+        -- (\cabBot,{\jibBot-\cabHeight*\s})
+        -- (\cabTop,\jibBot)
+        [sharp corners] -- cycle;
+
+  % ---- UV spotlight (drawn before the trolley, hoist and diagram, which sit on top
+  % of it); it starts halfway up the trolley so it comes out from behind it ---------
+  \coordinate (src) at (\trolleyX,{\jibBot-0.5*\trolleyHeight*\s});
+  % distance from the source to the bottom of the circle = radius of the fall-off
+  \pgfmathsetlengthmacro\lightL{\jibBot-0.5*\trolleyHeight*\s-(\circleY-\circleR)*\s}
+  \pgfmathsetlengthmacro\lightTopW{0.45*\trolleyWidth*\s}
+  \pgfmathsetlengthmacro\lightBotW{\lightTopW+\lightL*tan(\lightAngle)}
+  \begin{scope}
+    \clip (cc) circle[radius=\circleR*\s-0.5*\circleWidth];
+    % main beam: several cones of decreasing width, each with the radial fall-off,
+    % so the edges are soft and the middle is brightest
+    \pgfmathsetmacro\layerOpacity{1-(1-\lightOpacity)^(1/\lightLayers)}
+    \foreach \k in {1,...,\lightLayers} {
+      \pgfmathsetlengthmacro\w{\lightBotW*(1-\lightSoftness*(\k-1)/max(\lightLayers-1,1))}
+      \fill[\lightColor, fill opacity=\layerOpacity, path fading=uvfalloff,
+            fit fading=false, fading transform={shift={(src)}}]
+        ($(src)+(-\lightTopW,0)$) -- ($(src)+(\lightTopW,0)$)
+        -- ($(src)+(\w,-\lightL)$) -- ($(src)+(-\w,-\lightL)$) -- cycle;
+    }
+    % hot core right under the trolley
+    \fill[\lightCoreColor, fill opacity=\lightCoreOpacity, path fading=uvcore,
+          fit fading=false, fading transform={shift={(src)}}]
+      ($(src)+(-\lightTopW,0)$) -- ($(src)+(\lightTopW,0)$)
+      -- ($(src)+(\lightBotW,-\lightL)$) -- ($(src)+(-\lightBotW,-\lightL)$) -- cycle;
+  \end{scope}
+  % a faint halo around the source itself (also above the beam), like a lamp
+  \pgfmathsetlengthmacro\haloR{\lightHalo*\s}
+  \fill[\lightColor, fill opacity=0.45, path fading=uvhalo,
+        fit fading=false, fading transform={shift={(src)}}]
+    (src) circle[radius=\haloR];
+
+  % ---- trolley (centred under its jib box, slightly rounded bottom) --------------
+  \fill ({\trolleyX-0.5*\trolleyWidth*\s},\jibBot)
+        [rounded corners=0.03*\s]
+        -- ({\trolleyX-0.5*\trolleyWidth*\s},\trolleyBot)
+        -- ({\trolleyX+0.5*\trolleyWidth*\s},\trolleyBot)
+        -- ({\trolleyX+0.5*\trolleyWidth*\s},\jibBot)
+        [sharp corners] -- cycle;
+
+  % ---- hoist cables, hook block, hook ---------------------------------------------
+  \foreach \dx in {-0.12,0.12}
+    \draw[line width=\cableWidth] ({\trolleyX+\dx*\s},\trolleyBot)
+                                  -- ({\trolleyX+\dx*\s},\blockTop);
+  \fill[rounded corners=0.06*\s]
+    ({\trolleyX-0.25*\s},\blockTop) -- ({\trolleyX+0.25*\s},\blockTop)
+    -- ({\trolleyX+0.18*\s},{\blockTop-0.4*\s}) -- ({\trolleyX-0.18*\s},{\blockTop-0.4*\s})
+    -- cycle;
+  \pic (hook) [hook size=\hookSize*\s] at (\trolleyX,{\blockTop-0.38*\s}) {hook};
+
+  % ---- Feynman diagram, held by the two photon vertices ---------------------------
+  \pic (fd) [diagram width=\loadW, photon color=\loadPhotonColor,
+             photon line width=\loadPhotonWidth,
+             line width=\loadLineWidth, line cap=round]
+    at ($(hook-throat)+(0,{-\slingDrop*\s})$) {diagram};
+  \draw[line width=\cableWidth, line cap=round]
+    (fd-v1) -- (hook-throat) -- (fd-v2);
+
+  % ---- Lagrangians under the photon ------------------------------------------------
+  % (math fonts don't follow \fontsize, so the 10pt symbol is scaled instead)
+  \pgfmathsetmacro\lagScale{\lagSize*\s/10pt}
+  \foreach \k in {1,...,\lagCount}
+    \node[text=\lagColor, inner sep=0pt, scale=\lagScale]
+      at ({\trolleyX+(\k-(\lagCount+1)/2)*\lagSpacing*\s},
+          {\fdY-\lagDrop*\loadW
+           -\lagDip*\s*(1-((\k-(\lagCount+1)/2)/max((\lagCount-1)/2,0.5))^2)})
+      {$\mathscr{L}$};
+\end{tikzpicture}
+
+\end{document}

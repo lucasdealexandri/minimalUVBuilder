@@ -1,0 +1,28 @@
+BLOCK MASS  # Mass Spectrum
+# PDG code           mass       particle
+   1000006     500.0     #    ~t_1
+   1000005     490.0     #    ~b_1
+   2000006     600.0     #    ~t_2
+   2000005     580.0     #    ~b_2
+   1000022     100.0    #    ~chi_10
+
+
+DECAY   1000005     1.00000000E+00   # sbottom1 decays
+#          BR         NDA      ID1       ID2
+     1.00000000E+00    2     1000022         5   # BR(~b_1 -> ~chi_10 b )
+#
+   
+DECAY   1000006     1.00000000E+00   # stop1 decays
+#          BR         NDA      ID1       ID2
+     1.00000000E+00    2     1000022         6   # BR(~t_1 -> ~chi_10 t )
+#
+
+DECAY   2000005     1.00000000E+00   # sbottom2 decays
+#          BR         NDA      ID1       ID2
+     1.00000000E+00    2     1000022         5   # BR(~b_2 -> ~chi_10 b )
+#
+   
+DECAY   2000006     1.00000000E+00   # stop2 decays
+#          BR         NDA      ID1       ID2
+     1.00000000E+00    2     1000022         6   # BR(~t_2 -> ~chi_10 t )
+#
