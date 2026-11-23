@@ -508,17 +508,6 @@ class MultipletModel:
         when the multiplet appears more than once).'''
         return sp.Symbol(field.label)
 
-    def parameter_count(self, mass_sector_only = False) -> int:
-        '''Number of independent mass parameters: one per expanded (family-level)
-        edge of the non-gauge operators.'''
-
-        ops = [o for o in self.operators if o.contains_singlet]
-
-        if mass_sector_only:
-            ops = [o for o in ops if o.forms_bilinear]
-
-        return len(ops)
-
     def to_feynrules(self, tracker, mixings: ParticleMixing) -> Dict[str, List[str]]:
         '''FeynRules chunk for the whole gauge sector: the multiplet classes
         (W blocks + kinetic terms), the Dirac pairs (right-handed partners

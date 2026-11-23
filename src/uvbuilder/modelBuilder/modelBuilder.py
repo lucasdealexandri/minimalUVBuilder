@@ -24,8 +24,7 @@ from uvbuilder.modelBuilder.modelBuilderUtils import fillECharge,explodeColordim
 from uvbuilder.states.SMfinalStates import SMfinalStatesDict
 
 import logging
-logging.basicConfig(format='Date-Time : %(asctime)s : Line No. : %(lineno)d - %(message)s', \
-                    level = logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 # TODO: WHEN SETTING SPIN, SELECT ONLY SCALAR or DIRAC_SPINOR for BSM particles. Erro pra setar rep do modelo padrão
@@ -61,7 +60,7 @@ class ModelBuilder(object):
         for key,value in dm_default_reps.items():            
             self.possible_dm_reps.setdefault(key,value)
 
-        logging.debug(f'Created Model Builder:\n {self.pretty_print()}')
+        logger.debug(f'Created Model Builder:\n {self.pretty_print()}')
 
         if modelData is not None:
             self.load(modelData)
@@ -270,8 +269,8 @@ class ModelBuilder(object):
                 try:
                     for particleModelFilled in self.setParticleQNumbers(particleModel):
                         yield particleModelFilled
-                except Exception:
-                    pass
+                except Exception as error:
+                    logger.debug(f'{particleModel} rejected: {error}')
 
     def generateMultipletModels(self, finalStateModel: Union[FinalStateModel, None] = None,
                                 uniqueReps: bool = False,

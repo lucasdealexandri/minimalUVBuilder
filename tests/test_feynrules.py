@@ -586,13 +586,14 @@ class TestRenames:
             "labels": {1000022: 'B', 1000006: 'st', 1000021: 'Go'}}
 
     @pytest.fixture(scope='class')
-    def stop(self):
+    @classmethod
+    def stop(cls):
         import warnings
         from uvbuilder.modelBuilder.modelBuilder import ModelBuilder
         from uvbuilder.partition.partitions_builder import PartitionsBuilder
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            for pm in ModelBuilder(modelData=self.STOP).generateParticleModels():
+            for pm in ModelBuilder(modelData=cls.STOP).generateParticleModels():
                 for mm in PartitionsBuilder(pm).get_multipletModels():
                     if mm.is_valid:
                         return mm, pm
