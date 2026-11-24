@@ -37,15 +37,13 @@ class ModelBuilder(object):
    
     
     def __init__(self,
-                 modelData: Union[Dict,str,FinalStateModel,None] = None,
+                 modelData: Union[Dict,FinalStateModel,None] = None,
                  dm_pdg : int = 1000022,
                  possible_dm_reps: Dict[str,List[AllReps]] = {}, 
-                 labels: Dict[int,str] = {},
                  SMpdgDict: StateDict = SMfinalStatesDict,
                  ) -> None:
         
         
-        self.labels :  Dict[int,str] = labels # Optional dictionary to assign custom labels to the particles. Keys should be PDGs and values should be the corresponding labels.
         self.pdgDict : StateDict = StateDict(dict(SMpdgDict.items()))
         self.finalStateModel : Union[FinalStateModel,None] = None
         dm_default_reps = {'spin': [SCALAR, DIRAC_SPINOR],
@@ -67,26 +65,21 @@ class ModelBuilder(object):
 
         self.check_types()
 
-    def load(self, modelData : Union[str,Dict,FinalStateModel]):
+    def load(self, modelData : Union[Dict,FinalStateModel]):
         """
         Load the input data.
         It can be:
-           * path to a SLHA file
-           * a dictionary with masses and decays
+           * a dictionary with masses, decays and labels (FinalStateModel.fromDict)
            * a FinalStateModel object
         """
 
-        if isinstance(modelData,str):
-            self.finalStateModel = FinalStateModel.fromFile(modelData,labels=self.labels,
-                                                            pdgDict=self.pdgDict)            
-            
-        elif isinstance(modelData,dict):
+        if isinstance(modelData,dict):
             self.finalStateModel = FinalStateModel.fromDict(modelData,
                                                             pdgDict=self.pdgDict)
         elif isinstance(modelData,FinalStateModel):
             self.finalStateModel = modelData
         else:
-            raise ValueError(f'modelData ({type(modelData)}) should be a string, dictionary or FinalStateModel object')
+            raise ValueError(f'modelData ({type(modelData)}) should be a dictionary or FinalStateModel object')
 
     def __repr__(self):
         return f'ModelBuilder for {self.finalStateModel}'

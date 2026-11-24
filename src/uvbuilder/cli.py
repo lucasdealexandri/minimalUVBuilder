@@ -13,20 +13,16 @@ USAGE = '''
 
 
 def _protomodel(path: Path) -> dict:
-    '''ModelBuilder arguments of a protomodel file: an SLHA file, or a Python file
-    defining `protomodel` (a dictionary with masses, decays and labels, or the path of
-    an SLHA file) and optionally `possible_dm_reps`, `dm_pdg`, `labels`, `labeler` and
-    `name`.'''
+    '''ModelBuilder arguments of a protomodel file: a Python file defining `protomodel`
+    (a dictionary with masses, decays and labels, see FinalStateModel.fromDict) and
+    optionally `possible_dm_reps`, `dm_pdg`, `labeler` and `name`.'''
     if path.suffix != '.py':
-        return dict(modelData=str(path))
+        raise ValueError(f'{path}: the protomodel is a Python file defining `protomodel`')
     namespace = runpy.run_path(str(path))
-    if 'protomodel' not in namespace:
-        raise SystemExit(f'{path} does not define `protomodel`')
-    data = namespace['protomodel']
-    if isinstance(data, (str, Path)):
-        data = str((path.parent / data).resolve())
-    options = dict(modelData=data)
-    options.update({key: namespace[key] for key in ('possible_dm_reps', 'dm_pdg', 'labels')
+    if not isinstance(namespace.get('protomodel'), dict):
+        raise ValueError(f'{path} does not define the dictionary `protomodel`')
+    options = dict(modelData=namespace['protomodel'])
+    options.update({key: namespace[key] for key in ('possible_dm_reps', 'dm_pdg')
                     if key in namespace})
     for key in ('labeler', 'name'):
         if key in namespace:
@@ -72,7 +68,7 @@ def main(argv=None) -> int:
     commands = parser.add_subparsers(dest='command', required=True)
 
     p = commands.add_parser('build', help='FeynRules models of a protomodel')
-    p.add_argument('protomodel', type=Path, help='SLHA file, or Python file defining `protomodel`')
+    p.add_argument('protomodel', type=Path, help='Python file defining the dictionary `protomodel`')
     p.add_argument('--name', help='model name (default: the protomodel file name)')
     p.add_argument('--out', default='.', help='output folder (default: current)')
     p.set_defaults(run=build)

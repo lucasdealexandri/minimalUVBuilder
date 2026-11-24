@@ -40,6 +40,14 @@ def test_fill_from_the_pickle_of_build(tmp_path):
     assert card.read_text() == reference
 
 
+def test_build_needs_a_python_file_with_the_protomodel(tmp_path, capsys):
+    (tmp_path / 'model.slha').write_text('BLOCK MASS\n')
+    (tmp_path / 'empty.py').write_text('x = 1\n')
+    assert main(['build', str(tmp_path / 'model.slha')]) == 1
+    assert main(['build', str(tmp_path / 'empty.py')]) == 1
+    assert 'does not define the dictionary `protomodel`' in capsys.readouterr().err
+
+
 def test_fill_rejects_a_pickle_of_another_object(tmp_path, capsys):
     import pickle
     (tmp_path / 'other.pkl').write_bytes(pickle.dumps({'masses': {}}))

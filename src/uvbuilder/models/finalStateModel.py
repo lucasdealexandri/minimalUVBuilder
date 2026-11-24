@@ -38,83 +38,16 @@ class FinalStateModel(object):
             
 
     @classmethod
-    def fromFile(cls,slhaFile : str, 
-                 labels : Dict[int,str] = {},
-                 pdgDict :  StateDict = SMdict,
-                 maxMass : float = 3000., 
-                 skipPDGs : list = []) -> Union[None,"FinalStateModel"]:
-
-        """
-        Convert the blocks in the SLHA file (mass, decay, xsections) to a dictionary and then use the dictionary to create a FinalStateModel.
-
-        :param slhafile: Path to the SLHA file
-        :param pdgDict: Dictionary to convert PDGs to Particle/FinalState objects (SM states). If a PDG is not found, assumes it is a BSM particle.
-        :param maxMass: Maximum mass allowed for the BSM particles. Any particle with mass above this limit will be ignored.
-        :param labels: Optional dictionary to assign custom labels to the particles. Keys should be PDGs and values should be the corresponding labels.
-        :param skipPDGs: Optional list of PDGs to be ignored when reading the SLHA file.
-
-        :return: FinalStateModel dictionary
-        """
-
-        skip = [abs(pdg) for pdg in skipPDGs]
-        
-        import pyslha
-        import os    
-
-        if not os.path.isfile(slhaFile):
-            raise FileNotFoundError(f"Model file {slhaFile} not found.")
-
-        slhaData = pyslha.readSLHAFile(slhaFile)
-        if slhaData is None:
-            raise ValueError(f"Error reading SLHA file {slhaFile}")
-        elif slhaData.decays is None:
-            raise ValueError(f"No decay block found in SLHA file {slhaFile}")
-        
-        
-        modelDict: dict = {'masses' : {}, 'decays' : {}, 
-                           'xsections' : {}, 
-                           'labels' : dict(labels.items())}
-        
-
-        for pdg,mass in slhaData.blocks['MASS'].items():
-            # Skip selected PDGs
-            if abs(pdg) in skip:
-                continue
-            # Skip particles above maxMass
-            if mass > maxMass:
-                continue
-            modelDict['masses'][pdg] = mass
-        
-        
-        for pdg in slhaData.decays:
-            if abs(pdg) in skip:
-                continue
-            modelDict['decays'][pdg] = {}
-            for decay in slhaData.decays[pdg].decays:
-                if any(abs(daughter_pdg) in skip for daughter_pdg in decay.ids):
-                    continue
-                modelDict['decays'][pdg].update({tuple(decay.ids) : decay.br})
-        
-        if slhaData.xsections:
-            for pdgList in slhaData.xsections:
-                pdgs = tuple(slhaData.xsections[pdgList].pidsfinal)
-                # Skip production of particles which did not make the mass dict cut
-                if any(abs(pdg) in skip for pdg in pdgs):
-                    continue
-                modelDict['xsections'][pdgs] = [xsec.__dict__ for xsec in slhaData.xsections[pdgList].xsecs]
-        
-        return FinalStateModel.fromDict(modelDict, pdgDict=pdgDict)
-    
-    @classmethod
     def fromDict(cls, modelDict : Dict, pdgDict :  StateDict = SMdict) -> Union[None,"FinalStateModel"]:
 
         """
         Use the dictionary to create a FinalStateModel.
 
-        :param modelDict: Model dictionary containing masses and decays
+        :param modelDict: Model dictionary with decays ({mother: {(daughters): BR}}) and,
+                          optionally, masses ({pdg: GeV}) and labels ({pdg: label}; a BSM
+                          state without a label is named X<pdg>). Decays of SM particles
+                          are skipped.
         :param pdgDict: Dictionary to convert PDGs to Particle/FinalState objects (SM states). If a PDG is not found, assumes it is a BSM particle.
-        :param maxMass: Maximum mass allowed for the BSM particles. Any particle with mass above this limit will be ignored.
-        :param skipPDGs: Optional list of PDGs to be ignored when reading the SLHA file.
 
         :return: FinalStateModel dictionary
         """
@@ -123,7 +56,8 @@ class FinalStateModel(object):
         if 'decays' not in modelDict or len(modelDict['decays']) == 0:
             raise ValueError(f"Error creating FinalStateModel from {modelDict}. No decays found")
         
-        decays = modelDict['decays']
+        # SM decays carry no information on the BSM states
+        decays = {mom: d for mom, d in modelDict['decays'].items() if abs(mom) not in pdgDict}
         masses = modelDict.get('masses',{})
         xsections = modelDict.get('xsections',{})
         labels = modelDict.get('labels',{})
@@ -153,7 +87,7 @@ class FinalStateModel(object):
                 finalState = pdgDict[pdg].copy()
             else:
                 bsm_ptc = Particle(pdg=pdg,
-                                label=labels.get(pdg,str(pdg)),
+                                label=labels.get(pdg,f'X{pdg}'),
                                 isSM=False)
                 mass = masses.get(pdg,None)
                 if mass is not None:

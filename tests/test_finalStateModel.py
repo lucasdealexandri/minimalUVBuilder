@@ -120,41 +120,6 @@ class TestFinalStateModelFromDict(unittest.TestCase):
         self.assertIsNotNone(_mass(fs.pdgDict[1000006]))
 
 
-class TestFinalStateModelFromFile(unittest.TestCase):
-    """Test FinalStateModel.fromFile() class method"""
-    
-    def test_fromFile_sleptons(self):
-        """Test loading FinalStateModel from SLHA file"""
-        slhaFile = os.path.join(os.path.dirname(__file__), 'data', 'slhaFiles', 'sleptons.slha')
-        
-        # Check if file exists
-        if not os.path.isfile(slhaFile):
-            self.skipTest(f"SLHA file {slhaFile} not found")
-        
-        labels = {
-            1000011: 'seL', 2000011: 'seR',
-            1000013: 'smuL', 2000013: 'smuR',
-            1000015: 'stauL', 2000015: 'stauR',
-            1000012: 'snueL', 1000014: 'snumuL', 1000016: 'snutauL',
-            1000022: 'n1'
-        }
-        
-        fs = FinalStateModel.fromFile(slhaFile=slhaFile, labels=labels)
-        
-        self.assertIsNotNone(fs)
-        self.assertGreater(len(fs.vertices), 0)
-        self.assertGreater(len(fs.pdgDict), 0)
-        
-        # Check that labels were applied
-        if 1000011 in fs.pdgDict:
-            self.assertEqual(fs.pdgDict[1000011].label, 'seL')
-    
-    def test_fromFile_nonexistent(self):
-        """Test that fromFile handles non-existent files gracefully"""
-        with self.assertRaises((FileNotFoundError, ValueError)):
-            FinalStateModel.fromFile(slhaFile='nonexistent_file.slha')
-
-
 class TestFinalStateModelFromVertices(unittest.TestCase):
     """Test FinalStateModel creation from vertices"""
     
@@ -427,32 +392,6 @@ class TestFinalStateModelVerticesPopulation(unittest.TestCase):
         for vertex in sq_vertices:
             daughter_pdgs = [pdg for d in vertex.daughters for pdg in d.getPDGs()]
             self.assertIn(1000022, daughter_pdgs)
-    
-    def test_vertices_from_file_populated(self):
-        """Test that vertices are populated when loading from file"""
-        slhaFile = os.path.join(os.path.dirname(__file__), 'data', 'slhaFiles', 'sleptons.slha')
-        
-        if not os.path.isfile(slhaFile):
-            self.skipTest(f"SLHA file {slhaFile} not found")
-        
-        labels = {
-            1000011: 'seL', 2000011: 'seR',
-            1000013: 'smuL', 2000013: 'smuR',
-            1000015: 'stauL', 2000015: 'stauR',
-            1000012: 'snueL', 1000014: 'snumuL', 1000016: 'snutauL',
-            1000022: 'n1'
-        }
-        
-        fs = FinalStateModel.fromFile(slhaFile=slhaFile, labels=labels)
-        
-        # Check that vertices are created
-        self.assertGreater(len(fs.vertices), 0)
-        
-        # All vertices should be DecayVertex instances
-        for vertex in fs.vertices:
-            self.assertIsInstance(vertex, DecayVertex)
-            self.assertIsNotNone(vertex.mother)
-            self.assertGreater(len(vertex.daughters), 0)
     
     def test_vertices_correspond_to_decay_dict(self):
         """Test that all vertices correspond to entries in decay dictionary"""

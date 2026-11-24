@@ -151,15 +151,6 @@ def test_decays_need_a_direct_coupling():
     assert all(any(dim == 2 for dim, _ in s) for s in scalars if s)
 
 
-def test_model_builder_reads_an_slha_file():
-    from pathlib import Path
-    slha = str(Path(__file__).resolve().parent / 'data' / 'slhaFiles' / 'stopR.slha')
-    from_file = list(ModelBuilder(modelData=slha).generateMultipletModels())
-    from_model = list(ModelBuilder(modelData=FinalStateModel.fromFile(slha)).generateMultipletModels())
-    assert from_file
-    assert [_multiplet_symbols(mm) for mm in from_file] == [_multiplet_symbols(mm) for mm in from_model]
-
-
 def test_mixing_columns_follow_the_mass_order():
     data = {"masses": {1000022: 100., 1000023: 400., 1000024: 200., 1000025: 300.},
             "decays": {1000022: {}, 1000023: {(1000022, 23): 1.0}, 1000024: {(1000022, 24): 1.0},
@@ -348,6 +339,24 @@ def test_conjugated_daughters_give_the_same_multiplet_models():
     assert len(reference) == 1
     assert models(-1000022, {(1000024, -24): 1.0}) == reference                         # neutral
     assert models(1000022, {(-1000024, 24): 0.5, (1000024, -24): 0.5}) == reference    # charged
+
+
+def test_states_without_labels_are_named_by_their_pdg():
+    import warnings
+    data = {'masses': {1000022: 100., 1000024: 200.},
+            'decays': {1000022: {}, 1000024: {(1000022, 24): 1.0}}, 'labels': {1000024: 'W1'}}
+    with warnings.catch_warnings():
+        warnings.simplefilter('error')
+        model = FinalStateModel.fromDict(data)
+    labels = {p.pdg: p.label for fs in model.pdgDict.values() for p in fs.getParticles()
+              if not p.isSM and p.pdg > 0}
+    assert labels == {1000022: 'X1000022', 1000024: 'W1'}
+
+
+def test_sm_decays_are_skipped():
+    data = {'masses': {1000022: 100., 1000024: 200.},
+            'decays': {1000022: {}, 1000024: {(1000022, 24): 1.0}, 6: {(5, 24): 1.0}}}
+    assert len(list(ModelBuilder(modelData=data).generateMultipletModels())) > 0
 
 
 def test_protomodel_labels_and_masses_do_not_change_sm_particles():

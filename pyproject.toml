@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Minimal UV Lagrangians from protomodels"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["numpy", "sympy", "networkx", "unum", "pyslha"]
+dependencies = ["numpy", "sympy", "networkx", "unum"]
 
 [project.scripts]
 uvbuilder = "uvbuilder.cli:main"
