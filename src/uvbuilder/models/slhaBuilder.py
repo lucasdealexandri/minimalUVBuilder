@@ -72,57 +72,26 @@ def _declared(fr_model) -> set:
     return {f for m in fr_model.multiplet_model.non_conjugated_multiplets for f in m.fields}
 
 
-def _real_rows(m, declared):
-    '''(rows, parts) of a Majorana or real scalar block: the symbols of its real basis
-    (MixingMatrix.real_basis, as in the .fr definitions) and the substitution of the
-    field components, phi = C rho, where they differ.'''
-    labels, C = m.real_basis(declared)
-    rows = [sp.Symbol(label) for label in labels]
-    phi = [_symbol(f) for f in m.f_components]
-    parts = {p: e for p, e in zip(phi, C * sp.Matrix(rows)) if e != p}
-    return rows, parts
-
-
 def mass_matrices(fr_model) -> Dict[str, Tuple[tuple, sp.Matrix]]:
     '''Mass matrix of each mixing block, {U block symbol: (blocks, matrix)}, with blocks
     (U,) or, for a Dirac pair, (U, V), from V = sum of the two-field terms at the vev
-    (L = -V - h.c., as in the .fr):
-      Majorana, real scalar   hessian of V in the rows of U      (-L = 1/2 x^T M x [+ h.c.])
-      Dirac                   d2V / dU_i dV_j                    (-L = U^T M V + h.c.)
-      complex scalar          d2V / dphibar_i dphi_j             (-L = phi^dagger M^2 phi)
-    Real blocks are written in their real basis (MixingMatrix.real_basis). Raises if V
-    has a term outside the blocks.'''
+    (MixingMatrix.mass_matrix). Real blocks are written in their real basis
+    (MixingMatrix.real_basis). Raises if V has a term outside the blocks.'''
     declared = _declared(fr_model)
-    V = _mass_potential(fr_model)
     matrices = fr_model.mixings.get_mixing_matrices()
     rights = {m.particles: m for m in matrices if m.is_right_block}
-    real_parts, real_blocks, result, quadratic = {}, [], {}, 0
+    V = _mass_potential(fr_model)
+    for m in matrices:
+        V = m.to_real_basis(V, declared)
+    V = sp.expand(V)
+    result, quadratic = {}, 0
     for m in matrices:
         if m.is_right_block:
             continue
-        rows = [_symbol(f) for f in m.f_components]
-        if m.type == 'DiracSpinor':
-            right = rights[m.particles]
-            columns = [_symbol(f) for f in right.f_components]
-            M = sp.Matrix(len(rows), len(columns), lambda i, j: sp.diff(V, rows[i], columns[j]))
-            result[m.standard_symbol] = ((m, right), M)
-            quadratic += (sp.Matrix([rows]) * M * sp.Matrix(columns))[0]
-            continue
-        if m.type == 'ComplexScalar':
-            bars = [_symbol(f.conjugateField) for f in m.f_components]
-            M = sp.Matrix(len(rows), len(rows), lambda i, j: sp.diff(V, bars[i], rows[j]))
-            result[m.standard_symbol] = ((m,), M)
-            quadratic += (sp.Matrix([bars]) * M * sp.Matrix(rows))[0]
-            continue
-        rows, parts = _real_rows(m, declared)
-        real_parts.update(parts)
-        real_blocks.append((m, rows))
-    # Majorana and real scalar blocks, after X = (R + iI)/sqrt(2)
-    V = sp.expand(V.xreplace(real_parts))
-    for m, rows in real_blocks:
-        M = sp.simplify(sp.hessian(V, rows))
-        result[m.standard_symbol] = ((m,), M)
-        quadratic += (sp.Matrix([rows]) * M * sp.Matrix(rows))[0] / 2
+        right = rights.get(m.particles) if m.type == 'DiracSpinor' else None
+        M, form = m.mass_matrix(V, declared, right)
+        result[m.standard_symbol] = ((m,) if right is None else (m, right), M)
+        quadratic += form
     rest = sp.simplify(sp.expand(V - quadratic))
     if rest != 0:
         raise ValueError(f'mass terms outside the mixing blocks: {rest}')
@@ -228,8 +197,7 @@ def write_card(fr_model, card, path=None, values=None) -> Path:
         for i, j in np.ndindex(m.dim, m.dim):
             key = (p.block.upper(), (i + 1, j + 1))
             names[key], mixing[key] = f'{p.name}{i + 1}x{j + 1}', (p.base, p.part, i, j)
-        rows = (_real_rows(m, declared)[0] if m.type in ('MajoranaSpinor', 'RealScalar')
-                else [_symbol(f) for f in m.f_components])
+        rows = m.real_basis(declared)[0]
         headers[p.block.upper()] = (f'{_ROWS}{" ".join(map(str, rows))}; '
                                     f'columns (mass): {" ".join(label[q.label] for q in m.particles)}')
 

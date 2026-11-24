@@ -165,6 +165,36 @@ class MixingMatrix:
                 C[b, r], C[b, b] = 1 / sp.sqrt(2), -sp.I / sp.sqrt(2)
         return labels, C
 
+    def to_real_basis(self, V, declared):
+        '''V with the field components of the block written in its real basis,
+        phi = C rho (real_basis).'''
+        import sympy as sp
+        labels, C = self.real_basis(declared)
+        phi = [sp.Symbol(f.label) for f in self.f_components]
+        rho = sp.Matrix([sp.Symbol(label) for label in labels])
+        return V.xreplace({p: e for p, e in zip(phi, C * rho) if e != p})
+
+    def mass_matrix(self, V, declared, right=None):
+        '''(M, quadratic form) of the block from V, the two-field terms at the vev
+        (L = -V - h.c.) with every real block in its real basis (to_real_basis):
+          Majorana, real scalar   hessian of V in rho          (-L = 1/2 rho^T M rho [+ h.c.])
+          Dirac                   d2V / dU_i dV_j, right = V block  (-L = U^T M V + h.c.)
+          complex scalar          d2V / dphibar_i dphi_j       (-L = phi^dagger M^2 phi)'''
+        import sympy as sp
+        symbols = lambda fields: [sp.Symbol(f.label) for f in fields]
+        rows = symbols(self.f_components)
+        if self.type == 'DiracSpinor':
+            columns = symbols(right.f_components)
+            M = sp.Matrix(len(rows), len(columns), lambda i, j: sp.diff(V, rows[i], columns[j]))
+            return M, (sp.Matrix([rows]) * M * sp.Matrix(columns))[0]
+        if self.type == 'ComplexScalar':
+            bars = symbols(f.conjugateField for f in self.f_components)
+            M = sp.Matrix(len(rows), len(rows), lambda i, j: sp.diff(V, bars[i], rows[j]))
+            return M, (sp.Matrix([bars]) * M * sp.Matrix(rows))[0]
+        rho = [sp.Symbol(label) for label in self.real_basis(declared)[0]]
+        M = sp.simplify(sp.hessian(V, rho))
+        return M, (sp.Matrix([rho]) * M * sp.Matrix(rho))[0] / 2
+
 class ParticleMixing(UserDict):
     """
     Bidirectional One to Many Dictionary relating MassEigenstates to FlavorEigenstates.
