@@ -25,6 +25,26 @@ def test_mixing_values_are_sets_and_inverse_collects_particles():
     assert dict(mixing.inverse) == {'f': {'p', 'q'}, 'g': {'q'}}
 
 
+def test_real_basis_of_a_neutral_doublet_component():
+    import sympy as sp
+    mm = multiplet_model(DOUBLET_PARTNER)
+    block = _matrices(DOUBLET_PARTNER)['UMixRZ1Z2Z3']
+    declared = {f for m in mm.non_conjugated_multiplets for f in m.fields}
+    labels, C = block.real_basis(declared)
+    assert [f.label for f in block.f_components] == ['PhiI1Y0q0', 'PhiI2Y3q0', 'PhiI2Y3q0bar']
+    assert labels == ['PhiI1Y0q0', 'PhiI2Y3q0_R', 'PhiI2Y3q0_I']
+    s = 1 / sp.sqrt(2)
+    assert C == sp.Matrix([[1, 0, 0], [0, s, sp.I * s], [0, s, -sp.I * s]])
+    assert sp.simplify(C * C.H) == sp.eye(3)
+
+
+def test_real_basis_is_trivial_without_neutral_scalars():
+    import sympy as sp
+    for block in _matrices(MAJORANA).values():
+        labels, C = block.real_basis({f for f in block.f_components})
+        assert labels == [f.label for f in block.f_components] and C == sp.eye(block.dim)
+
+
 def test_majorana_states_mix_through_one_matrix():
     matrices = _matrices(MAJORANA)
     assert list(matrices) == ['UMixDW1', 'UMixMZ1Z2Z3', 'VMixDW1']       # sorted by name

@@ -10,9 +10,8 @@ from uvbuilder.states.particle import family_key
 
 class MixingMatrix:
     '''Mixing block between field components (rows) and mass eigenstates (columns).
-    Blocks of real scalars are real orthogonal. If such a block contains a complex
-    component X and its conjugate, their rows are the real fields phi_R and phi_I,
-    with X = (phi_R + i phi_I)/sqrt(2).'''
+    Blocks of real scalars are real orthogonal, in the real basis of the block
+    (real_basis).'''
 
     def __init__(self, 
                  p_components: Union[Sequence[ScalarComponent], Sequence[WeylComponent]], 
@@ -142,6 +141,29 @@ class MixingMatrix:
         if field not in self.f_components: return None
 
         return self.f_components.index(field)
+
+    def real_basis(self, declared):
+        '''(labels, C): the real basis rho of the block and the change of basis
+        phi = C rho, phi the field components (rows). Only neutral scalars (real scalar
+        blocks) have a non-trivial one, the basis of CP eigenstates if CP is conserved:
+        a component Phi of a declared multiplet and its conjugate PhiBar are
+            Phi = (Phi_R + i Phi_I)/sqrt(2),   PhiBar = (Phi_R - i Phi_I)/sqrt(2).
+        rho keeps the order of the rows: Phi_R is listed in the row of Phi and Phi_I in
+        the row of PhiBar, which fixes the rows of the orthogonal mixing matrix. Real
+        fields are kept.'''
+        import sympy as sp
+        labels, C = [f.label for f in self.f_components], sp.eye(self.dim)
+        if self.type != 'RealScalar':
+            return labels, C
+        for r, f in enumerate(self.f_components):
+            if f in declared and not f.selfConjugate:
+                if f.conjugateField not in self.f_components:
+                    raise ValueError(f'{f} mixes into real states without its conjugate')
+                b = self.get_index(f.conjugateField)
+                labels[r], labels[b] = f'{f.label}_R', f'{f.label}_I'
+                C[r, r], C[r, b] = 1 / sp.sqrt(2), sp.I / sp.sqrt(2)
+                C[b, r], C[b, b] = 1 / sp.sqrt(2), -sp.I / sp.sqrt(2)
+        return labels, C
 
 class ParticleMixing(UserDict):
     """

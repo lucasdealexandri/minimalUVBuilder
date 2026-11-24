@@ -324,11 +324,11 @@ def getGaugeDefinitions(multiplet, mixings, symbol=None, conjugate=False, phases
         physical expansion of field.'''
         mixing_matrix = next(mm for mm in mixing_matrices if field in mm.f_components)
         row = mixing_matrix.get_index(field) + 1
-        row_im = None
-        if mixing_matrix.type == 'RealScalar' and not field.selfConjugate:
-            if field.conjugateField not in mixing_matrix.f_components:
-                raise ValueError(f'{field} mixes into real states without its conjugate')
-            row_im = mixing_matrix.get_index(field.conjugateField) + 1
+        # the components of this multiplet are the Phi of their (Phi, PhiBar) pairs;
+        # Phi = (Phi_R + i Phi_I)/sqrt(2) puts the row of Phi_I in its row of C
+        _, C = mixing_matrix.real_basis(multiplet.fields)
+        row_im = next((k + 1 for k in range(mixing_matrix.dim)
+                       if k != row - 1 and C[row - 1, k] != 0), None)
 
         # Physical class this field mixes into (mass order = family order)
         members = sorted(mixings.inverse[field], key=family_key)

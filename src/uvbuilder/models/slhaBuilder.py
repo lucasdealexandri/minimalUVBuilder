@@ -73,19 +73,13 @@ def _declared(fr_model) -> set:
 
 
 def _real_rows(m, declared):
-    '''(rows, parts) of a Majorana or real scalar block: row symbols, with a component X
-    of a declared multiplet and its conjugate in the block written X = (R + iI)/sqrt(2),
-    R on the row of X and I on the row of X-bar, as in the .fr definitions; parts maps
-    X, X-bar to R, I.'''
-    rows, parts = [_symbol(f) for f in m.f_components], {}
-    for f in m.f_components:
-        partner = f.conjugateField
-        if f in declared and partner != f and partner in m.f_components:
-            R, I = sp.Symbol(f'{f.label}_R'), sp.Symbol(f'{f.label}_I')
-            parts[_symbol(f)] = (R + sp.I * I) / sp.sqrt(2)
-            parts[_symbol(partner)] = (R - sp.I * I) / sp.sqrt(2)
-            rows[m.f_components.index(f)] = R
-            rows[m.f_components.index(partner)] = I
+    '''(rows, parts) of a Majorana or real scalar block: the symbols of its real basis
+    (MixingMatrix.real_basis, as in the .fr definitions) and the substitution of the
+    field components, phi = C rho, where they differ.'''
+    labels, C = m.real_basis(declared)
+    rows = [sp.Symbol(label) for label in labels]
+    phi = [_symbol(f) for f in m.f_components]
+    parts = {p: e for p, e in zip(phi, C * sp.Matrix(rows)) if e != p}
     return rows, parts
 
 
@@ -96,8 +90,7 @@ def mass_matrices(fr_model) -> Dict[str, Tuple[tuple, sp.Matrix]]:
       Majorana, real scalar   hessian of V in the rows of U      (-L = 1/2 x^T M x [+ h.c.])
       Dirac                   d2V / dU_i dV_j                    (-L = U^T M V + h.c.)
       complex scalar          d2V / dphibar_i dphi_j             (-L = phi^dagger M^2 phi)
-    A component X and its conjugate in one real block are written X = (R + iI)/sqrt(2),
-    R on the row of X and I on the row of X-bar, as in the .fr definitions. Raises if V
+    Real blocks are written in their real basis (MixingMatrix.real_basis). Raises if V
     has a term outside the blocks.'''
     declared = _declared(fr_model)
     V = _mass_potential(fr_model)
