@@ -572,3 +572,23 @@ class FeynRulesModel(object):
 
         with open(self.output_file, 'w') as f:
             f.write(self.to_feynrules())
+
+    def save2pickle(self, path: Optional[str] = None) -> str:
+        '''Pickle of the model, by default next to its .fr (output_file with .pkl).'''
+        import pickle
+        path = path or os.path.splitext(self.output_file)[0] + '.pkl'
+        if os.path.dirname(path):
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'wb') as f:
+            pickle.dump(self, f)
+        return path
+
+    @classmethod
+    def load(cls, path: str) -> FeynRulesModel:
+        '''Model saved by save2pickle.'''
+        import pickle
+        with open(path, 'rb') as f:
+            model = pickle.load(f)
+        if not isinstance(model, cls):
+            raise TypeError(f'{path} holds a {type(model).__name__}, not a {cls.__name__}')
+        return model

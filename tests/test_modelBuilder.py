@@ -3,6 +3,7 @@
 import pytest
 
 from uvbuilder.modelBuilder.modelBuilder import ModelBuilder
+from uvbuilder.models.feynrulesmodel import FeynRulesModel
 from uvbuilder.models.finalStateModel import FinalStateModel
 from uvbuilder.models.particleModel import ParticleModel
 from uvbuilder.states.finalState import FinalState
@@ -180,6 +181,17 @@ def test_feynrules_model_survives_pickling(tmp_path):
                              f'import pickle; print(pickle.load(open({str(path)!r}, "rb")).to_feynrules(), end="")'],
                             capture_output=True, text=True, check=True).stdout
     assert loaded == model.to_feynrules()
+
+
+def test_feynrules_model_saved_next_to_its_fr_and_loaded(tmp_path):
+    import pickle
+    model = next(_sddm_builder().generateFeynRulesModels(outputFile=str(tmp_path / 'sddm.fr')))
+    path = model.save2pickle()
+    assert path == model.output_file.removesuffix('.fr') + '.pkl'
+    assert FeynRulesModel.load(path).to_feynrules() == model.to_feynrules()
+    (tmp_path / 'other.pkl').write_bytes(pickle.dumps({'masses': {}}))
+    with pytest.raises(TypeError, match='holds a dict, not a FeynRulesModel'):
+        FeynRulesModel.load(tmp_path / 'other.pkl')
 
 
 def test_generate_feynrules_models():
