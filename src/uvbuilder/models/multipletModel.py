@@ -523,8 +523,8 @@ class MultipletModel:
         '''Valid iff (i) every BSM particle is assigned, (ii) particles of the same
         rep (one physical FeynRules class) sit in the same mixing block, so the
         block's column index is the class family index, and (iii) every decay
-        vertex is realised within one interaction cluster (which excludes decays
-        with fewer than two BSM particles, see `valid_decays`).'''
+        vertex is realised by a tree-level coupling (which excludes decays with
+        fewer than two BSM particles, see `valid_decays`).'''
         # Z2-even decays (X -> SM SM) cannot come from BSM-pair operators
         if any(sum(not p.isSM for p in v.getParticles()) < 2
                for v in self.particle_model.vertices):
@@ -551,6 +551,10 @@ class MultipletModel:
 
     @property
     def is_valid(self) -> bool:
+        '''True if a mixing realises every decay with tree-level couplings
+        (valid_mixing). The masses are not checked: a valid model may not reproduce
+        the protomodel spectrum, e.g. a doublet pair alone has a single mass
+        parameter, so its neutral and charged states are degenerate.'''
         return any(self.possible_mixings)
 
     def field_symbol(self, field: Field) -> sp.Symbol:
