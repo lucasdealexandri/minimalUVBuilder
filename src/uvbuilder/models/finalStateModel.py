@@ -46,7 +46,8 @@ class FinalStateModel(object):
         :param modelDict: Model dictionary with decays ({mother: {(daughters): BR}}) and,
                           optionally, masses ({pdg: GeV}) and labels ({pdg: label}; a BSM
                           state without a label is named X<pdg>). Decays of SM particles
-                          are skipped.
+                          are skipped; decays must be two-body (an off-shell decay is
+                          written with its virtual boson, e.g. (1000022, 23)).
         :param pdgDict: Dictionary to convert PDGs to Particle/FinalState objects (SM states). If a PDG is not found, assumes it is a BSM particle.
 
         :return: FinalStateModel dictionary
@@ -58,6 +59,12 @@ class FinalStateModel(object):
         
         # SM decays carry no information on the BSM states
         decays = {mom: d for mom, d in modelDict['decays'].items() if abs(mom) not in pdgDict}
+        many = [f'{mom} -> {" ".join(map(str, d))}' for mom, ds in decays.items()
+                for d in ds if len(d) != 2]
+        if many:
+            raise ValueError('only two-body decays are supported; write an off-shell decay '
+                             'with its virtual boson, e.g. (1000022, 23) instead of '
+                             '(1000022, 12, -12): ' + ', '.join(many))
         masses = modelDict.get('masses',{})
         xsections = modelDict.get('xsections',{})
         labels = modelDict.get('labels',{})

@@ -1,7 +1,9 @@
 '''Command line interface: uvbuilder build | fill.'''
 
 import argparse
+import ast
 import logging
+import re
 import runpy
 import sys
 from pathlib import Path
@@ -13,11 +15,21 @@ USAGE = '''
 
 
 def _protomodel(path: Path) -> dict:
-    '''ModelBuilder arguments of a protomodel file: a Python file defining `protomodel`
-    (a dictionary with masses, decays and labels, see FinalStateModel.fromDict) and
-    optionally `possible_dm_reps`, `dm_pdg`, `labeler` and `name`.'''
+    '''ModelBuilder arguments of a protomodel file (a dictionary with masses, decays and
+    labels, see FinalStateModel.fromDict): a .dict file holding the dictionary (as
+    written by the SModelS protomodel builder; read as a literal, never executed), or a
+    Python file defining `protomodel` and optionally `possible_dm_reps`, `dm_pdg`,
+    `labeler` and `name`.'''
+    if path.suffix == '.dict':
+        try:
+            data = ast.literal_eval(path.read_text())
+        except (SyntaxError, ValueError) as error:
+            raise ValueError(f'{path} is not a dictionary literal: {error}') from None
+        if not isinstance(data, dict):
+            raise ValueError(f'{path} is not a dictionary literal')
+        return dict(modelData=data)
     if path.suffix != '.py':
-        raise ValueError(f'{path}: the protomodel is a Python file defining `protomodel`')
+        raise ValueError(f'{path}: the protomodel is a .dict file or a Python file')
     namespace = runpy.run_path(str(path))
     if not isinstance(namespace.get('protomodel'), dict):
         raise ValueError(f'{path} does not define the dictionary `protomodel`')
@@ -35,7 +47,9 @@ def build(args):
     from uvbuilder.models.multipletModel import default_component_label
     options = _protomodel(args.protomodel)
     labeler = options.pop('_labeler', default_component_label)
-    name = args.name or options.pop('_name', None) or args.protomodel.stem
+    # the default name is the file name made a valid model name: pmodel-2 -> pmodel_2
+    stem = re.sub(r'\W', '_', args.protomodel.stem)
+    name = args.name or options.pop('_name', None) or (stem if stem[:1].isalpha() else f'M{stem}')
     options.pop('_name', None)
     out = Path(args.out)
     models = ModelBuilder(**options).generateFeynRulesModels(
@@ -68,7 +82,8 @@ def main(argv=None) -> int:
     commands = parser.add_subparsers(dest='command', required=True)
 
     p = commands.add_parser('build', help='FeynRules models of a protomodel')
-    p.add_argument('protomodel', type=Path, help='Python file defining the dictionary `protomodel`')
+    p.add_argument('protomodel', type=Path,
+                   help='.dict file, or Python file defining the dictionary `protomodel`')
     p.add_argument('--name', help='model name (default: the protomodel file name)')
     p.add_argument('--out', default='.', help='output folder (default: current)')
     p.set_defaults(run=build)

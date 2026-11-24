@@ -353,6 +353,15 @@ def test_states_without_labels_are_named_by_their_pdg():
     assert labels == {1000022: 'X1000022', 1000024: 'W1'}
 
 
+def test_three_body_decays_are_rejected_by_name():
+    data = {'masses': {1000022: 90., 1000023: 126., 1000024: 155.},
+            'decays': {1000022: {}, 1000023: {(1000022, 12, 12): 1.0},
+                       1000024: {(1000022, 2, 1): 1.0}}}
+    with pytest.raises(ValueError, match='only two-body decays.*: '
+                                         '1000023 -> 1000022 12 12, 1000024 -> 1000022 2 1$'):
+        FinalStateModel.fromDict(data)
+
+
 def test_sm_decays_are_skipped():
     data = {'masses': {1000022: 100., 1000024: 200.},
             'decays': {1000022: {}, 1000024: {(1000022, 24): 1.0}, 6: {(5, 24): 1.0}}}

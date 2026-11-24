@@ -40,12 +40,25 @@ def test_fill_from_the_pickle_of_build(tmp_path):
     assert card.read_text() == reference
 
 
+def test_build_reads_a_dict_file(tmp_path):
+    (tmp_path / 'sddm-2.dict').write_text(repr(
+        {'masses': {1000022: 100., 1000023: 300., 1000024: 200., 1000025: 400.},
+         'decays': {1000022: {}, 1000023: {(1000022, 23): 1.0}, 1000024: {(1000022, 24): 1.0},
+                    1000025: {(1000023, 25): 1.0}},
+         'xsecs[fb]': {((1000022, 1000023), 13.0): 1.0}, 'walkerid': 'uphi'}))
+    assert main(['build', str(tmp_path / 'sddm-2.dict'), '--out', str(tmp_path / 'out')]) == 0
+    assert (tmp_path / 'out' / 'sddm_2_1.fr').is_file() and (tmp_path / 'out' / 'sddm_2_1.pkl').is_file()
+
+
 def test_build_needs_a_python_file_with_the_protomodel(tmp_path, capsys):
     (tmp_path / 'model.slha').write_text('BLOCK MASS\n')
     (tmp_path / 'empty.py').write_text('x = 1\n')
     assert main(['build', str(tmp_path / 'model.slha')]) == 1
     assert main(['build', str(tmp_path / 'empty.py')]) == 1
     assert 'does not define the dictionary `protomodel`' in capsys.readouterr().err
+    (tmp_path / 'code.dict').write_text("__import__('os').system('echo hi')")
+    assert main(['build', str(tmp_path / 'code.dict')]) == 1
+    assert 'is not a dictionary literal' in capsys.readouterr().err
 
 
 def test_fill_rejects_a_pickle_of_another_object(tmp_path, capsys):
