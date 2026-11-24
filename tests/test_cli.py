@@ -16,6 +16,9 @@ PROTOMODEL = '''
                   "labels": {1000022: 'Z1', 1000023: 'Z2', 1000024: 'W1', 1000025: 'Z3'}}
     possible_dm_reps = {'spin': [DIRAC_SPINOR], 'globalU1s': [GlobalU1s()]}
 '''
+PROTOMODEL_DICT = {'masses': {1000022: 100., 1000023: 300., 1000024: 200., 1000025: 400.},
+                   'decays': {1000022: {}, 1000023: {(1000022, 23): 1.0},
+                              1000024: {(1000022, 24): 1.0}, 1000025: {(1000023, 25): 1.0}}}
 
 
 def test_build_writes_the_fr_and_pickle_of_each_model(tmp_path, capsys):
@@ -40,12 +43,42 @@ def test_fill_from_the_pickle_of_build(tmp_path):
     assert card.read_text() == reference
 
 
+def _models(argv, capsys):
+    """Names of the models listed by build."""
+    assert main(argv) == 0
+    return [line.split()[0] for line in capsys.readouterr().out.splitlines() if '[' in line]
+
+
+def test_build_writes_nothing_without_out(tmp_path, monkeypatch, capsys):
+    source = tmp_path / 'sddm.py'
+    source.write_text(textwrap.dedent(PROTOMODEL))
+    monkeypatch.chdir(tmp_path)
+    assert main(['build', str(source)]) == 0
+    out = capsys.readouterr().out
+    assert 'sddm  [ChiI1Y0Lw, ChiI2Y3Lw, ChiI2Ym3Lw]' in out and 'nothing written' in out
+    assert sorted(p.name for p in tmp_path.iterdir()) == ['sddm.py']
+
+
+def test_dm_spins_and_charges_from_the_command_line(tmp_path, capsys):
+    from uvbuilder.tools.reps import GlobalU1s
+    from uvbuilder.cli import _dm_charges
+    assert _dm_charges('none') == GlobalU1s() and _dm_charges('B=0, D=1') == GlobalU1s(B=0, D=1)
+    assert _dm_charges('L=1/2') == GlobalU1s(L='1/2')
+    source = tmp_path / 'sddm.py'
+    source.write_text(textwrap.dedent(PROTOMODEL))      # fermionic DM, no charges
+    fermion = _models(['build', str(source)], capsys)
+    scalar = _models(['build', str(source), '--dm-spin', 'scalar'], capsys)
+    both = _models(['build', str(source), '--dm-spin', 'both'], capsys)
+    assert len(both) == len(fermion) + len(scalar) and scalar
+    dark = _models(['build', str(source), '--dm-charges', 'none', '--dm-charges', 'D=1'], capsys)
+    assert len(dark) > len(fermion)
+    (tmp_path / 'sddm.dict').write_text(repr(PROTOMODEL_DICT))
+    assert len(_models(['build', str(tmp_path / 'sddm.dict')], capsys)) == len(both)   # defaults
+
+
 def test_build_reads_a_dict_file(tmp_path):
     (tmp_path / 'sddm-2.dict').write_text(repr(
-        {'masses': {1000022: 100., 1000023: 300., 1000024: 200., 1000025: 400.},
-         'decays': {1000022: {}, 1000023: {(1000022, 23): 1.0}, 1000024: {(1000022, 24): 1.0},
-                    1000025: {(1000023, 25): 1.0}},
-         'xsecs[fb]': {((1000022, 1000023), 13.0): 1.0}, 'walkerid': 'uphi'}))
+        {**PROTOMODEL_DICT, 'xsecs[fb]': {((1000022, 1000023), 13.0): 1.0}, 'walkerid': 'uphi'}))
     assert main(['build', str(tmp_path / 'sddm-2.dict'), '--out', str(tmp_path / 'out')]) == 0
     assert (tmp_path / 'out' / 'sddm_2_1.fr').is_file() and (tmp_path / 'out' / 'sddm_2_1.pkl').is_file()
 

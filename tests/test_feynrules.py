@@ -477,7 +477,9 @@ class TestMixChunks:
         checked = skipped = 0
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')
-            for pm in ModelBuilder(modelData=sddm).generateParticleModels():
+            from uvbuilder.tools.reps import GlobalU1s
+            dm = {'globalU1s': [GlobalU1s(), GlobalU1s(D=1)]}       # Majorana and Dirac DM
+            for pm in ModelBuilder(modelData=sddm, possible_dm_reps=dm).generateParticleModels():
                 for mm in PartitionsBuilder(pm).get_multipletModels():
                     if not mm.is_valid:
                         continue

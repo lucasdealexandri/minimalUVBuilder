@@ -197,7 +197,10 @@ def _sddm_model(names):
             "labels": {1000022: 'Z1', 1000023: 'Z2', 1000024: 'W1', 1000025: 'Z3'}}
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
-        for pm in ModelBuilder(modelData=sddm).generateParticleModels():
+        from uvbuilder.tools.reps import GlobalU1s
+        # with and without a dark charge (Majorana and Dirac DM)
+        dm = {'globalU1s': [GlobalU1s(), GlobalU1s(D=1)]}
+        for pm in ModelBuilder(modelData=sddm, possible_dm_reps=dm).generateParticleModels():
             for mm in PartitionsBuilder(pm).get_multipletModels():
                 if mm.is_valid and {m.fr_symbol() for m in mm.non_conjugated_multiplets} == names:
                     return FeynRulesModel(mm, pm, mm.possible_mixings[0], 'test.fr')

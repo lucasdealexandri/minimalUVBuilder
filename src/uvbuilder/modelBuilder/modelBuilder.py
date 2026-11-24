@@ -49,7 +49,7 @@ class ModelBuilder(object):
         dm_default_reps = {'spin': [SCALAR, DIRAC_SPINOR],
                             'eCharge' : U1Rep(0),
                             'colordim' : SU3Rep(0,0),
-                            'globalU1s': [GlobalU1s(), GlobalU1s(D=1)]
+                            'globalU1s': [GlobalU1s()]
                            }
         # Define possible DM representations
         # (use default values if not defined)

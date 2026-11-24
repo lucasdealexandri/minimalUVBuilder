@@ -26,12 +26,10 @@ def test_dm_particles_use_complete_unbroken_reps():
     builder = ModelBuilder()
     particles = builder.getDMParticles(_final_state_model_with_dm())
 
-    assert len(particles) == 4       # 2 spins x 2 dark-charge choices
+    assert len(particles) == 2       # 2 spins, no global charge
     assert all(isinstance(p.rep, UnbrokenRep) for p in particles)
     assert {p.rep.spin for p in particles} == {SCALAR, builder.possible_dm_reps['spin'][1]}
-    assert {p.rep.globalU1s for p in particles} == {
-        GlobalU1s(), GlobalU1s(D=1)
-    }
+    assert {p.rep.globalU1s for p in particles} == {GlobalU1s()}
     assert all(p.selfConjugate == (p.rep.conjRep == p.rep) for p in particles)
 
 
