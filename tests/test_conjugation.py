@@ -141,8 +141,9 @@ def test_real_triplet_is_complex_class_with_phased_components():
     from uvbuilder.modelBuilder.modelBuilder import ModelBuilder
     from uvbuilder.partition.partitions_builder import PartitionsBuilder
     from uvbuilder.models.feynrulesmodel import FeynRulesModel
+    # Z2 -> Z1 h: a real triplet has no Z coupling between neutral states
     sddm = {"masses": {1000022: 89.88887, 1000023: 126.046269, 1000024: 155.494055, 1000025: 451.886204},
-            "decays": {1000022: {}, 1000023: {(1000022, 23): 1.0}, 1000024: {(1000022, 24): 1.0},
+            "decays": {1000022: {}, 1000023: {(1000022, 25): 1.0}, 1000024: {(1000022, 24): 1.0},
                        1000025: {(1000023, 25): 1.0}},
             "labels": {1000022: 'N1', 1000023: 'N2', 1000024: 'C1', 1000025: 'N3'}}
     found = 0
@@ -195,6 +196,8 @@ def _sddm_model(names):
             "decays": {1000022: {}, 1000023: {(1000022, 23): 1.0}, 1000024: {(1000022, 24): 1.0},
                        1000025: {(1000023, 25): 1.0}},
             "labels": {1000022: 'Z1', 1000023: 'Z2', 1000024: 'W1', 1000025: 'Z3'}}
+    if 'PhiI3Y0' in names:      # a real triplet has no Z coupling between neutral states
+        sddm['decays'][1000023] = {(1000022, 25): 1.0}
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
         from uvbuilder.tools.reps import GlobalU1s

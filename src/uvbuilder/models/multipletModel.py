@@ -330,23 +330,72 @@ class MultipletModel:
 
     @property
     def interactions_graph(self) -> Graph:
+        '''Fields joined by a coupling. Each edge holds in `emits` what the coupling can
+        emit at tree level: 'W' for the gauge link of neighbouring components, 'h' for
+        a term with a neutral Higgs component (v + h)/sqrt(2), and the other SM fields
+        of the term (e.g. tR of a Yukawa). Terms with a charged Higgs component (the
+        Goldstone eaten by the W) emit nothing.'''
         # Cache interactions_graph to avoid recalculating
         if not hasattr(self, '_interactions_graph'):
             graph = Graph()
 
+            def emit(f1, f2, what):
+                if not graph.has_edge(f1, f2):
+                    graph.add_edge(f1, f2, emits=set())
+                graph.edges[f1, f2]['emits'] |= what
+
             for m in self.multiplets:
                 for f1, f2 in itertools.pairwise(m.fields):
                     graph.add_nodes_from((f1, f2))
-                    graph.add_edge(f1, f2)
+                    emit(f1, f2, {'W'})
 
+            neutral = {HiggsDoublet.components[U1Rep(-1, 2)],
+                       HiggsDoublet.conjugateMultiplet.components[U1Rep(1, 2)]}
+            higgs = set(HiggsDoublet.fields) | set(HiggsDoublet.conjugateMultiplet.fields)
             for op in self.operators:
                 for fop in op.expand_singlets(at_vev=True):
                     f1, f2, *sm = fop.fields
-                    graph.add_edge(f1, f2)
+                    emit(f1, f2, set())
+                for fop in op.expand_singlets():
+                    f1, f2, *sm = fop.fields
+                    if fop.at_vev() is None:        # charged Higgs component
+                        continue
+                    others = {f for f in sm if f not in higgs}
+                    emit(f1, f2, others or ({'h'} if any(f in neutral for f in sm) else set()))
 
             self._interactions_graph = graph
 
         return self._interactions_graph
+
+    def _emits(self, mother, daughter, sm: Particle) -> bool:
+        '''A coupling of the fields of two BSM particles (mother, daughter: sets of
+        fields) emits the SM particle sm at tree level: W from a gauge link, Z if the
+        shared fields have different T3 (its coupling is diagonal in fields and Q is
+        common), h and SM fermions from an operator term; photon and gluon never.'''
+        pdg = abs(sm.pdg)
+        if pdg in (21, 22):
+            return False
+        if pdg == 23:
+            return len({f.i3 for f in mother & daughter}) > 1
+        if pdg == 24:
+            wanted = {'W'}
+        elif pdg == 25:
+            wanted = {'h'}
+        else:
+            from uvbuilder.states.SMparticles import SMparticlesDict
+            fields = {t.field.label for t in SMparticlesDict[pdg].fieldExpansion}
+            wanted = None
+        for f in mother:
+            for g in daughter:
+                if not self.interactions_graph.has_edge(f, g):
+                    continue
+                emits = self.interactions_graph.edges[f, g]['emits']
+                if wanted is not None and emits & wanted:
+                    return True
+                if wanted is None and any(isinstance(e, Field) and e.label.removesuffix('bar')
+                                          in fields for e in emits):
+                    return True
+        return False
 
     @property
     def mass_sector(self) -> Graph:
@@ -458,7 +507,8 @@ class MultipletModel:
 
             if len(bsm_particles) == 2:
                 mother, daughter = (mixing[p] for p in bsm_particles)
-                if any(self.interactions_graph.has_edge(f, g) for f in mother for g in daughter):
+                sm = [p for p in vertex.getParticles() if p.isSM]
+                if len(sm) == 1 and self._emits(mother, daughter, sm[0]):
                     valid.append(vertex)
                 continue
 

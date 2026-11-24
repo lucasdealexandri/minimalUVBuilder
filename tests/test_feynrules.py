@@ -244,7 +244,7 @@ class TestMixingStub:
 
 
 def _sddm_model():
-    from uvbuilder.states.SMparticles import nue, d, u, higgs
+    from uvbuilder.states.SMparticles import W, Z, higgs
     from uvbuilder.states.particle import Particle
     from uvbuilder.states.physicsUnits import GeV
     from uvbuilder.vertices.particleVertex import ParticleVertex
@@ -263,8 +263,8 @@ def _sddm_model():
                   rep=neutral_rep, isSM=False)
     N3 = Particle(label='N3', pdg=1000025, mass=451.886204 * GeV,
                   rep=neutral_rep, isSM=False)
-    vertices = [ParticleVertex(N2, [N1, nue, nue]),
-                ParticleVertex(C, [N1, u, d]),
+    vertices = [ParticleVertex(N2, [N1, Z]),
+                ParticleVertex(C, [N1, W]),
                 ParticleVertex(N3, [N2, higgs])]
     pm = ParticleModel(vertices)
 

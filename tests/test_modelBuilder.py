@@ -351,6 +351,41 @@ def test_states_without_labels_are_named_by_their_pdg():
     assert labels == {1000022: 'X1000022', 1000024: 'W1'}
 
 
+# -- the SM particle of a decay must be emitted by a tree-level coupling --
+
+def _valid(protomodel, **options):
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        return {frozenset(m.fr_symbol() for m in mm.non_conjugated_multiplets)
+                for mm in ModelBuilder(modelData=protomodel, **options).generateMultipletModels()}
+
+
+# inert doublet: H0 (DM), A0, H+
+_IDM = {'masses': {1000022: 100., 1000023: 200., 1000024: 250.},
+        'decays': {1000022: {}, 1000023: {(1000022, 23): 1.0}, 1000024: {(1000022, 24): 1.0}}}
+
+
+def test_inert_doublet_and_no_singlet_triplet():
+    # A0 -> H0 Z: the singlet and the neutral triplet component have T3 = 0, no Z coupling
+    assert _valid(_IDM) == {frozenset({'PhiI2Y3'}),
+                                        frozenset({'ChiI2Y3Lw', 'ChiI2Ym3Lw'})}
+
+
+def test_no_model_emits_a_photon():
+    # (a gluon is read as a jet, which a coloured state emits as a quark)
+    data = {'masses': {1000022: 100., 1000023: 300.},
+            'decays': {1000022: {}, 1000023: {(1000022, 22): 1.0}}}
+    assert _valid(data) == set()
+
+
+def test_real_triplet_emits_h_but_not_z():
+    from tests._sddm import PROTOMODEL, PROTOMODEL_H, REAL_TRIPLET
+    triplet = frozenset(f'{name}' for name in REAL_TRIPLET)
+    assert triplet not in _valid(PROTOMODEL, possible_dm_reps={'spin': [SCALAR]})
+    assert triplet in _valid(PROTOMODEL_H, possible_dm_reps={'spin': [SCALAR]})
+
+
 def test_three_body_decays_are_rejected_by_name():
     data = {'masses': {1000022: 90., 1000023: 126., 1000024: 155.},
             'decays': {1000022: {}, 1000023: {(1000022, 12, 12): 1.0},
