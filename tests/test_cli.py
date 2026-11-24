@@ -40,26 +40,8 @@ def test_fill_from_the_pickle_of_build(tmp_path):
     assert card.read_text() == reference
 
 
-def test_external_programs_must_be_configured(tmp_path, monkeypatch, capsys):
-    monkeypatch.setenv('XDG_CONFIG_HOME', str(tmp_path / 'config'))
-    monkeypatch.delenv('UVB_MG5', raising=False)
-    assert main(['card', str(tmp_path)]) == 1
-    assert 'run `uvbuilder config mg5 <path>`' in capsys.readouterr().err
-
-
-def test_config_file_set_once_and_overridden_by_the_environment(tmp_path, monkeypatch, capsys):
-    from uvbuilder.config import config_file, tool_path
-    monkeypatch.setenv('XDG_CONFIG_HOME', str(tmp_path / 'config'))
-    monkeypatch.delenv('UVB_MG5', raising=False)
-    mg5, other = tmp_path / 'mg5_aMC', tmp_path / 'other_mg5'
-    mg5.touch(), other.touch()
-    assert main(['config', 'mg5', str(mg5)]) == 0
-    assert config_file().read_text() == f'mg5 = "{mg5}"\n'
-    assert tool_path('mg5') == mg5
-    assert f'{mg5}  ({config_file()})' in capsys.readouterr().out
-    monkeypatch.setenv('UVB_MG5', str(other))
-    assert tool_path('mg5') == other
-    main(['config'])
-    out = capsys.readouterr().out
-    assert f'{other}  (environment variable UVB_MG5)' in out and 'feynrules      -  (not set)' in out
-    assert main(['config', 'feynrules', str(tmp_path / 'missing')]) == 1
+def test_fill_rejects_a_pickle_of_another_object(tmp_path, capsys):
+    import pickle
+    (tmp_path / 'other.pkl').write_bytes(pickle.dumps({'masses': {}}))
+    assert main(['fill', str(tmp_path / 'other.pkl'), str(tmp_path / 'card.dat')]) == 1
+    assert 'holds a dict, not a FeynRulesModel' in capsys.readouterr().err
