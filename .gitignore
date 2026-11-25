@@ -255,3 +255,10 @@ $RECYCLE.BIN/
 .directory
 .Trash-*
 .nfs*
+
+# LaTeX build files
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
