@@ -242,6 +242,7 @@ class Particle(object):
         return [self._pdg]
 
     def chargeConjugate(self) -> "Particle":
+        '''The antiparticle.'''
         return self.antiParticle
 
     @property

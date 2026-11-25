@@ -424,9 +424,11 @@ class Multiplet(object):
         return self.conjugateMultiplet
 
     def is_filled(self) -> bool:
+        '''True if every component has a field.'''
         return all(comp is not None for comp in self._components.values())
 
     def _add_field(self, field: Field) -> None:
+        '''Place field at its component, checking its quantum numbers.'''
         assert field.isSM == self.isSM
         assert self.spin == field.spin
         assert self.colordim == field.colordim

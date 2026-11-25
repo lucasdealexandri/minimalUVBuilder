@@ -150,6 +150,7 @@ class FinalState(object):
         return self_copy
 
     def getPDGs(self) -> List[int]:
+        '''Sorted PDGs of the particles of the final state.'''
 
         pdgList = sorted([ptc.pdg for ptc in self.particleList])
 

@@ -202,6 +202,7 @@ def _head(expr: str) -> Optional[str]:
 
 
 def _fraction(value: str) -> Optional[Fraction]:
+    '''Fraction of a string, or None.'''
     try:
         return Fraction(value.replace(' ', ''))
     except (ValueError, ZeroDivisionError):
@@ -222,6 +223,7 @@ class FRIndex:
 
     @property
     def unfold(self) -> Optional[bool]:
+        '''False for NoUnfold, True for Unfold, None without a range.'''
         if self.range is None:
             return None
         if self.range.startswith('NoUnfold'):
@@ -245,6 +247,7 @@ class FRClass:
 
     # --- simple accessors -------------------------------------------------
     def _bool(self, key: str, default: bool = False) -> bool:
+        '''Option key as a bool.'''
         v = self.options.get(key)
         return default if v is None else v.strip() == 'True'
 
@@ -278,6 +281,7 @@ class FRClass:
 
     @property
     def quantum_numbers(self) -> Dict[str, Fraction]:
+        '''QuantumNumbers of the class, {name: value}.'''
         out: Dict[str, Fraction] = {}
         for item in list_items(self.options.get('QuantumNumbers', '')):
             rule = split_rule(item)
@@ -420,11 +424,13 @@ class FRModelFile:
 
     @classmethod
     def parse(cls, path) -> 'FRModelFile':
+        '''Parse the file at path.'''
         path = Path(path)
         return cls.from_text(path.read_text(encoding='utf-8', errors='replace'), source=path.name)
 
     @classmethod
     def from_text(cls, text: str, source: str = '<string>') -> 'FRModelFile':
+        '''Parse the text of a .fr file.'''
         model = cls(source=source)
         clean = strip_comments(text)
         line_starts = [0] + [m.end() for m in re.finditer('\n', clean)]
@@ -445,6 +451,7 @@ class FRModelFile:
 
     # --- statements -------------------------------------------------------
     def _statement(self, off: int, stmt: str, line) -> None:
+        '''Record one top-level statement.'''
         m = re.match(r'IndexRange\[\s*Index\[\s*([A-Za-z][A-Za-z0-9]*)\s*\]\s*\]\s*=\s*(.*)$', stmt, re.S)
         if m:
             old = self.indices.get(m.group(1), FRIndex(m.group(1)))
@@ -669,11 +676,13 @@ class ReservedNames:
 
     # --- building -----------------------------------------------------------
     def add(self, symbol: str, kind: str, where: str) -> None:
+        '''Register symbol, of kind, defined at where.'''
         origin = Origin(symbol, kind, where)
         self._exact.setdefault(symbol, []).append(origin)
         self._lower.setdefault(symbol.lower(), []).append(origin)
 
     def add_model(self, model: FRModelFile) -> None:
+        '''Register every symbol of a model file.'''
         self.models.append(model)
         for symbol, kind, ln in model.symbols():
             self.add(symbol, kind, f'{model.source}:{ln}')
@@ -701,6 +710,7 @@ class ReservedNames:
 
     # --- queries ------------------------------------------------------------
     def copy(self) -> 'ReservedNames':
+        '''Independent copy.'''
         other = ReservedNames()
         other._exact = {k: list(v) for k, v in self._exact.items()}
         other._lower = {k: list(v) for k, v in self._lower.items()}
@@ -711,6 +721,7 @@ class ReservedNames:
         return symbol in self._exact
 
     def origins(self, symbol: str) -> List[Origin]:
+        '''Where symbol is defined (exact match).'''
         return list(self._exact.get(symbol, []))
 
     def clashes(self, symbol: str, ufo_bound: bool = False) -> List[Origin]:
@@ -778,6 +789,7 @@ class SMClassMap:
         self._globals = {short: long for short, long in GLOBAL_U1_QN.items() if long in used}
 
     def defines_class(self, name: str) -> bool:
+        '''True if the SM file defines the class name.'''
         return name in self.model.classes
 
     @property
@@ -922,6 +934,7 @@ class Renamer:
         self.reserved = reserved.copy()
 
     def problems(self, derived: Derived) -> List[str]:
+        '''Invalid or clashing names among derived, as messages.'''
         out = []
         for symbol, ufo in derived:
             if not is_valid_symbol(symbol):
@@ -931,6 +944,7 @@ class Renamer:
         return out
 
     def _register(self, derived: Derived, where: str) -> None:
+        '''Reserve derived, so later names cannot reuse them.'''
         for symbol, ufo in derived:
             self.reserved.add(symbol, 'parameter' if ufo else 'class', f'generated ({where})')
 

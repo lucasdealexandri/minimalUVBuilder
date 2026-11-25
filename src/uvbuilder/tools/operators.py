@@ -64,6 +64,7 @@ class Term(NamedTuple):
     fields: Tuple[Field]
 
     def to_sympy_expr(self) -> sp.Expr:
+        '''The monomial as a sympy expression, each field a symbol of its label.'''
         return self.coeff * sp.prod([sp.Symbol(f.label) for f in self.fields])
 
     @property
@@ -135,6 +136,7 @@ class Operator:
 
     @property
     def possible_reps(self) -> List[BrokenRep]:
+        '''Representations in the product of the multiplets.'''
         reps = [self._projected_rep(m) for m in self.multiplets]
         result = reps[0]
         for rep in reps[1:]:
@@ -244,6 +246,8 @@ class Operator:
 
     @property
     def forms_bilinear(self) -> bool:
+        '''True if the operator gives a mass term of two BSM fields once the Higgs
+        takes its vev.'''
         multiplets = [
             m for m in self.multiplets
             if m != HiggsDoublet and m != HiggsDoublet.conjugateMultiplet]
@@ -514,6 +518,7 @@ class Operator:
                 (3, 2): 'Yukawa', (4, 0): 'Quartic'}.get((n, n_fermions), 'Other')
 
     def _description(self) -> str:
+        '''Description of the parameter in the .fr, e.g. Dirac mass of X Y.'''
         labels = ' '.join(m.label for m in self.multiplets)
         if self.sector != 'Mass':
             # label only when the field set keeps several invariants (parameter suffix P<k>)
@@ -581,6 +586,7 @@ class Operator:
     # -- printing ----------------------------------------------------------
 
     def pretty_print(self) -> str:
+        '''The parameter and the multiplet labels.'''
         return f'{self.parameter} ' + ' '.join(m.label for m in self.multiplets)
 
     def __repr__(self):

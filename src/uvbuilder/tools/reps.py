@@ -126,6 +126,8 @@ class GlobalU1s:
         return all(v == 0 for _, v in self.items())
 
     def _combine(self, other: GlobalU1s, sign: int) -> GlobalU1s:
+        '''Sum (sign 1) or difference (sign -1) of the charges; both must track the same
+        charges.'''
         if not isinstance(other, GlobalU1s):
             return NotImplemented
         if self.tracked != other.tracked:
@@ -172,6 +174,7 @@ class GlobalU1s:
 
 
 class SU2Rep(namedtuple("SU2", "dynkin")):
+    '''SU(2) representation, by its Dynkin index (dimension dynkin + 1).'''
 
     def __repr__(self):
         return f"{self.dim}"
@@ -207,6 +210,7 @@ class SU2Rep(namedtuple("SU2", "dynkin")):
     
 
 class SU3Rep(namedtuple("SU3", "upper lower")):
+    '''SU(3) representation, by its Dynkin labels (upper, lower): 3 is (1, 0), 3bar (0, 1).'''
 
     def __repr__(self):        
         if self.upper == 0 and self.lower != 0:
@@ -305,6 +309,7 @@ class Rep:
         return self._product(other, scalar=False)
 
     def _product(self, other, *, scalar: bool) -> List[Rep]:
+        '''The representations in the products with other (one representation or several).'''
         others = other if isinstance(other, Sequence) else [other]
         for o in others:
             if not (isinstance(o, type(self)) and isinstance(self, type(o))):
@@ -373,6 +378,8 @@ class UnbrokenRep(Rep):
         return self.scalar_product(other)
 
     def can_connect(self, other: UnbrokenRep) -> bool:
+        '''True if other can be a neighboring component of the same multiplet: same
+        spin, color and global charges, electric charge differing by one.'''
         return (self.spin == other.spin and
                 self.colordim == other.colordim and
                 self.globalU1s == other.globalU1s and
@@ -380,6 +387,7 @@ class UnbrokenRep(Rep):
 
     @classmethod
     def from_particle(cls, particle) -> UnbrokenRep:
+        '''The representation of a particle.'''
         return cls(
             spin=particle.spin,
             colordim=particle.colordim,
@@ -443,6 +451,7 @@ class BrokenRep(Rep):
         return replace(self, i3=None)
 
     def same_multiplet(self, other: BrokenRep) -> bool:
+        '''True if both are components of the same multiplet.'''
 
         if self.multiplet_rep == other.multiplet_rep:
             return True
@@ -461,6 +470,7 @@ class BrokenRep(Rep):
 
     @property
     def unbroken(self) -> UnbrokenRep:
+        '''The unbroken representation of this component.'''
         if self.i3 is None:
             raise ValueError('A whole multiplet (i3=None) has no definite electric charge.')
         return UnbrokenRep(spin=self.spin, colordim=self.colordim,
@@ -469,6 +479,8 @@ class BrokenRep(Rep):
 
     @classmethod
     def from_block(cls, block: List[UnbrokenRep]) -> BrokenRep:
+        '''The multiplet whose components are the chain block: isospin j = (len - 1)/2,
+        hypercharge Q_max - j.'''
         anchor = block[0]
         max_charge = max(rep.eCharge for rep in block)
         isospin = SU2Rep(len(block) - 1,)
@@ -702,6 +714,7 @@ def su3_prod(
 
 
 def _integer(q: U1Rep, what: str) -> int:
+    '''q as an int; ValueError naming what if it is not an integer.'''
     q = U1Rep(q)
     if q.denominator != 1:
         raise ValueError(f'{what} must be an integer, got {q}')
@@ -872,6 +885,7 @@ def _spin_mul(self, other, prod):
 
 
 class DiracSpinor(namedtuple("DiracSpinor", "left right")):
+    '''Dirac spinor, (1/2, 0) + (0, 1/2).'''
     def __repr__(self):
         return "DiracSpinor"
         
@@ -895,6 +909,7 @@ class DiracSpinor(namedtuple("DiracSpinor", "left right")):
     
     
 class WeylSpinor(namedtuple("WeylSpinor", "left right")):
+    '''Weyl spinor: left-handed (1/2, 0) or right-handed (0, 1/2).'''
 
     def __repr__(self):
         chirality = "LH" if self.left else "RH"
@@ -913,6 +928,7 @@ class WeylSpinor(namedtuple("WeylSpinor", "left right")):
         return U1Rep(3, 2)
 
     def scalar_product(self, other: WeylSpinor) -> Scalar:
+        '''Lorentz scalar of two spinors of the same chirality.'''
         assert type(self) == type(other), 'Can only scalar multiply two spinors of the same type.'
         return Scalar
 
@@ -933,6 +949,7 @@ class WeylSpinor(namedtuple("WeylSpinor", "left right")):
     
 
 class Scalar(namedtuple("Scalar", "arg")):
+    '''Scalar, (0, 0).'''
     def __repr__(self):
         return "Scalar"
     
@@ -958,6 +975,7 @@ class Scalar(namedtuple("Scalar", "arg")):
     
 
 class Vector(namedtuple("Vector", "arg")):
+    '''Vector, (1/2, 1/2).'''
     def __repr__(self):
         return "Vector"
     

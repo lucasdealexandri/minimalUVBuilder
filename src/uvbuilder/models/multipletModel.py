@@ -41,6 +41,7 @@ from uvbuilder.vertices.particleVertex import ParticleVertex
 
 
 def _spin_letter(spin) -> str:
+    '''Spin letter of a default component label: S (scalar), V (vector), LW (Weyl).'''
     name = type(spin).__name__.lower()
     if 'scalar' in name:
         return 'S'
@@ -62,6 +63,7 @@ def _spin_prefix(spin) -> str:
 
 
 def _default_charge_suffix(q: U1Rep) -> str:
+    '''Charge superscript of a default component label: ^0, ^+, ^{-2}, ^{+1/3}, ...'''
     if q.numerator == 0:
         return '^0'
     sign = '+' if q.numerator > 0 else '-'
@@ -172,6 +174,9 @@ default_component_label = fr_component_label
 
 def default_operator_parameter(
         multiplets: List[Multiplet]):
+    '''Default parameter of the operator of these multiplets (docs/conventions.md):
+    M^2 (M^2/2 for a real scalar) or M (M/2 for a Majorana mass), mu, y, z or lambda,
+    followed by the multiplet labels.'''
 
     anchor = multiplets[0]
 
@@ -267,6 +272,9 @@ class MultipletModel:
 
     @property
     def operators(self) -> List[Operator]:
+        '''The renormalizable operators: two BSM multiplets and up to two SM ones, one
+        operator per independent SU(2) invariant (suffix P<k>). Operators whose singlet
+        vanishes or whose color contraction is not implemented are dropped.'''
         # Cache operators to avoid recalculating
         if not hasattr(self, '_operators'):
 
@@ -403,6 +411,7 @@ class MultipletModel:
 
     @property
     def mass_sector(self) -> Graph:
+        '''Graph of the fields joined by a mass term, couplings to the Higgs vev included.'''
         # Cache mass_sector to avoid recalculating
         if not hasattr(self, '_mass_sector'):
             graph = Graph()
@@ -419,6 +428,7 @@ class MultipletModel:
 
     @property
     def mass_clusters(self) -> List[Set[Field]]:
+        '''Connected components of mass_sector: the sets of fields that can mix.'''
         # Cache mass_clusters to avoid recalculating
         if not hasattr(self, '_mass_clusters'):
             self._mass_clusters = list(
@@ -427,6 +437,7 @@ class MultipletModel:
 
     @property
     def interaction_clusters(self) -> List[Set[Field]]:
+        '''Connected components of interactions_graph.'''
         # Cache interactions_clusters to avoid recalculating
         if not hasattr(self, '_interactions_clusters'):
             self._interactions_clusters = list(
@@ -542,6 +553,7 @@ class MultipletModel:
 
     @property
     def possible_mixings(self) -> List[List[ParticleMixing]]:
+        '''The assignments of the BSM particles to the mixing blocks that pass valid_mixing.'''
         matched_clusters = self._match_clusters(
             self.mass_clusters, self.particle_model.bsm_particles)
 
@@ -705,6 +717,7 @@ class MultipletModel:
 
 
     def pretty_print(self) -> str:
+        '''Summary of the multiplets.'''
 
         string = f'Multiplet Model with {len(self.counter)} Multiplets:'
         indentation = 4

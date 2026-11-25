@@ -243,6 +243,7 @@ class FRParameter:
         return ('', 'R', 'I')[self.sort_key[1]]
 
     def render(self, **extra) -> str:
+        '''The entry of the parameter in M$Parameters.'''
         return formatParameterBlock(self.name, {**dict(self.options), **extra})
 
 
@@ -274,6 +275,7 @@ def getSU2Index(field) -> int:
 
 
 def _indexed(symbol: str, indices: List[str]) -> str:
+    '''symbol[indices], or symbol alone without indices.'''
     return f"{symbol}[{', '.join(indices)}]" if indices else symbol
 
 

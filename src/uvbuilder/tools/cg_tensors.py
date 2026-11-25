@@ -138,12 +138,15 @@ class CGTensor:
     and the indices passed to it.'''
 
     def render(self, labels: Sequence[str]) -> str:
+        '''The tensor with its index labels, e.g. SU2CG22[i1, i2].'''
         return f'{self.name}[{", ".join(labels)}]'
 
     def fr_symbol(self) -> str:
+        '''FeynRules symbol of the tensor.'''
         return self.name
 
     def fr_definition(self) -> str:
+        '''FeynRules definition of the symbol; empty for built-ins.'''
         return ''
 
 
@@ -168,12 +171,15 @@ class SU2CGTensor(CGTensor):
         self._numeric: Optional[Dict[Tuple[U1Rep, ...], sp.Expr]] = None
 
     def render(self, labels: Sequence[str]) -> str:
+        '''As CGTensor.render; empty when every multiplet is an SU(2) singlet.'''
         if not self.dims:
             return ''
         return super().render(labels)
 
     @property
     def numeric(self) -> Dict[Tuple[U1Rep, ...], sp.Expr]:
+        '''Singlet coefficients {(m_1, ..., m_n): value}; with two indices, scaled to
+        entries +-1.'''
         if self._numeric is None:
             self._numeric = (su2_singlet_coeff(self.isospins, self.path) if self.dims else {})
             if len(self.dims) == 2:

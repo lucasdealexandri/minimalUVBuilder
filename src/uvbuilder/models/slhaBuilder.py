@@ -39,6 +39,7 @@ def _number(text):
 
 
 def _finite(x) -> bool:
+    '''True for a finite number.'''
     try:
         return math.isfinite(x)
     except TypeError:
@@ -46,6 +47,7 @@ def _finite(x) -> bool:
 
 
 def _symbol(field) -> sp.Symbol:
+    '''sympy symbol of a field label.'''
     return sp.Symbol(field.label)
 
 

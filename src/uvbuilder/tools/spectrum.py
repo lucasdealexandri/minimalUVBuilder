@@ -43,6 +43,8 @@ def _check_masses(masses, block) -> None:
 
 
 def _scalar_masses(squared, block) -> np.ndarray:
+    '''Masses from the squared masses; ValueError for a negative physical mass squared
+    (and the checks of _check_masses).'''
     scale = max(float(np.max(np.abs(squared))), 1.0)
     if squared[0] < -TOLERANCE * scale:
         raise ValueError(f'{block}: negative physical mass squared ({squared[0]:.6g} GeV^2)')
