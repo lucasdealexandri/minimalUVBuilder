@@ -10,7 +10,7 @@ from pathlib import Path
 
 USAGE = '''
   uvbuilder build PROTOMODEL [--out FOLDER] [--dm-spin S] [--dm-charges C]
-                                  valid models of a protomodel (.fr and .pkl with --out)
+                                  valid models of a protomodel (.fr, .pkl and .md with --out)
   uvbuilder fill MODEL.pkl CARD   masses, mixing matrices and DECAY Auto from the inputs
 '''
 
@@ -75,6 +75,7 @@ def _dm_reps(args, given: dict) -> dict:
 def build(args):
     from uvbuilder.modelBuilder.modelBuilder import ModelBuilder
     from uvbuilder.models.multipletModel import default_component_label
+    from uvbuilder.report import model_report
     options = _protomodel(args.protomodel)
     options['possible_dm_reps'] = _dm_reps(args, options.get('possible_dm_reps', {}))
     labeler = options.pop('_labeler', default_component_label)
@@ -94,13 +95,15 @@ def build(args):
         else:
             fr_model.save2file()
             pickle = Path(fr_model.save2pickle())
-            print(f'{fr_model.output_file}  {pickle.name}  [{multiplets}]')
+            report = pickle.with_suffix('.md')
+            report.write_text(model_report(fr_model))
+            print(f'{fr_model.output_file}  {pickle.name}  {report.name}  [{multiplets}]')
         count += 1
     if not count:
         print('no valid model (run with -v to see why the candidates were rejected)')
         return 1
     if args.out is None:
-        print('nothing written: use --out FOLDER to write the .fr and .pkl files')
+        print('nothing written: use --out FOLDER to write the .fr, .pkl and .md files')
     return 0
 
 
@@ -121,7 +124,7 @@ def main(argv=None) -> int:
     p.add_argument('protomodel', type=Path,
                    help='.dict file, or Python file defining the dictionary `protomodel`')
     p.add_argument('--name', help='model name (default: the protomodel file name)')
-    p.add_argument('--out', help='folder for the .fr and .pkl files (default: none written)')
+    p.add_argument('--out', help='folder for the .fr, .pkl and .md files (default: none written)')
     p.add_argument('--dm-spin', choices=['scalar', 'fermion', 'both'],
                    help='spin of the DM candidate (default: both)')
     p.add_argument('--dm-charges', type=_dm_charges, action='append', metavar='CHARGES',

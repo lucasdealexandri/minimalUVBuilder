@@ -25,7 +25,10 @@ def test_build_writes_the_fr_and_pickle_of_each_model(tmp_path, capsys):
     source = tmp_path / 'sddm.py'
     source.write_text(textwrap.dedent(PROTOMODEL))
     assert main(['build', str(source), '--out', str(tmp_path / 'out')]) == 0
-    assert sorted(p.name for p in (tmp_path / 'out').iterdir()) == ['sddm.fr', 'sddm.pkl']
+    assert sorted(p.name for p in (tmp_path / 'out').iterdir()) == ['sddm.fr', 'sddm.md', 'sddm.pkl']
+    report = (tmp_path / 'out' / 'sddm.md').read_text()
+    assert '### UMixMZ1Z2Z3: Majorana fermion, Takagi' in report
+    assert '| MChiI2Y3ChiI2Ym3 | BSMMASS 2 | mass |' in report and r'M_{\mathrm{ChiI1Y0}}' in report
     assert 'M$ModelName = "sddm";' in (tmp_path / 'out' / 'sddm.fr').read_text()
     assert '[ChiI1Y0Lw, ChiI2Y3Lw, ChiI2Ym3Lw]' in capsys.readouterr().out
 
@@ -99,3 +102,12 @@ def test_fill_rejects_a_pickle_of_another_object(tmp_path, capsys):
     (tmp_path / 'other.pkl').write_bytes(pickle.dumps({'masses': {}}))
     assert main(['fill', str(tmp_path / 'other.pkl'), str(tmp_path / 'card.dat')]) == 1
     assert 'holds a dict, not a FeynRulesModel' in capsys.readouterr().err
+
+
+def test_report_writes_real_scalar_blocks_in_the_card_entries():
+    from uvbuilder.report import model_report
+    from tests.test_slhaBuilder import _sddm_model
+    report = model_report(_sddm_model({'PhiI1Y0', 'PhiI2Y3'}))
+    assert ': real scalar, orthogonal' in report and '| M² |' in report
+    # mu = Rmu + i Imu, no conjugate left
+    assert r'\overline' not in report and r'\mathrm{Im}\,\mu_{\mathrm{PhiI1Y0PhiI2Y3}} v' in report
