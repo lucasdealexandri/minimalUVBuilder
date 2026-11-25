@@ -1,8 +1,9 @@
-'''SLHA builder: the input parameters of a FeynRules model, the mass matrices of its
-mixing blocks, their spectrum and the MG5 parameter card.
+"""
+.. module:: slhaBuilder
+   :synopsis: Mass matrices, spectrum and param_card of a FeynRules model.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 import math
 import re

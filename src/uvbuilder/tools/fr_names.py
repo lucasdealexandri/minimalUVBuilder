@@ -1,36 +1,10 @@
 #!/usr/bin/env python3
-'''FeynRules model-file parser and reserved-name registry.
-
-Two layers:
-
-* ``FRModelFile.parse(path)`` reads a FeynRules ``.fr`` file *statically* (no
-  Mathematica needed): comments are stripped, the file is split into top-level
-  statements, and the blocks FeynRules cares about are parsed into plain data:
-  particle classes (``M$ClassesDescription``), parameters (``M$Parameters``),
-  gauge groups (``M$GaugeGroups``), index declarations (``IndexRange`` /
-  ``IndexStyle``) and top-level definitions (``LSM := ...``, ``FeynmanGauge = ...``).
-  Values that are not needed are kept as raw text.
-
-* ``ReservedNames`` collects every symbol a set of model files defines (class
-  names, automatic conjugates ``Xbar``, class members, mass/width symbols,
-  parameters and their ``ParameterName`` aliases, block names, indices and index
-  styles, gauge-group symbols, top-level definitions, particle-name strings) plus
-  the language-level names that must not be redefined (Mathematica / FeynRules
-  symbols, Python keywords and builtins, UFO module names).  Each entry remembers
-  where it comes from (``file:line`` or list name) so conflicts can be reported.
-
-Comparison rules (see ``ReservedNames.clashes``): names that end up in the UFO /
-MG5 (parameters, mass/width symbols, aliases, block names, particle names) are
-compared case-insensitively, because MG5 lowercases them; everything else, and
-all language-level lists (Mathematica and Python are case-sensitive), is compared
-exactly.
-
-The parser is deliberately a subset parser: it understands the structure used by
-SM.fr / SMMod.fr / mssm.fr style files (``K[n] == {opt -> value, ...}`` entries,
-``name == {...}`` parameters and gauge groups) and ignores everything else.
+"""
+.. module:: fr_names
+   :synopsis: Parses FeynRules model files and collects the names a model must not reuse.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 from __future__ import annotations
 
@@ -432,7 +406,10 @@ def _entries(block: str, base: int) -> Iterator[Tuple[int, str, str]]:
 
 @dataclass
 class FRModelFile:
-    '''Static content of one ``.fr`` file.'''
+    '''Static content of one ``.fr`` file (FRModelFile.parse, no Mathematica needed):
+    particle classes, parameters, gauge groups, index declarations and top-level
+    definitions; other values are kept as raw text. A subset parser: it understands the
+    structure of SM.fr, SMMod.fr and mssm.fr style files and ignores the rest.'''
     source: str
     classes: Dict[str, FRClass] = field(default_factory=dict)
     parameters: Dict[str, FRParameter] = field(default_factory=dict)
@@ -679,7 +656,11 @@ class Origin:
 
 
 class ReservedNames:
-    '''Registry of names that generated symbols must not reuse.'''
+    '''Registry of names that generated symbols must not reuse: every symbol the model
+    files define, and the Mathematica, FeynRules, Python and UFO names, each with where
+    it comes from. Names that reach the UFO (parameters, masses, widths, blocks, particle
+    names) are compared case-insensitively, since MG5 lowercases them; the rest exactly
+    (clashes).'''
 
     def __init__(self):
         self._exact: Dict[str, List[Origin]] = {}

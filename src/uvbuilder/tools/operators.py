@@ -1,17 +1,9 @@
-'''
-Class to hold operator type and ease of life operations regarding them.
-
-Design: a single ``Operator`` class. The SU(2) singlet CG structure of the
-(canonically ordered) multiplets is taken from ``su2_tensor`` (a
-``tools.cg_tensors.SU2CGTensor``) and mapped onto the component fields on the
-fly, giving the merged singlet monomials (``singlets``); ``expand_singlets()``
-returns them as a flat list of ``Term`` records.
-
-A ``Term`` is a lightweight record (coeff, canonically ordered fields, SU(3)
-contraction head). ``Operator`` is the only class carrying behavior.
+"""
+.. module:: operators
+   :synopsis: Defines the Operator class, a coupling of multiplets contracted to an SU(2) singlet.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 import sympy as sp
 from sympy.printing.mathematica import mathematica_code

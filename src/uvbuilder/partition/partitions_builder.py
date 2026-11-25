@@ -1,12 +1,9 @@
-'''Partitions of the BSM states of a ParticleModel into SU(2) multiplets.
-
-The states are grouped by their unbroken representation (spin, color, electric charge,
-global charges). Two representations can be neighboring components of a multiplet if
-they differ only by one unit of charge; a multiplet of isospin j is a chain of 2j + 1 of
-them, with hypercharge Y = Q_max - j (BrokenRep.from_block).
+"""
+.. module:: partitions_builder
+   :synopsis: Defines the PartitionsBuilder class, which partitions the BSM states into SU(2) multiplets.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 import itertools
 from typing import List
@@ -21,7 +18,10 @@ from uvbuilder.models.multipletModel import (MultipletModel, default_component_l
 
 class PartitionsBuilder:
     '''The partitions of the BSM states of a ParticleModel into SU(2) multiplets that admit
-    mass terms (vector-like: every multiplet together with its conjugate).'''
+    mass terms (vector-like: every multiplet together with its conjugate). Two
+    representations can be neighboring components of a multiplet if they differ only by
+    one unit of charge; a multiplet of isospin j is a chain of 2j + 1 of them, with
+    hypercharge Q_max - j (BrokenRep.from_block).'''
 
     def __init__(self, particle_model: ParticleModel):
         self.particle_model = particle_model

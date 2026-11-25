@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-'''ParticleModel: the particles of a protomodel, with their quantum numbers, and its decay vertices.
+"""
+.. module:: particleModel
+   :synopsis: Defines the ParticleModel class, which holds the particles of a protomodel and its decay vertices.
 
 .. moduleauthor:: John Gargalionis <johngargalionis@gmail.com>
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 
 from pyexpat import model
@@ -25,6 +27,10 @@ from uvbuilder.states.physicsUnits import GeV
 
 
 class ParticleModel:
+    '''The particles of a protomodel, with their quantum numbers (filled by ModelBuilder),
+    and its decay vertices. pdgDict holds one object per particle, shared by the
+    vertices. It also writes the classes of the mass eigenstates in the FeynRules model
+    (to_feynrules).'''
 
     __slots__ = ["vertices","pdgDict","_parent"]
 
@@ -67,6 +73,8 @@ class ParticleModel:
 
     def _physical_group_chunk(self, members: List[Particle],
                               tracker) -> Dict[str, List[str]]:
+        '''FeynRules classes of one family of mass eigenstates (members: particles of
+        the same representation).'''
 
         first = members[0]
         majorana = first.selfConjugate
@@ -135,6 +143,8 @@ class ParticleModel:
 
     @staticmethod
     def _container_name(members: List[Particle]) -> str:
+        '''Name of the FeynRules class of a family: Chi (Dirac or Majorana), Phi (scalar) or
+        ChiL (Weyl), followed by the tag of _gauge_name.'''
         spin = members[0].rep.spin
         if isinstance(spin, DiracSpinor):
             name = 'Chi'
@@ -161,6 +171,8 @@ class ParticleModel:
 
     @staticmethod
     def _family_name(members: List[Particle]) -> str:
+        '''Name of the family index of a group: FGen (fermions) or SGen (scalars), followed
+        by the tag of _gauge_name.'''
         if isinstance(members[0].rep.spin, (DiracSpinor, WeylSpinor)):
             name = 'F'
         else:
@@ -169,6 +181,9 @@ class ParticleModel:
 
     @property
     def bsm_components(self) -> List[WeylComponent | ScalarComponent]:
+        '''The components of the BSM particles, each once: scalar and left-handed Weyl
+        components; a right-handed Weyl component enters as its conjugate (Dirac) or not at
+        all (Majorana, whose left-handed component is already in).'''
         components = []
 
         for particle in self.bsm_particles:
@@ -196,7 +211,7 @@ class ParticleModel:
 
     @property
     def unbroken_reps(self) -> List[UnbrokenRep]:
-
+        '''Representations of bsm_components, the input of PartitionsBuilder.'''
         return [component.rep for component in self.bsm_components]
 
     def __str__(self):
@@ -260,7 +275,7 @@ class ParticleModel:
         return f"{modelStr}:\n  {'\n  '.join(ptc_description)}"   
 
     def copy(self) -> "ParticleModel":
-        
+        '''Copy with new particle objects, the vertices rebuilt on them in the same order.'''
         # Make a copy of all particles
         newDict = self.pdgDict.copy()
         newVertices = []
@@ -352,6 +367,7 @@ class ParticleModel:
 
 
     def signature_order(self, rep):
+        '''Sort key of a representation: electric charge, then global charges.'''
         return (rep.eCharge, rep.globalU1s)
 
     @property

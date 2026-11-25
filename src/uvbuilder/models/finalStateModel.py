@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-'''The protomodel as decay vertices: the input of ModelBuilder.
+"""
+.. module:: finalStateModel
+   :synopsis: Defines the FinalStateModel class, which holds the decay vertices of a protomodel.
 
 .. moduleauthor:: John Gargalionis <johngargalionis@gmail.com>
 .. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
-'''
+"""
 
 from typing import List, Dict, Union
 

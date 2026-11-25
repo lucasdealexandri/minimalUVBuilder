@@ -1,19 +1,9 @@
-'''Diagonalization of the mass matrices of the mixing blocks, in the conventions of the
-FeynRules output: the gauge eigenstates are U times the mass eigenstates, columns in
-ascending mass.
-
-  real scalar      O^T M2 O = diag(m^2)    O real orthogonal       (numpy eigh)
-  complex scalar   U^dag M2 U = diag(m^2)  U unitary               (numpy eigh)
-  Dirac            U^T M V = diag(m)       U, V unitary            (numpy svd)
-  Majorana         U^T M U = diag(m)       U unitary               (Takagi, Jacobi as
-                                                                    in Hahn, physics/0607103)
-Every column is then rephased: its entry of largest modulus real and positive (only a
-sign is free for real scalars and Majorana fermions: there that entry gets a positive
-real part, or a positive imaginary part if its real part vanishes). Masses must be
-positive and non-degenerate within a block; otherwise ValueError.
+"""
+.. module:: spectrum
+   :synopsis: Diagonalizes the mass matrices of the mixing blocks.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 import numpy as np
 
@@ -27,7 +17,10 @@ def _largest(column) -> int:
 
 
 def _phases(U, sign_only=False) -> np.ndarray:
-    '''Column factors that apply the phase convention to U.'''
+    '''Column factors that apply the phase convention to U: the entry of largest modulus of
+    each column becomes real and positive; with sign_only (real scalars, Majorana
+    fermions) only its sign is fixed: a positive real part, or a positive imaginary part
+    if the real part vanishes.'''
     factors = np.ones(U.shape[1], dtype=complex)
     for j in range(U.shape[1]):
         z = U[_largest(U[:, j]), j]

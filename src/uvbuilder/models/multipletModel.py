@@ -1,15 +1,11 @@
-'''Container of a BSM sector: MultipletModel.
-
-A Multiplet is one *family* of a multiplet rep, with labeled Fields. The
-MultipletModel builds the interaction_graph directly from the multiplets:
-nodes are the labeled fields, edges are the BSM-sector vertices carrying
-{source, smfields, coeff, param}. The mass_sector_graph (edges whose SM
-connectors are all scalars, hence vev-carrying), the family-level
-expanded_multiplet_graph and the rep-level multiplet_graph are derived views.
+"""
+.. module:: multipletModel
+   :synopsis: Defines the MultipletModel class, a model of SU(2) multiplets and their couplings.
 
 .. moduleauthor:: John Gargalionis <johngargalionis@gmail.com>
+.. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 from collections import Counter
 from dataclasses import dataclass
@@ -218,6 +214,11 @@ def default_operator_parameter(
 # ----------------------------------------------------------------------
 
 class MultipletModel:
+    '''A BSM sector: the multiplets (each one family of a multiplet representation, with
+    labeled fields) and their couplings. interaction_graph has the labeled fields as nodes
+    and the vertices of the BSM sector as edges ({source, smfields, coeff, param}); the
+    mass sector (edges whose SM fields are all scalars, hence carry the vev) and the
+    family- and representation-level multiplet graphs are derived from it.'''
 
     def __init__(self,
                  multiplets: Sequence[Multiplet],

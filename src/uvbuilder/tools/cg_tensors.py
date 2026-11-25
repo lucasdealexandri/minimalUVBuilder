@@ -1,17 +1,10 @@
 #!/usr/bin/env python3
-'''SU(2) and SU(3) Clebsch-Gordan tensor objects.
-
-The CG layer treats both groups symmetrically: a CGTensor knows its own
-FeynRules symbol, the indices passed to it, and (SU(2) only) the numeric
-singlet values that must be declared with a ``Definitions`` rule in
-FeynRules. The SU(3) heads (K3, K6, T, ...) are FeynRules built-ins, so no
-numeric data lives here (K3/K3bar alias the built-in ``Eps``).
-
-Field/index assignment is NOT this module's job - the Operator knows how to
-render a FeynRules term with its multiplets and distributes the indices.
+"""
+.. module:: cg_tensors
+   :synopsis: Defines the SU(2) and SU(3) Clebsch-Gordan tensors of the FeynRules output.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 import warnings
 

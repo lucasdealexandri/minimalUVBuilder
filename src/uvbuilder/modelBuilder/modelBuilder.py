@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-'''From a protomodel to its valid multiplet models and their FeynRules models.
+"""
+.. module:: modelBuilder
+   :synopsis: Defines the ModelBuilder class, which builds the UV models of a protomodel.
 
 .. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
-'''
+"""
 
 import os
 from dataclasses import replace

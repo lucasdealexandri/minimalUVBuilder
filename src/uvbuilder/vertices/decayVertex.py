@@ -95,7 +95,8 @@ class DecayVertex(object):
     
     @classmethod
     def fromDict(cls,vertexDict : Dict, pdgDict : StateDict = StateDict()) -> List["DecayVertex"]:
-        
+        '''One vertex per decay of {mother: {(daughters): BR}}, the PDGs resolved with
+        pdgDict.'''
         vertexList = []
         for mom, decays in vertexDict.items():
             for daughters,br in decays.items():
@@ -129,7 +130,7 @@ class DecayVertex(object):
         return newVertex
 
     def hasFinalStates(self):
-
+        '''True if the mother and the daughters are all FinalState objects.'''
         onlyParticles = all(isinstance(ptc,FinalState) 
                             for ptc in [self.mother] + self.daughters)
         return onlyParticles

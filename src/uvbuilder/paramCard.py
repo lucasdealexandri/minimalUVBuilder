@@ -1,7 +1,9 @@
-'''MG5 parameter cards of a FeynRules model built by the UV builder.
+"""
+.. module:: paramCard
+   :synopsis: Defines the ParamCardGenerator class, which fills the param_card of a model.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 from pathlib import Path
 from typing import Dict, List, Optional

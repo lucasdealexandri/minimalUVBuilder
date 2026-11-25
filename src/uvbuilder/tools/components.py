@@ -1,8 +1,9 @@
-'''Components of a multiplet in the FeynRules output: scalar and Weyl components
-(ScalarComponent, WeylComponent) and their class definitions.
+"""
+.. module:: components
+   :synopsis: Defines the ScalarComponent and WeylComponent classes, the components of multiplets.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 from __future__ import annotations
 from typing import Union, Sequence, List, Optional, Dict
 from .reps import Scalar, WeylSpinor, WEYL_LEFT, WEYL_RIGHT, U1Rep
@@ -21,6 +22,8 @@ def _fr_charge(charge: Optional[U1Rep]) -> str:
 
 
 class ScalarComponent:
+    '''A scalar component: a label and its representation (unbroken, or broken for a
+    gauge component).'''
 
     def __init__(self, label: str, rep: Union[UnbrokenRep, BrokenRep]):
         assert isinstance(rep.spin, Scalar), f'spin should be {Scalar} instead of {type(rep.spin).__name__}.'
@@ -30,6 +33,8 @@ class ScalarComponent:
 
     @property
     def conjugate_label(self) -> str:
+        '''Label of the conjugate: the same for a real representation, otherwise the
+        conjugation marker toggled or the charge signs (+, -) in the label flipped.'''
 
         # For selfConjugate Internal Reps, do not change the label
         if self.rep.is_realInternalRep:
@@ -52,13 +57,14 @@ class ScalarComponent:
 
     @property
     def dagger(self) -> ScalarComponent:
-
+        '''The conjugate component.'''
         return ScalarComponent(self.conjugate_label, self.rep.conjRep)
 
     def scalar_product(
             self, 
             other: Union[Sequence[ScalarComponent], ScalarComponent]) -> List[ScalarComponent]:
-
+        '''Products with other (one component or several): one component per
+        representation of the product.'''
         if isinstance(other, Sequence):
             final_list = []
             for component in other:
@@ -112,11 +118,12 @@ class WeylComponent:
 
     @property
     def conjugate_label(self) -> str:
-        # Involution: X <-> Xbar
+        '''Label of the conjugate: the conjugation marker toggled (X <-> Xbar).'''
         return toggle_dagger(self.label)
 
     @property
     def dagger(self) -> WeylComponent:
+        '''The conjugate component, of opposite chirality.'''
         return WeylComponent(self.conjugate_label, self.rep.conjRep)
 
     def scalar_product(self, other: WeylComponent):
@@ -131,6 +138,7 @@ class WeylComponent:
         return [ScalarComponent(label, rep) for rep in reps]
 
     def describe(self) -> str:
+        '''One-line description: chirality, label and representation.'''
         return f'{self.chirality} Weyl {self.label} of rep {self.rep}'
 
     def to_feynrules(self, tracker, family=None) -> Dict[str, List[str]]:

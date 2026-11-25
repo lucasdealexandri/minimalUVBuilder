@@ -1,7 +1,9 @@
-'''Command line interface: uvbuilder build | fill.
+"""
+.. module:: cli
+   :synopsis: Command line interface: uvbuilder build and uvbuilder fill.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 import argparse
 import ast

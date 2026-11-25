@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-'''Filling of the quantum numbers of a ParticleModel from its decay vertices: at each
-vertex an unknown value is one of the products of the other two particles', and each
-possibility gives a new model.
+"""
+.. module:: modelBuilderUtils
+   :synopsis: Fills the quantum numbers of the particles of a ParticleModel from its decay vertices.
 
 .. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
-'''
+"""
 
 from typing import List, Sequence, Iterator, Union
 

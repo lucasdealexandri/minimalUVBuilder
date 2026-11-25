@@ -1,8 +1,9 @@
-'''Mixing blocks of the mass eigenstates (MixingMatrix, ParticleMixing): the gauge
-components of each block, its real basis and its mass matrix.
+"""
+.. module:: particle_mixing
+   :synopsis: Defines the MixingMatrix and ParticleMixing classes, the mixing of the mass eigenstates.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 # We use UserDict instead of inheriting from dict for more predictable behavior
 # See, e.g., https://treyhunner.com/2019/04/why-you-shouldnt-inherit-from-list-and-dict-in-python/
 from collections import UserDict
@@ -22,7 +23,11 @@ class MixingMatrix:
                  p_components: Union[Sequence[ScalarComponent], Sequence[WeylComponent]], 
                  f_components: Union[Sequence[ScalarComponent], Sequence[WeylComponent]],
                  particles: Sequence = ()):
-        
+        '''
+        :param p_components: components of the mass eigenstates (columns)
+        :param f_components: gauge components of the multiplets (rows)
+        :param particles: the mass eigenstates, in mass order (their family index)
+        '''
         self.p_components = p_components
         self.f_components = f_components
         self.particles = tuple(particles)   # mass eigenstates, mass order (family index)
@@ -67,7 +72,8 @@ class MixingMatrix:
 
     @property
     def type(self) -> str:
-
+        '''MajoranaSpinor or DiracSpinor (Weyl components of a real or complex
+        representation), RealScalar or ComplexScalar.'''
         spin = self.rep.spin
         realInternalRep = self.rep.is_realInternalRep
 
@@ -143,6 +149,7 @@ class MixingMatrix:
                   ComplexParameter=True, Description=f'"Mixing matrix of {states}"')]}
 
     def get_index(self, field):
+        '''Row of a gauge component in the block, or None if it is not in it.'''
         if field not in self.f_components: return None
 
         return self.f_components.index(field)
@@ -202,8 +209,9 @@ class MixingMatrix:
 
 class ParticleMixing(UserDict):
     """
-    Bidirectional One to Many Dictionary relating MassEigenstates to FlavorEigenstates.
-    Just a normal dictionary with a inverse() method.
+    Mixing of a model: {mass eigenstate: set of gauge components it mixes with}, with its
+    inverse (gauge component -> mass eigenstates) and the mixing blocks it defines
+    (get_mixing_matrices).
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -240,6 +248,7 @@ class ParticleMixing(UserDict):
    
     @property 
     def inverse(self):
+        '''{gauge component: set of mass eigenstates}.'''
         inv_map = ParticleMixing() # Return a ParticleMapping instance for consistency
         
         for particle, fields in self.data.items():
@@ -279,6 +288,8 @@ class ParticleMixing(UserDict):
         return clusters
 
     def get_mixing_matrices(self) -> list[MixingMatrix]:
+        '''One MixingMatrix per block (get_cluster), the mass eigenstates in mass order,
+        sorted by name.'''
         matrices = []
         for p_components, f_components in self.get_cluster().items():
             particles = sorted({p for f in f_components for p in self.inverse[f]},

@@ -348,19 +348,18 @@ class Multiplet(object):
         return self.components[U1Rep(i3)].conjugateField, 1
 
     def mass_partner(self, other: 'Multiplet', i3) -> Tuple[Field, int]:
-        '''(field, phase) paired with component i3 in the mass term of self and other:
-        -L = M sum_i3 phase self[i3] field (1/2 M if other is self). This is the one
-        convention of the mass terms, chosen so that a positive M gives positive masses.
-        Scalars: the conjugate component (conjugate_component), so -L = M^2 X* X.
-        Fermions: the component -i3 of other with phase s (-1)^(j+m) (su2_conj_phase),
-        the SU(2) singlet; s makes the leading pair positive: the neutral component of a
-        Majorana mass (it is paired with itself), the most charged pair of a Dirac mass
-        (the neutral pairs of a Dirac mass are pseudo-Dirac, masses +-M in any case).
-        The other pairs have the signs the SU(2) singlet fixes relative to the leading one
-        (e.g. -M for the charged pair of a Majorana triplet). These Dirac signs, and the
-        masses of negative inputs, are made positive by the phases of the mass eigenstates
-        (MultipletModel.mass_phases, and the Takagi / singular value decomposition of the
-        mixing blocks).'''
+        '''(field, phase) paired with component i3 = m in the mass term of self and other,
+        the one convention of the mass terms (docs/conventions.md, Mass terms):
+            -L = M sum_m phase self[m] field + h.c.   (1/2 M if other is self).
+        Scalars: the conjugate component (conjugate_component), -L = M^2 X* X.
+        Fermions: the component -m of other with phase c_m = s (-1)^(j+m) (su2_conj_phase),
+        which makes the sum an SU(2) singlet; s = (-1)^(j+m0) gives c_m0 = +1 to the pair
+        m0: the neutral component for a Majorana mass (other is self), the component of
+        self with the largest |Q| (the larger m on a tie) for a Dirac mass. The other pairs
+        have c_m = (-1)^(m-m0), e.g. -M for the charged pair of a Majorana triplet. A
+        positive M gives positive masses; the negative entries, and negative inputs, are
+        absorbed by the phases of the mass eigenstates (MultipletModel.mass_phases, and the
+        Takagi or singular value decomposition of the mixing blocks).'''
         if isinstance(self.rep.spin, Scalar):
             return self.conjugate_component(i3)
         if other is self:

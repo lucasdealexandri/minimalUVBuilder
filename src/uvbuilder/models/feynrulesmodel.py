@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-'''FeynRulesModel: a multiplet model with its mixings, written as a FeynRules model file (.fr).
+"""
+.. module:: feynrulesmodel
+   :synopsis: Defines the FeynRulesModel class, which writes a model as a FeynRules model file (.fr).
 
 .. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 from __future__ import annotations  # To avoid "ParticleModel" string
 from typing import List, Dict, Tuple, Union, Optional
@@ -107,6 +109,7 @@ class FRIndex(object):
         return (not self.is_gauge) and (not self.is_lorentz)
 
     def to_feynrules(self) -> str:
+        '''IndexRange declaration of the index.'''
         return f"IndexRange[{self.full_name}] = Range[{self.range}];"
 
 
@@ -170,9 +173,11 @@ class IndexTracker(object):
         return self.index(formatVariable(spin), 4, type(spin))
 
     def family(self, name: str, n: int) -> FRIndex:
+        '''Family index of a class of n mass eigenstates.'''
         return self.index(name, n, Particle)
 
     def multiplet(self, n: int) -> FRIndex:
+        '''Family index of n copies of a multiplet (GenMultiplet).'''
         return self.index('GenMultiplet', n, Multiplet)
 
     # -- unique labels and numbering -----------------------------------
@@ -199,6 +204,8 @@ class IndexTracker(object):
         return list(self._indices.values())
 
     def indices_block(self) -> str:
+        '''Index declarations of the .fr (IndexRange, IndexStyle), except those of the SM
+        file and the Lorentz indices.'''
         indicesHeader = "(* ************************** *)\n"
         indicesHeader += "(* *****    Indices     ***** *)\n"
         indicesHeader += "(* ************************** *)\n\n"
@@ -451,9 +458,11 @@ class FeynRulesModel(object):
         return header + 'M$Parameters = {\n\n' + ',\n\n'.join(groups) + '\n\n};'
 
     def get_indices(self) -> str:
+        '''Index section of the .fr.'''
         return self.index_tracker.indices_block()
 
     def _flavor_expand(self) -> str:
+        '''FlavorExpand option of the Lagrangian: the family, multiplet and SU(2) indices.'''
         expand = {index.name for index in self.index_tracker.all_indices
                   if index.index_type in (Multiplet, Particle, SU2Rep)}
         # SM SU(2) indices, as in SM.fr's FlavorExpand -> {SU2W, SU2D}: without
@@ -544,12 +553,14 @@ class FeynRulesModel(object):
                           '};', '', 'FeynmanGauge = True;'])
 
     def to_feynrules(self) -> str:
+        '''The .fr file: description, model information, indices, parameters, classes and
+        Lagrangian.'''
         return '\n\n'.join([self.get_model_description() + '\n',
                             self.get_model_info(), self.get_indices(), self.get_parameters(),
                             self.get_classes_definitions(), self.get_lagrangian()])
 
     def save2file(self) -> None:
-
+        '''Write the .fr to output_file (its folder created if needed).'''
         if os.path.dirname(self.output_file):
             os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
 

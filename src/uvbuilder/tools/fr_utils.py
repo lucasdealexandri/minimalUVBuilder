@@ -1,16 +1,10 @@
 #!/usr/bin/env python3
-'''Shared FeynRules rendering helpers.
-
-Every object that knows how to write its own chunk of a .fr file returns an
-``FRChunk`` (a dict of section -> list of rendered strings, or of
-``FRParameter`` entries for 'Parameters') from its ``to_feynrules(tracker)``
-method. ``merge_chunks`` combines them. The formatting helpers
-(``formatVariable``, ``formatClassBlock``, ``formatParameterBlock``) are used by
-the leaf providers and the FeynRulesModel assembler, which groups parameters
-and Lagrangian terms by sector (``SECTORS``).
+"""
+.. module:: fr_utils
+   :synopsis: Helpers to render the FeynRules model file.
 
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
-'''
+"""
 
 from __future__ import annotations
 

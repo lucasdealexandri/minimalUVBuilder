@@ -1,7 +1,9 @@
-'''ParticleVertex: a decay vertex of particles, the building block of a ParticleModel.
+"""
+.. module:: particleVertex
+   :synopsis: Defines the ParticleVertex class, which represents a decay vertex of particles.
 
 .. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
-'''
+"""
 
 from uvbuilder.states.particle import Particle
 from typing import List,Dict
@@ -11,7 +13,7 @@ from uvbuilder.tools.reps import AllReps
 
 class ParticleVertex(object):
     """
-    Class describing a Particle vertex, which contains Particle objects
+    A decay vertex of particles: mother -> daughters (sorted), with its branching ratio.
     """
     
     def __init__(
@@ -63,6 +65,7 @@ class ParticleVertex(object):
         return len(self.daughters) + 1
 
     def hasParticles(self):
+        '''True if the mother and the daughters are all Particle objects.'''
 
         onlyParticles = all(isinstance(ptc,Particle)
                             for ptc in [self.mother] + self.daughters)
