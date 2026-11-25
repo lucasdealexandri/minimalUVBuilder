@@ -1,4 +1,10 @@
-# minimalUVBuilder
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/design/logo/UVBuilderLogo-dark.png">
+    <img src="docs/design/logo/UVBuilderLogo-light.png" alt="UV Builder logo" width="140" align="middle">
+  </picture>
+  Minimal UV Builder
+</h1>
 
 Minimal UV Lagrangians from LHC signatures. Given a *protomodel* (the masses of new
 states and their decays, e.g. from the SModelS protomodel builder), `uvbuilder` finds
