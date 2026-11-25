@@ -23,6 +23,8 @@ from uvbuilder.tools.fr_names import (DEFAULT_SM_FILE, Renamer, SMClassMap, load
 from uvbuilder.states.particle import Particle
 
 
+REPOSITORY = 'https://github.com/UVBuilder/minimalUVBuilder'
+
 class FRIndex(object):
     """
     Describes a single FeynRules Index and its style.
@@ -225,17 +227,17 @@ class FeynRulesModel(object):
                  particle_model: ParticleModel, mixings,
                  output_file: str, sm_file=DEFAULT_SM_FILE,
                  strict: bool = False, name: str = 'UVtest',
-                 author: str = 'Andre Lessa & Lucas Heck', version: str = '1.0') -> None:
+                 author: Union[str, List[str]] = 'UVBuilder', version: str = '1.0') -> None:
         '''name is M$ModelName and the default UFO folder (<name>_UFO). MG5 imports
         that folder as a Python package: the name must be a valid identifier (letters,
         digits, underscores, starting with a letter) and should not be the name of an
-        existing Python module.'''
+        existing Python module. author: one name or a list of names (M$Information).'''
 
         if not MODEL_NAME.fullmatch(name):
             raise ValueError(f'invalid model name {name!r}: letters, digits and '
                              'underscores, starting with a letter')
         self.name = name
-        self.author = author
+        self.author = [author] if isinstance(author, str) else list(author)
         self.version = version
         today = date.today()
         self.date = today.strftime("%d.%m.%Y")
@@ -494,68 +496,44 @@ class FeynRulesModel(object):
         return self._description
 
     def _render_model_description(self) -> str:
+        '''Comment banner: origin of the file and the tables of multiplets and physical
+        states, every line of the same width.'''
+        def table(header, rows):
+            widths = [max(len(r[k]) for r in [header] + rows) + 1 for k in range(len(header))]
+            line = lambda r: ' ' + ' | '.join(f'{c:<{w}}' for c, w in zip(r, widths))
+            return [line(header), None] + [line(r) for r in rows]     # None: rule
 
-        comm_left = "(*"
-        comm_right = "*)\n"
-        sep = comm_left + ("*" * 61) + comm_right
-        header = sep + sep
-        header += "(***** FeynRules model file automatically generated      *******)\n"
-        header += sep
-        header += comm_left + f"{" Multiplet States ":*^61}" + comm_right
-        header += sep
-
-        data = []
-        data.append(['Multiplet', 'SU3C,SU2L,Y,Lorentz', 'Particles'])
+        multiplets = []
         for multiplet in self.multiplet_model.non_conjugated_multiplets:
-            rep = [multiplet.rep.colordim, multiplet.rep.isospin,
-                   multiplet.rep.hypercharge, multiplet.rep.spin]
-            rep = ','.join([str(r) for r in rep])
-            data.append([multiplet.fr_symbol(), rep,
-                         ', '.join(f.label for f in multiplet.fields)])
-
-        column_widths = [max(len(str(item)) for item in col) + 1
-                         for col in zip(*data)]
-        header_format = " | ".join(f"{{:<{width}}}" for width in column_widths)
-        header += comm_left + ' ' + header_format.format(*data[0]) + comm_right
-        header += comm_left + ' ' + ("-" * (sum(column_widths) + (len(column_widths) - 1) * 3)) + comm_right
-
-        for row in data[1:]:
-            header += comm_left + ' ' + header_format.format(*row) + comm_right
-
-        header += sep
-        header += sep
-        header += comm_left + f"{" Physical States ":*^61}" + comm_right
-        header += sep
-
-        data = []
-        data.append(['States', 'SU3C,Q,Lorentz', 'Particles'])
-        particles = sorted(self.particle_model.bsm_particles,
-                           key=lambda p: p.rep)
+            rep = multiplet.rep
+            multiplets.append([multiplet.fr_symbol(),
+                               ','.join(str(r) for r in (rep.colordim, rep.isospin, rep.hypercharge, rep.spin)),
+                               ', '.join(f.label for f in multiplet.fields)])
+        states = []
+        particles = sorted(self.particle_model.bsm_particles, key=lambda p: p.rep)
         for _, group in groupby(particles, key=lambda p: p.rep):
             members = list(group)
-            rep = [members[0].rep.colordim, members[0].rep.eCharge,
-                   members[0].rep.spin]
-            rep = ','.join([str(r) for r in rep])
-            data.append([', '.join(p.label for p in members), rep,
-                         ', '.join(p.label for p in members)])
+            rep = members[0].rep
+            labels = ', '.join(p.label for p in members)
+            states.append([labels, ','.join(str(r) for r in (rep.colordim, rep.eCharge, rep.spin)), labels])
+        multiplets = table(['Multiplet', 'SU3C,SU2L,Y,Lorentz', 'Particles'], multiplets)
+        states = table(['States', 'SU3C,Q,Lorentz', 'Particles'], states)
 
-        column_widths = [max(len(str(item)) for item in col) + 1
-                         for col in zip(*data)]
-        header_format = " | ".join(f"{{:<{width}}}" for width in column_widths)
-        header += comm_left + ' ' + header_format.format(*data[0]) + comm_right
-        header += comm_left + ' ' + ("-" * (sum(column_widths) + (len(column_widths) - 1) * 3)) + comm_right
-
-        for row in data[1:]:
-            header += comm_left + ' ' + header_format.format(*row) + comm_right
-
-        header += sep
-        return header
+        width = max([61] + [len(line) + 1 for line in multiplets + states if line])
+        stars = lambda text='': f'(*{text:*^{width}}*)'
+        row = lambda line: f'(*{line or " " + "-" * (width - 1):<{width}}*)'
+        lines = [stars(), stars(), stars(' FeynRules file automatically generated by UVBuilder '),
+                 stars(f' {REPOSITORY} '), stars(), stars(' Multiplet States '), stars()]
+        lines += [row(line) for line in multiplets]
+        lines += [stars(), stars(), stars(' Physical States '), stars()]
+        lines += [row(line) for line in states] + [stars()]
+        return '\n'.join(lines) + '\n'
 
     def get_model_info(self) -> str:
         '''Basic model information (name, author, ...).'''
         return '\n'.join([f'M$ModelName = "{self.name}";', '',
                           'M$Information = {',
-                          f'  Authors -> {{"{self.author}"}},',
+                          '  Authors -> {' + ', '.join(f'"{a}"' for a in self.author) + '},',
                           f'  Version -> "{self.version}",',
                           f'  Date    -> "{self.date}"',
                           '};', '', 'FeynmanGauge = True;'])

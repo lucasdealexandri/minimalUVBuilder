@@ -10,6 +10,7 @@ from pathlib import Path
 
 USAGE = '''
   uvbuilder build PROTOMODEL [--out FOLDER] [--dm-spin S] [--dm-charges C]
+                            [--name N] [--author A] [--version V]
                                   valid models of a protomodel (.fr, .pkl and .md with --out)
   uvbuilder fill MODEL.pkl CARD   masses, mixing matrices and DECAY Auto from the inputs
 '''
@@ -20,7 +21,7 @@ def _protomodel(path: Path) -> dict:
     labels, see FinalStateModel.fromDict): a .dict file holding the dictionary (as
     written by the SModelS protomodel builder; read as a literal, never executed), or a
     Python file defining `protomodel` and optionally `possible_dm_reps`, `dm_pdg`,
-    `labeler` and `name`.'''
+    `labeler`, `name`, `author` and `version`.'''
     if path.suffix == '.dict':
         try:
             data = ast.literal_eval(path.read_text())
@@ -37,7 +38,7 @@ def _protomodel(path: Path) -> dict:
     options = dict(modelData=namespace['protomodel'])
     options.update({key: namespace[key] for key in ('possible_dm_reps', 'dm_pdg')
                     if key in namespace})
-    for key in ('labeler', 'name'):
+    for key in ('labeler', 'name', 'author', 'version'):
         if key in namespace:
             options[f'_{key}'] = namespace[key]
     return options
@@ -83,9 +84,14 @@ def build(args):
     stem = re.sub(r'\W', '_', args.protomodel.stem)
     name = args.name or options.pop('_name', None) or (stem if stem[:1].isalpha() else f'M{stem}')
     options.pop('_name', None)
+    # author and version: the command line, else the protomodel file, else the defaults
+    # of FeynRulesModel
+    info = {key: getattr(args, key) or options.pop(f'_{key}') for key in ('author', 'version')
+            if getattr(args, key) or f'_{key}' in options}
+    options.pop('_author', None), options.pop('_version', None)
     out = Path(args.out or '.')
     models = ModelBuilder(**options).generateFeynRulesModels(
-        outputFile=str(out / f'{name}.fr'), name=name, labeler=labeler)
+        outputFile=str(out / f'{name}.fr'), name=name, labeler=labeler, **info)
     count = 0
     for fr_model in models:
         multiplets = ', '.join(sorted(m.fr_symbol() for m in
@@ -124,6 +130,9 @@ def main(argv=None) -> int:
     p.add_argument('protomodel', type=Path,
                    help='.dict file, or Python file defining the dictionary `protomodel`')
     p.add_argument('--name', help='model name (default: the protomodel file name)')
+    p.add_argument('--author', action='append',
+                   help='author of the models (default: UVBuilder); repeat for several')
+    p.add_argument('--version', help='version of the models (default: 1.0)')
     p.add_argument('--out', help='folder for the .fr, .pkl and .md files (default: none written)')
     p.add_argument('--dm-spin', choices=['scalar', 'fermion', 'both'],
                    help='spin of the DM candidate (default: both)')

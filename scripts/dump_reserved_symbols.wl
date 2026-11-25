@@ -1,7 +1,7 @@
 (* ::Package:: *)
 (* Dump the Mathematica and FeynRules symbol lists used by tools/fr_names.py as reserved names.
 
-   Writes  tools/reserved/mathematica_<version>.txt  and  tools/reserved/feynrules_<version>.txt
+   Writes  src/uvbuilder/tools/reserved/mathematica_<version>.txt  and  src/uvbuilder/tools/reserved/feynrules_<version>.txt
    (one symbol per line, '#' header lines with versions and date). All files present are unioned
    by tools/fr_names.language_lists, so lists from several versions can coexist.
 
@@ -11,8 +11,8 @@
 
 frPath = If[Length[$ScriptCommandLine] > 1, $ScriptCommandLine[[2]], Environment["FEYNRULES_PATH"]];
 outDir = If[StringQ[$InputFileName] && $InputFileName =!= "",
-   FileNameJoin[{DirectoryName[$InputFileName], "..", "tools", "reserved"}],
-   FileNameJoin[{Directory[], "tools", "reserved"}]];
+   FileNameJoin[{DirectoryName[$InputFileName], "..", "src", "uvbuilder", "tools", "reserved"}],
+   FileNameJoin[{Directory[], "src", "uvbuilder", "tools", "reserved"}]];
 If[!DirectoryQ[outDir], CreateDirectory[outDir]];
 
 header[what_] := {"# " <> what, "# Mathematica " <> $Version, "# generated " <> DateString[{"Year", "-", "Month", "-", "Day"}]};
