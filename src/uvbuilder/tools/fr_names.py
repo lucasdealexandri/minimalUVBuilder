@@ -28,6 +28,8 @@ exactly.
 The parser is deliberately a subset parser: it understands the structure used by
 SM.fr / SMMod.fr / mssm.fr style files (``K[n] == {opt -> value, ...}`` entries,
 ``name == {...}`` parameters and gauge groups) and ignores everything else.
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
 '''
 
 from __future__ import annotations

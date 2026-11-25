@@ -1,3 +1,7 @@
+'''ParticleVertex: a decay vertex of particles, the building block of a ParticleModel.
+
+.. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
+'''
 
 from uvbuilder.states.particle import Particle
 from typing import List,Dict

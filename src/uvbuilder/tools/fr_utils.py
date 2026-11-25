@@ -8,6 +8,8 @@ method. ``merge_chunks`` combines them. The formatting helpers
 (``formatVariable``, ``formatClassBlock``, ``formatParameterBlock``) are used by
 the leaf providers and the FeynRulesModel assembler, which groups parameters
 and Lagrangian terms by sector (``SECTORS``).
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
 '''
 
 from __future__ import annotations

@@ -11,6 +11,8 @@ Every column is then rephased: its entry of largest modulus real and positive (o
 sign is free for real scalars and Majorana fermions: there that entry gets a positive
 real part, or a positive imaginary part if its real part vanishes). Masses must be
 positive and non-degenerate within a block; otherwise ValueError.
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
 '''
 
 import numpy as np

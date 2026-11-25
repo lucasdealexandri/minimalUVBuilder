@@ -9,6 +9,8 @@ numeric data lives here (K3/K3bar alias the built-in ``Eps``).
 
 Field/index assignment is NOT this module's job - the Operator knows how to
 render a FeynRules term with its multiplets and distributes the indices.
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
 '''
 
 import warnings

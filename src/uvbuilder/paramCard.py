@@ -1,4 +1,7 @@
-'''MG5 parameter cards of a FeynRules model built by the UV builder.'''
+'''MG5 parameter cards of a FeynRules model built by the UV builder.
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
+'''
 
 from pathlib import Path
 from typing import Dict, List, Optional

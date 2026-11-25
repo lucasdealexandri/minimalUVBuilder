@@ -1,3 +1,8 @@
+'''Mixing blocks of the mass eigenstates (MixingMatrix, ParticleMixing): the gauge
+components of each block, its real basis and its mass matrix.
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
+'''
 # We use UserDict instead of inheriting from dict for more predictable behavior
 # See, e.g., https://treyhunner.com/2019/04/why-you-shouldnt-inherit-from-list-and-dict-in-python/
 from collections import UserDict

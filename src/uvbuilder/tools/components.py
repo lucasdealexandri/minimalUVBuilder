@@ -1,3 +1,8 @@
+'''Components of a multiplet in the FeynRules output: scalar and Weyl components
+(ScalarComponent, WeylComponent) and their class definitions.
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
+'''
 from __future__ import annotations
 from typing import Union, Sequence, List, Optional, Dict
 from .reps import Scalar, WeylSpinor, WEYL_LEFT, WEYL_RIGHT, U1Rep

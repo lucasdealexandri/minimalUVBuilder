@@ -1,6 +1,9 @@
 '''Markdown report of a FeynRules model: its mass eigenstates, input parameters and the
 mass matrices of its mixing blocks (LaTeX), to help choose the parameters of a
-param_card. The conventions are in docs/conventions.md.'''
+param_card. The conventions are in docs/conventions.md.
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
+'''
 
 import re
 

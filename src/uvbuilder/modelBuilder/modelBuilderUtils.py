@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
+'''Filling of the quantum numbers of a ParticleModel from its decay vertices: at each
+vertex an unknown value is one of the products of the other two particles', and each
+possibility gives a new model.
 
+.. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
+'''
 
 from typing import List, Sequence, Iterator, Union
 
@@ -143,15 +148,19 @@ def explodeQuantityHelper(
                 pass
 
 def fillECharge(model : ParticleModel) -> Iterator[ParticleModel]:
+    '''Models with the electric charges filled (explodeQuantity).'''
     return explodeQuantity(model, qnumber="eCharge")
 
 def fillGlobalU1s(model: ParticleModel) -> Iterator[ParticleModel]:
+    '''Models with the global charges filled (explodeQuantity).'''
     return explodeQuantity(model, qnumber="globalU1s")
     
 def explodeColordim(model : ParticleModel) -> Iterator[ParticleModel]:
+    '''Models with the color representations filled, one per possibility (explodeQuantity).'''
     return explodeQuantity(model,qnumber="colordim")
 
 def explodeSpin(model : ParticleModel) -> Iterator[ParticleModel]:
+    '''Models with the spins filled, one per possibility (explodeQuantity).'''
     return explodeQuantity(model, qnumber="spin")
 
 

@@ -9,6 +9,8 @@ returns them as a flat list of ``Term`` records.
 
 A ``Term`` is a lightweight record (coeff, canonically ordered fields, SU(3)
 contraction head). ``Operator`` is the only class carrying behavior.
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
 '''
 
 import sympy as sp

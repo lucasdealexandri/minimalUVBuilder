@@ -1,4 +1,7 @@
-'''Command line interface: uvbuilder build | fill.'''
+'''Command line interface: uvbuilder build | fill.
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
+'''
 
 import argparse
 import ast
@@ -98,6 +101,8 @@ def _dm_reps(args, given: dict) -> dict:
 
 
 def build(args):
+    '''`uvbuilder build`: lists the valid models of the protomodel; with --out, writes each
+    to <out>/<model>/ as .fr, .pkl and .md. Exit code 1 if there is no valid model.'''
     from uvbuilder.modelBuilder.modelBuilder import ModelBuilder
     from uvbuilder.models.multipletModel import default_component_label
     from uvbuilder.report import model_report
@@ -141,6 +146,8 @@ def build(args):
 
 
 def fill(args):
+    '''`uvbuilder fill`: writes the masses, mixing matrices and DECAY Auto into the card,
+    from its inputs and the pickled model.'''
     from uvbuilder.models.feynrulesmodel import FeynRulesModel
     from uvbuilder.paramCard import ParamCardGenerator
     print(ParamCardGenerator(FeynRulesModel.load(args.model)).fill(args.card, output=args.output))
@@ -148,6 +155,8 @@ def fill(args):
 
 
 def main(argv=None) -> int:
+    '''Entry point of the `uvbuilder` command. Returns the exit code; errors in the input
+    are printed, not raised.'''
     parser = argparse.ArgumentParser(prog='uvbuilder', usage=USAGE,
                                      description='Minimal UV Lagrangians from protomodels.')
     parser.add_argument('-v', '--verbose', action='store_true', help='debug messages')

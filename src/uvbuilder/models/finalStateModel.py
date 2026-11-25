@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
+'''The protomodel as decay vertices: the input of ModelBuilder.
 
+.. moduleauthor:: John Gargalionis <johngargalionis@gmail.com>
+.. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
+'''
 
 from typing import List, Dict, Union
 
@@ -16,8 +20,8 @@ from uvbuilder.vertices.decayVertex import DecayVertex
 
 class FinalStateModel(object):
     """
-    Simple class to store the basic information
-    concerning the decay vertices and the particles appearing in it
+    Decay vertices of a protomodel and the states appearing in them (pdgDict: PDG ->
+    Particle for the BSM states, FinalState for the SM ones).
     """
 
     __slots__ = ["vertices","pdgDict"]

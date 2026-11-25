@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+'''ParticleModel: the particles of a protomodel, with their quantum numbers, and its decay vertices.
+
+.. moduleauthor:: John Gargalionis <johngargalionis@gmail.com>
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
+'''
 
 
 from pyexpat import model

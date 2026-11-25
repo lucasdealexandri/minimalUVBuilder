@@ -1,3 +1,10 @@
+'''Representations: U(1) and global U(1) charges, SU(2), SU(3) and Lorentz representations,
+and the unbroken (UnbrokenRep) and broken (BrokenRep) representations of states and
+multiplets.
+
+.. moduleauthor:: John Gargalionis <johngargalionis@gmail.com>
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
+'''
 from __future__ import annotations
 
 import numpy as np

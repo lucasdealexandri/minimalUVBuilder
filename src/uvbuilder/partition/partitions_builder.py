@@ -1,3 +1,13 @@
+'''Partitions of the BSM states of a ParticleModel into SU(2) multiplets.
+
+The states are grouped by their unbroken representation (spin, color, electric charge,
+global charges). Two representations can be neighboring components of a multiplet if
+they differ only by one unit of charge; a multiplet of isospin j is a chain of 2j + 1 of
+them, with hypercharge Y = Q_max - j (BrokenRep.from_block).
+
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
+'''
+
 import itertools
 from typing import List
 from uvbuilder.tools.reps import UnbrokenRep, BrokenRep, WEYL_RIGHT
@@ -10,6 +20,8 @@ from uvbuilder.models.multipletModel import (MultipletModel, default_component_l
 
 
 class PartitionsBuilder:
+    '''The partitions of the BSM states of a ParticleModel into SU(2) multiplets that admit
+    mass terms (vector-like: every multiplet together with its conjugate).'''
 
     def __init__(self, particle_model: ParticleModel):
         self.particle_model = particle_model
@@ -19,6 +31,8 @@ class PartitionsBuilder:
         self.unbroken_reps = self.particle_model.unbroken_reps
 
     def charge_graph(self, unbroken_reps: List[dict]) -> DiGraph:
+        '''Directed graph of the distinct representations, with an edge from each to its
+        neighbor with one unit more charge (UnbrokenRep.can_connect).'''
 
         unique_reps = []
         for rep in unbroken_reps:
@@ -41,6 +55,8 @@ class PartitionsBuilder:
 
 
     def building_blocks(self, charge_graph: DiGraph) -> List[List[UnbrokenRep]]:
+        '''The candidate multiplets: every chain of the charge graph, single
+        representations (singlets) included.'''
 
         blocks = []
         for rep1, rep2 in itertools.product(charge_graph.nodes, charge_graph.nodes):
@@ -54,8 +70,8 @@ class PartitionsBuilder:
 
     def valid_partition(self, partition: List[BrokenRep]) -> bool:
         '''
-        A Given partition is valid if every broken representation has a
-        conjugate representation in it (vectorlike condition).
+        A partition is valid if every multiplet has its conjugate in it
+        (vector-like condition).
         This must strictly account for multiplicity to allow mass terms.
         '''
         
@@ -67,7 +83,8 @@ class PartitionsBuilder:
     def get_partitions(self, unbroken_reps: List[UnbrokenRep] = None) -> List[BrokenRep]:
 
         '''
-        Returns all valid broken reps a list of unbroken reps can have come from.
+        All valid partitions of the representations into multiplets (BrokenRep), each
+        once.
         '''
 
         unbroken_reps = self.unbroken_reps if unbroken_reps is None else unbroken_reps
@@ -105,8 +122,7 @@ class PartitionsBuilder:
         return valid_partitions
 
     def get_multipletModels(self, labeler=default_component_label):
-        '''Each partition becomes a
-        MultipletModel whose components are named gauge fields (labeler).'''
+        '''The MultipletModel of each partition, its gauge fields named by labeler.'''
         return [multiplet_model_from_partition(partition, labeler=labeler,
                                                particle_model=self.particle_model)
                 for partition in self.get_partitions()]

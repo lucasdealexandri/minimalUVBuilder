@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+'''FeynRulesModel: a multiplet model with its mixings, written as a FeynRules model file (.fr).
+
+.. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
+'''
 
 from __future__ import annotations  # To avoid "ParticleModel" string
 from typing import List, Dict, Tuple, Union, Optional

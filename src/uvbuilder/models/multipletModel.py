@@ -6,6 +6,9 @@ nodes are the labeled fields, edges are the BSM-sector vertices carrying
 {source, smfields, coeff, param}. The mass_sector_graph (edges whose SM
 connectors are all scalars, hence vev-carrying), the family-level
 expanded_multiplet_graph and the rep-level multiplet_graph are derived views.
+
+.. moduleauthor:: John Gargalionis <johngargalionis@gmail.com>
+.. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
 '''
 
 from collections import Counter

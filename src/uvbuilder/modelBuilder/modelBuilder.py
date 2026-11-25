@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+'''From a protomodel to its valid multiplet models and their FeynRules models.
+
+.. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
+'''
 
 import os
 from dataclasses import replace
@@ -32,7 +36,22 @@ logger = logging.getLogger(__name__)
 
 class ModelBuilder(object):
     """
-    Class holding all the methods required for building models from the basic input data.
+    Builds the minimal UV models of a protomodel. For each representation allowed for
+    the DM candidate (possible_dm_reps), the quantum numbers of the BSM particles are
+    filled vertex by vertex from the decays (electric charge, global charges, color,
+    spin; generateParticleModels), the particles are partitioned into SU(2) multiplets
+    (PartitionsBuilder), the multiplet models whose couplings produce every decay at
+    tree level are kept (generateMultipletModels) and each is written as a FeynRules
+    model (generateFeynRulesModels).
+
+    :param modelData: the protomodel, a dictionary (FinalStateModel.fromDict) or a
+                      FinalStateModel
+    :param dm_pdg: PDG of the DM candidate
+    :param possible_dm_reps: allowed representations of the DM candidate ({'spin': [...],
+                             'globalU1s': [...], ...}); missing keys take the default:
+                             scalar or Dirac spinor, neutral, color singlet, no global
+                             charge tracked
+    :param SMpdgDict: the SM states, by PDG
     """
    
     
@@ -88,6 +107,7 @@ class ModelBuilder(object):
         return self.__repr__()
         
     def pretty_print(self,addDecays=False):
+        '''Summary: the DM representations and the protomodel (with its decays if addDecays).'''
 
         modelStr = "ModelBuilder"
         modelStr += '\nPossible DM representations:\n'
@@ -99,6 +119,7 @@ class ModelBuilder(object):
         return modelStr
 
     def check_types(self):
+        '''ValueError if the protomodel or possible_dm_reps have the wrong type.'''
 
         modelData = self.finalStateModel
         possible_dmn_reps = self.possible_dm_reps
@@ -199,7 +220,7 @@ class ModelBuilder(object):
 
     def setParticleQNumbers(self, particleModel: ParticleModel) -> Iterator[ParticleModel]:
         """
-        Fill the quantum numbers of the particles (eCharge, colordim and spin) in the ParticleModel based on the decay vertices and the quantum numbers of the final states.
+        Fill the quantum numbers of the particles (eCharge, globalU1s, colordim and spin) in the ParticleModel based on the decay vertices and the quantum numbers of the final states.
         Since there can be multiple possibilities for the quantum numbers of a given particle, 
         this method generates a list of ParticleModels.
         """
