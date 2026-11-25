@@ -29,23 +29,23 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ### UMixCW1: complex scalar, single state → W1
 
-$$
+```math
 \begin{array}{c|c}
  & \mathrm{PhiI2Y3q6} \\ \hline
 \mathrm{PhiI2Y3q6bar} & M_{\mathrm{PhiI2Y3}}^{2} + \frac{\lambda_{\mathrm{PhiI2Y3PhiI2Y3barP1}} v^{2}}{4} + \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3PhiI2Y3barP2}} v^{2}}{12} \\
 \end{array}
-$$
+```
 
 ### UMixRZ1Z2Z3: real scalar, orthogonal → Z1, Z2, Z3
 
-$$
+```math
 \begin{array}{c|ccc}
  & \mathrm{PhiI1Y0q0} & \mathrm{PhiI2Y3q0\_R} & \mathrm{PhiI2Y3q0\_I} \\ \hline
 \mathrm{PhiI1Y0q0} & M_{\mathrm{PhiI1Y0}}^{2} + \lambda_{\mathrm{PhiI1Y0PhiI1Y0}} v^{2} & - \mathrm{Re}\,\mu_{\mathrm{PhiI1Y0PhiI2Y3}} v & \mathrm{Im}\,\mu_{\mathrm{PhiI1Y0PhiI2Y3}} v \\
 \mathrm{PhiI2Y3q0\_R} & - \mathrm{Re}\,\mu_{\mathrm{PhiI1Y0PhiI2Y3}} v & M_{\mathrm{PhiI2Y3}}^{2} + \frac{\sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3PhiI2Y3}} v^{2}}{3} + \frac{\lambda_{\mathrm{PhiI2Y3PhiI2Y3barP1}} v^{2}}{4} - \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3PhiI2Y3barP2}} v^{2}}{12} & - \frac{\sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3PhiI2Y3}} v^{2}}{3} \\
 \mathrm{PhiI2Y3q0\_I} & \mathrm{Im}\,\mu_{\mathrm{PhiI1Y0PhiI2Y3}} v & - \frac{\sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3PhiI2Y3}} v^{2}}{3} & M_{\mathrm{PhiI2Y3}}^{2} - \frac{\sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3PhiI2Y3}} v^{2}}{3} + \frac{\lambda_{\mathrm{PhiI2Y3PhiI2Y3barP1}} v^{2}}{4} - \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3PhiI2Y3barP2}} v^{2}}{12} \\
 \end{array}
-$$
+```
 
 ## Multiplets
 

@@ -15,6 +15,7 @@ DIAGONALIZATION = {'MajoranaSpinor': 'Takagi', 'DiracSpinor': 'SVD',
 
 
 def _mathrm(name) -> str:
+    '''name in upright LaTeX, underscores escaped.'''
     return r'\mathrm{%s}' % name.replace('_', r'\_')
 
 
@@ -52,7 +53,8 @@ def _matrix_latex(M, rows, columns, names) -> list:
              ' & ' + ' & '.join(_mathrm(str(c)) for c in columns) + r' \\ \hline']
     lines += [_mathrm(str(r)) + ' & ' + ' & '.join(entry(M[i, j]) for j in range(M.shape[1])) + r' \\'
               for i, r in enumerate(rows)]
-    return ['$$'] + lines + [r'\end{array}', '$$']
+    # a math block, not $$: GitHub applies the Markdown escapes (\\ -> \) inside $$
+    return ['```math'] + lines + [r'\end{array}', '```']
 
 
 def _table(rows, header) -> list:
@@ -62,6 +64,8 @@ def _table(rows, header) -> list:
 
 
 def _parameter_type(p) -> str:
+    '''Type of an input in the report: mass, M² (a scalar mass, entering squared), Re or Im
+    (part of a complex coupling), or coupling.'''
     if p.part:
         return 'Re' if p.part == 'R' else 'Im'
     if p.sector == 'Mass':
@@ -70,6 +74,8 @@ def _parameter_type(p) -> str:
 
 
 def model_report(fr_model) -> str:
+    '''Markdown report of the model: mass eigenstates, input parameters (param_card entry,
+    type, the mass matrices they enter), mass matrices in LaTeX, multiplets and notes.'''
     mm = fr_model.multiplet_model
     label = lambda q: fr_model.renames['particle'].get(q.label, q.label)
     # where a coupling enters with its conjugate (real scalar blocks), the matrix is written

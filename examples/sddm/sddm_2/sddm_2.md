@@ -26,23 +26,23 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ### UMixDW1: Dirac fermion, single state → W1
 
-$$
+```math
 \begin{array}{c|c}
  & \mathrm{ChiI2Ym3qm6} \\ \hline
 \mathrm{ChiI2Y3q6} & M_{\mathrm{ChiI2Y3ChiI2Ym3}} \\
 \end{array}
-$$
+```
 
 ### UMixMZ1Z2Z3: Majorana fermion, Takagi → Z1, Z2, Z3
 
-$$
+```math
 \begin{array}{c|ccc}
  & \mathrm{ChiI1Y0q0} & \mathrm{ChiI2Y3q0} & \mathrm{ChiI2Ym3q0} \\ \hline
 \mathrm{ChiI1Y0q0} & M_{\mathrm{ChiI1Y0}} & - \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Y3}}}{2} & \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Ym3}}}{2} \\
 \mathrm{ChiI2Y3q0} & - \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Y3}}}{2} & 0 & - M_{\mathrm{ChiI2Y3ChiI2Ym3}} \\
 \mathrm{ChiI2Ym3q0} & \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Ym3}}}{2} & - M_{\mathrm{ChiI2Y3ChiI2Ym3}} & 0 \\
 \end{array}
-$$
+```
 
 ## Multiplets
 

@@ -40,17 +40,17 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ### UMixCC1C2: complex scalar, unitary → C1, C2
 
-$$
+```math
 \begin{array}{c|cc}
  & \mathrm{PhiI1Y6q6} & \mathrm{PhiI2Y3q6} \\ \hline
 \mathrm{PhiI1Y6q6bar} & M_{\mathrm{PhiI1Y6}}^{2} + \frac{\lambda_{\mathrm{PhiI1Y6PhiI1Y6bar}} v^{2}}{2} & \frac{\sqrt{2} v \left(i \mathrm{Im}\,\mu_{\mathrm{PhiI2Y3PhiI1Y6bar}} + \mathrm{Re}\,\mu_{\mathrm{PhiI2Y3PhiI1Y6bar}}\right)}{2} \\
 \mathrm{PhiI2Y3q6bar} & \frac{\sqrt{2} v \left(- i \mathrm{Im}\,\mu_{\mathrm{PhiI2Y3PhiI1Y6bar}} + \mathrm{Re}\,\mu_{\mathrm{PhiI2Y3PhiI1Y6bar}}\right)}{2} & M_{\mathrm{PhiI2Y3}}^{2} + \frac{\lambda_{\mathrm{PhiI2Y3PhiI2Y3barP1}} v^{2}}{4} + \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3PhiI2Y3barP2}} v^{2}}{12} \\
 \end{array}
-$$
+```
 
 ### UMixRN1N2N3N4: real scalar, orthogonal → N1, N2, N3, N4
 
-$$
+```math
 \begin{array}{c|cccc}
  & \mathrm{PhiI1Y0q0F1} & \mathrm{PhiI1Y0q0F2} & \mathrm{PhiI2Y3q0\_R} & \mathrm{PhiI2Y3q0\_I} \\ \hline
 \mathrm{PhiI1Y0q0F1} & M_{\mathrm{PhiI1Y0F1}}^{2} + \lambda_{\mathrm{PhiI1Y0F1PhiI1Y0F1}} v^{2} & \frac{\lambda_{\mathrm{PhiI1Y0F1PhiI1Y0F2}} v^{2}}{2} & - \mathrm{Re}\,\mu_{\mathrm{PhiI1Y0F1PhiI2Y3}} v & \mathrm{Im}\,\mu_{\mathrm{PhiI1Y0F1PhiI2Y3}} v \\
@@ -58,7 +58,7 @@ $$
 \mathrm{PhiI2Y3q0\_R} & - \mathrm{Re}\,\mu_{\mathrm{PhiI1Y0F1PhiI2Y3}} v & - \mathrm{Re}\,\mu_{\mathrm{PhiI1Y0F2PhiI2Y3}} v & M_{\mathrm{PhiI2Y3}}^{2} + \frac{\sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3PhiI2Y3}} v^{2}}{3} + \frac{\lambda_{\mathrm{PhiI2Y3PhiI2Y3barP1}} v^{2}}{4} - \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3PhiI2Y3barP2}} v^{2}}{12} & - \frac{\sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3PhiI2Y3}} v^{2}}{3} \\
 \mathrm{PhiI2Y3q0\_I} & \mathrm{Im}\,\mu_{\mathrm{PhiI1Y0F1PhiI2Y3}} v & \mathrm{Im}\,\mu_{\mathrm{PhiI1Y0F2PhiI2Y3}} v & - \frac{\sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3PhiI2Y3}} v^{2}}{3} & M_{\mathrm{PhiI2Y3}}^{2} - \frac{\sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3PhiI2Y3}} v^{2}}{3} + \frac{\lambda_{\mathrm{PhiI2Y3PhiI2Y3barP1}} v^{2}}{4} - \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3PhiI2Y3barP2}} v^{2}}{12} \\
 \end{array}
-$$
+```
 
 ## Multiplets
 

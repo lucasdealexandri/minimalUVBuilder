@@ -27,21 +27,21 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ### UMixCT1: complex scalar, single state → T1
 
-$$
+```math
 \begin{array}{c|c}
  & \mathrm{PhiC3I1Y4q4} \\ \hline
 \mathrm{PhiC3I1Y4q4bar} & M_{\mathrm{PhiC3I1Y4}}^{2} + \frac{\lambda_{\mathrm{PhiC3I1Y4PhiC3I1Y4bar}} v^{2}}{2} \\
 \end{array}
-$$
+```
 
 ### UMixMX1: Majorana fermion, single state → X1
 
-$$
+```math
 \begin{array}{c|c}
  & \mathrm{ChiI1Y0q0} \\ \hline
 \mathrm{ChiI1Y0q0} & M_{\mathrm{ChiI1Y0}} \\
 \end{array}
-$$
+```
 
 ## Multiplets
 

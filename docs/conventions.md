@@ -12,10 +12,10 @@ singlet; the formulas below are those of `Multiplet.mass_partner`.
 
 ### Scalars
 
-$$
+```math
 -\mathcal{L} \supset M^2 \sum_m \phi_m^* \phi_m \quad \text{(complex multiplet)}, \qquad
 -\mathcal{L} \supset \frac{1}{2} M^2 \sum_m (-1)^m \phi_m \phi_{-m} \quad \text{(real multiplet)},
-$$
+```
 
 where a real multiplet ($Y = 0$, integer $j$) satisfies $\phi_m^* = (-1)^m \phi_{-m}$, so
 that the second form is also $\frac12 M^2 \sum_m |\phi_m|^2$. A real singlet has
@@ -26,17 +26,17 @@ $-\mathcal{L} \supset \frac12 M^2 \phi^2$. The input is $M$, which enters square
 For left-handed Weyl multiplets $\psi$ (isospin $j$, hypercharge $Y$) and $\chi$
 (isospin $j$, hypercharge $-Y$), the Dirac mass term is
 
-$$
+```math
 -\mathcal{L} \supset M \sum_m c_m\, \psi_m \chi_{-m} + \mathrm{h.c.}, \qquad
 c_m = s\,(-1)^{j+m},
-$$
+```
 
 and the Majorana mass term of a multiplet $\psi$ with $Y = 0$ and integer $j$ is
 
-$$
+```math
 -\mathcal{L} \supset \frac{1}{2} M \sum_m c_m\, \psi_m \psi_{-m} + \mathrm{h.c.}, \qquad
 c_m = s\,(-1)^{j+m}.
-$$
+```
 
 The factors $(-1)^{j+m}$ make the sum an SU(2) singlet (Condon-Shortley phases; Dreiner,
 Haber, Martin, Phys. Rept. 494 (2010) 1, App. E.1) and fix the relative signs of the
@@ -63,8 +63,8 @@ the two multiplets of a Dirac mass is called $\psi$. Examples:
 With these signs a positive $M$ gives positive masses. The negative entries ($-M$ above)
 and negative inputs are absorbed into the mass eigenstates:
 
-- a state alone in its block gets the phase $P = \mathrm{sign}(c\,M)$ (Dirac, on the
-  right-handed partner) or $P = \sqrt{\mathrm{sign}(c\,M)}$ (Majorana), where $c\,M$ is
+- a state alone in its block gets the phase $P = \mathrm{sign}(cM)$ (Dirac, on the
+  right-handed partner) or $P = \sqrt{\mathrm{sign}(cM)}$ (Majorana), where $cM$ is
   its entry in the mass matrix. E.g. a pure Majorana triplet: $P = 1$ for the neutral
   state, $P = -1$ for the charged one;
 - in a block of several states, by the phases of the mixing matrices (Takagi or
@@ -90,7 +90,7 @@ and negative inputs are absorbed into the mass eigenstates:
 - The param_card block of a mixing matrix is its name in capitals (`UMIX...`), with the
   imaginary parts in `IMUMIX...`; Dirac blocks have two matrices, $U$ and $V$.
 - A neutral complex scalar $\Phi$ mixing with real states is written in the real basis
-  $\Phi = (\Phi_R + i\,\Phi_I)/\sqrt2$: its block has the rows $\Phi_R$ and $\Phi_I$.
+  $\Phi = (\Phi_R + i\Phi_I)/\sqrt2$: its block has the rows $\Phi_R$ and $\Phi_I$.
 
 ## Parameters
 
@@ -98,10 +98,10 @@ and negative inputs are absorbed into the mass eigenstates:
 - Couplings to the Higgs carry the Clebsch-Gordan normalization of their SU(2) invariant:
   factors such as $\sqrt2/2$ (doublet), $\sqrt3/6$ (neutral triplet), $\sqrt6/6$ (charged
   triplet) in the mass matrices.
-- Complex couplings are $y = \mathrm{Re}\,y + i\,\mathrm{Im}\,y$, with `Ry...` and `Iy...`
+- Complex couplings are $y = \operatorname{Re} y + i \operatorname{Im} y$, with `Ry...` and `Iy...`
   separate param_card entries (blocks `<NAME>` and `IM<NAME>`). The mass matrices are
   written in $y$; where $y$ enters together with its conjugate (real scalar blocks), in
-  $\mathrm{Re}\,y$ and $\mathrm{Im}\,y$.
+  $\operatorname{Re} y$ and $\operatorname{Im} y$.
 - In the reports a parameter `MChiI1Y0` is written $M_{\mathrm{ChiI1Y0}}$, `yChiI1Y0ChiI2Y3`
   is $y_{\mathrm{ChiI1Y0ChiI2Y3}}$, and the rows and columns are the gauge components of
   the FeynRules model.

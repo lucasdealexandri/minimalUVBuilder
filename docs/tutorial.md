@@ -128,10 +128,10 @@ param_card entries, and the mass matrices. The inputs:
 The parameter names and blocks are described in [`docs/conventions.md`](conventions.md#parameter-names). Each state is
 alone in its mass matrix, so its mass is a single entry of the report:
 
-$$
+```math
 m_{X1} = |M_{\mathrm{ChiI1Y0}}|, \qquad
 m_{T1}^2 = M_{\mathrm{PhiC3I1Y4}}^2 + \frac{\lambda_{\mathrm{PhiC3I1Y4PhiC3I1Y4bar}}\, v^2}{2},
-$$
+```
 
 with the Higgs vev v = 246.22 GeV.
 
@@ -176,9 +176,9 @@ To reproduce the protomodel masses, take X1 at 200 GeV and the couplings of the 
 the top and to the Higgs at 0.5; the stop mass parameter then follows from the formula
 above:
 
-$$
+```math
 M_{\mathrm{PhiC3I1Y4}} = \sqrt{1000^2 - 0.5\, v^2/2} = 992.392996 \ \mathrm{GeV}.
-$$
+```
 
 In `stop_2_UFO/param_card.dat`:
 
@@ -248,14 +248,14 @@ sddm_2/  ...  [ChiI1Y0Lw, ChiI2Y3Lw, ChiI2Ym3Lw]
 like a bino and two higgsinos. Its report ([`sddm_2/sddm_2.md`](../examples/sddm/sddm_2/sddm_2.md)) gives the mass matrix of
 the neutral states, a complex symmetric matrix in the basis of the neutral components:
 
-$$
+```math
 \begin{array}{c|ccc}
  & \mathrm{ChiI1Y0q0} & \mathrm{ChiI2Y3q0} & \mathrm{ChiI2Ym3q0} \\ \hline
 \mathrm{ChiI1Y0q0} & M_{\mathrm{ChiI1Y0}} & - \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Y3}}}{2} & \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Ym3}}}{2} \\
 \mathrm{ChiI2Y3q0} & - \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Y3}}}{2} & 0 & - M_{\mathrm{ChiI2Y3ChiI2Ym3}} \\
 \mathrm{ChiI2Ym3q0} & \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Ym3}}}{2} & - M_{\mathrm{ChiI2Y3ChiI2Ym3}} & 0 \\
 \end{array}
-$$
+```
 
 It is diagonalized by a Takagi factorization, U^T M U = diag(m) with U unitary and m
 non-negative ([Dreiner, Haber, Martin](https://arxiv.org/abs/0812.1594);
@@ -297,13 +297,13 @@ itself (`idm_1`), the builder finds a pair of fermion doublets (`idm_2`,
 `[ChiI2Y3Lw, ChiI2Ym3Lw]`). Its report ([`idm_2/idm_2.md`](../examples/idm/idm_2/idm_2.md)) shows that it cannot reproduce the protomodel: a
 single parameter fixes every mass,
 
-$$
+```math
 \begin{array}{c|cc}
  & \mathrm{ChiI2Y3q0} & \mathrm{ChiI2Ym3q0} \\ \hline
 \mathrm{ChiI2Y3q0} & 0 & - M_{\mathrm{ChiI2Y3ChiI2Ym3}} \\
 \mathrm{ChiI2Ym3q0} & - M_{\mathrm{ChiI2Y3ChiI2Ym3}} & 0 \\
 \end{array}
-$$
+```
 
 so H0 and A0 are degenerate, and Hp has the same mass: two doublets with opposite
 hypercharge have no renormalizable coupling to the Higgs that would split them. The

@@ -27,21 +27,21 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ### UMixDT1: Dirac fermion, single state → T1
 
-$$
+```math
 \begin{array}{c|c}
  & \mathrm{ChiC3bI1Ym4qm4} \\ \hline
 \mathrm{ChiC3I1Y4q4} & M_{\mathrm{ChiC3I1Y4ChiC3bI1Ym4}} \\
 \end{array}
-$$
+```
 
 ### UMixRX1: real scalar, single state → X1
 
-$$
+```math
 \begin{array}{c|c}
  & \mathrm{PhiI1Y0q0} \\ \hline
 \mathrm{PhiI1Y0q0} & M_{\mathrm{PhiI1Y0}}^{2} + \lambda_{\mathrm{PhiI1Y0PhiI1Y0}} v^{2} \\
 \end{array}
-$$
+```
 
 ## Multiplets
 

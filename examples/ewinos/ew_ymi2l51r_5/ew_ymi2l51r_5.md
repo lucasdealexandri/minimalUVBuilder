@@ -33,17 +33,17 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ### UMixDC1C2: Dirac fermion, SVD → C1, C2
 
-$$
+```math
 \begin{array}{c|cc}
  & \mathrm{ChiI2Ym3qm6} & \mathrm{ChiI3Y0qm6} \\ \hline
 \mathrm{ChiI2Y3q6} & M_{\mathrm{ChiI2Y3ChiI2Ym3}} & \frac{\sqrt{6} v y_{\mathrm{ChiI2Y3ChiI3Y0}}}{6} \\
 \mathrm{ChiI3Y0q6} & \frac{\sqrt{6} v y_{\mathrm{ChiI2Ym3ChiI3Y0}}}{6} & - M_{\mathrm{ChiI3Y0}} \\
 \end{array}
-$$
+```
 
 ### UMixMN1N2N3N4: Majorana fermion, Takagi → N1, N2, N3, N4
 
-$$
+```math
 \begin{array}{c|cccc}
  & \mathrm{ChiI1Y0q0} & \mathrm{ChiI2Y3q0} & \mathrm{ChiI2Ym3q0} & \mathrm{ChiI3Y0q0} \\ \hline
 \mathrm{ChiI1Y0q0} & M_{\mathrm{ChiI1Y0}} & - \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Y3}}}{2} & \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Ym3}}}{2} & 0 \\
@@ -51,7 +51,7 @@ $$
 \mathrm{ChiI2Ym3q0} & \frac{\sqrt{2} v y_{\mathrm{ChiI1Y0ChiI2Ym3}}}{2} & - M_{\mathrm{ChiI2Y3ChiI2Ym3}} & 0 & - \frac{\sqrt{3} v y_{\mathrm{ChiI2Ym3ChiI3Y0}}}{6} \\
 \mathrm{ChiI3Y0q0} & 0 & - \frac{\sqrt{3} v y_{\mathrm{ChiI2Y3ChiI3Y0}}}{6} & - \frac{\sqrt{3} v y_{\mathrm{ChiI2Ym3ChiI3Y0}}}{6} & M_{\mathrm{ChiI3Y0}} \\
 \end{array}
-$$
+```
 
 ## Multiplets
 

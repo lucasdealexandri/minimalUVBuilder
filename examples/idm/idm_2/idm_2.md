@@ -20,22 +20,22 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ### UMixDHp: Dirac fermion, single state → Hp
 
-$$
+```math
 \begin{array}{c|c}
  & \mathrm{ChiI2Ym3qm6} \\ \hline
 \mathrm{ChiI2Y3q6} & M_{\mathrm{ChiI2Y3ChiI2Ym3}} \\
 \end{array}
-$$
+```
 
 ### UMixMH0A0: Majorana fermion, Takagi → H0, A0
 
-$$
+```math
 \begin{array}{c|cc}
  & \mathrm{ChiI2Y3q0} & \mathrm{ChiI2Ym3q0} \\ \hline
 \mathrm{ChiI2Y3q0} & 0 & - M_{\mathrm{ChiI2Y3ChiI2Ym3}} \\
 \mathrm{ChiI2Ym3q0} & - M_{\mathrm{ChiI2Y3ChiI2Ym3}} & 0 \\
 \end{array}
-$$
+```
 
 ## Multiplets
 

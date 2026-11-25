@@ -38,17 +38,17 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ### UMixCC1C2: complex scalar, unitary → C1, C2
 
-$$
+```math
 \begin{array}{c|cc}
  & \mathrm{PhiI2Y3q6F1} & \mathrm{PhiI2Y3q6F2} \\ \hline
 \mathrm{PhiI2Y3q6F1bar} & M_{\mathrm{PhiI2Y3F1}}^{2} + \frac{\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F1barP1}} v^{2}}{4} + \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F1barP2}} v^{2}}{12} & \frac{v^{2} \left(- 3 i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} + 3 \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} - \sqrt{3} \left(i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}} - \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)\right)}{12} \\
 \mathrm{PhiI2Y3q6F2bar} & \frac{v^{2} \left(3 i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} + 3 \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} + \sqrt{3} \left(i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}} + \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)\right)}{12} & M_{\mathrm{PhiI2Y3F2}}^{2} + \frac{\lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2barP1}} v^{2}}{4} + \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2barP2}} v^{2}}{12} \\
 \end{array}
-$$
+```
 
 ### UMixRN1N2N3N4: real scalar, orthogonal → N1, N2, N3, N4
 
-$$
+```math
 \begin{array}{c|cccc}
  & \mathrm{PhiI2Y3q0F1\_R} & \mathrm{PhiI2Y3q0F1\_I} & \mathrm{PhiI2Y3q0F2\_R} & \mathrm{PhiI2Y3q0F2\_I} \\ \hline
 \mathrm{PhiI2Y3q0F1\_R} & M_{\mathrm{PhiI2Y3F1}}^{2} + \frac{\sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F1}} v^{2}}{3} + \frac{\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F1barP1}} v^{2}}{4} - \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F1barP2}} v^{2}}{12} & - \frac{\sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F1}} v^{2}}{3} & \frac{v^{2} \left(2 \sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2}} + 3 \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} - \sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)}{12} & \frac{v^{2} \left(- 2 \sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2}} + 3 \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} - \sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)}{12} \\
@@ -56,7 +56,7 @@ $$
 \mathrm{PhiI2Y3q0F2\_R} & \frac{v^{2} \left(2 \sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2}} + 3 \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} - \sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)}{12} & \frac{v^{2} \left(- 2 \sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2}} - 3 \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} + \sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)}{12} & M_{\mathrm{PhiI2Y3F2}}^{2} + \frac{\sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2}} v^{2}}{3} + \frac{\lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2barP1}} v^{2}}{4} - \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2barP2}} v^{2}}{12} & - \frac{\sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2}} v^{2}}{3} \\
 \mathrm{PhiI2Y3q0F2\_I} & \frac{v^{2} \left(- 2 \sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2}} + 3 \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} - \sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)}{12} & \frac{v^{2} \left(- 2 \sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2}} + 3 \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} - \sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)}{12} & - \frac{\sqrt{3} \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2}} v^{2}}{3} & M_{\mathrm{PhiI2Y3F2}}^{2} - \frac{\sqrt{3} \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2}} v^{2}}{3} + \frac{\lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2barP1}} v^{2}}{4} - \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2barP2}} v^{2}}{12} \\
 \end{array}
-$$
+```
 
 ## Multiplets
 
