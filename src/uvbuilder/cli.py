@@ -9,9 +9,9 @@ import sys
 from pathlib import Path
 
 USAGE = '''
-  uvbuilder build PROTOMODEL [--out FOLDER] [--dm-spin S] [--dm-charges C]
+  uvbuilder build PROTOMODEL [-o FOLDER] [-s SPIN] [-q CHARGES]
                             [--name N] [--author A] [--version V]
-                                  valid models of a protomodel (.fr, .pkl and .md with --out)
+                                  valid models of a protomodel (<model>/<model>.fr, .pkl, .md with --out)
   uvbuilder fill MODEL.pkl CARD   masses, mixing matrices and DECAY Auto from the inputs
 '''
 
@@ -19,9 +19,10 @@ USAGE = '''
 def _protomodel(path: Path) -> dict:
     '''ModelBuilder arguments of a protomodel file (a dictionary with masses, decays and
     labels, see FinalStateModel.fromDict): a .dict file holding the dictionary (as
-    written by the SModelS protomodel builder; read as a literal, never executed), or a
-    Python file defining `protomodel` and optionally `possible_dm_reps`, `dm_pdg`,
-    `labeler`, `name`, `author` and `version`.'''
+    written by the SModelS protomodel builder; read as a literal, never executed), with
+    the optional keys `name`, `author`, `version`, `dm_spin` and `dm_charges` (values as
+    on the command line), or a Python file defining `protomodel` and optionally
+    `possible_dm_reps`, `dm_pdg`, `labeler`, `name`, `author` and `version`.'''
     if path.suffix == '.dict':
         try:
             data = ast.literal_eval(path.read_text())
@@ -29,7 +30,7 @@ def _protomodel(path: Path) -> dict:
             raise ValueError(f'{path} is not a dictionary literal: {error}') from None
         if not isinstance(data, dict):
             raise ValueError(f'{path} is not a dictionary literal')
-        return dict(modelData=data)
+        return _dict_options(data)
     if path.suffix != '.py':
         raise ValueError(f'{path}: the protomodel is a .dict file or a Python file')
     namespace = runpy.run_path(str(path))
@@ -45,6 +46,29 @@ def _protomodel(path: Path) -> dict:
 
 
 SPINS = {'scalar': 'SCALAR', 'fermion': 'DIRAC_SPINOR'}
+
+
+def _dict_options(data: dict) -> dict:
+    '''ModelBuilder arguments of a .dict protomodel: its options taken out, the rest is
+    the protomodel.'''
+    from uvbuilder.tools import reps
+    data = dict(data)
+    options = {f'_{key}': data.pop(key) for key in ('name', 'author', 'version') if key in data}
+    dm = {}
+    if 'dm_spin' in data:
+        spin = data.pop('dm_spin')
+        if spin not in (*SPINS, 'both'):
+            raise ValueError(f'dm_spin {spin!r}: scalar, fermion or both')
+        dm['spin'] = [getattr(reps, SPINS[s]) for s in (SPINS if spin == 'both' else [spin])]
+    if 'dm_charges' in data:
+        charges = data.pop('dm_charges')
+        try:
+            dm['globalU1s'] = [_dm_charges(c) for c in ([charges] if isinstance(charges, str) else charges)]
+        except argparse.ArgumentTypeError as error:
+            raise ValueError(f'dm_charges {error}') from None
+    if dm:
+        options['possible_dm_reps'] = dm
+    return dict(modelData=data, **options)
 
 
 def _dm_charges(text: str):
@@ -99,11 +123,14 @@ def build(args):
         if args.out is None:
             print(f'{fr_model.name}  [{multiplets}]')
         else:
+            # each model in its own folder: <out>/<model>/<model>.fr, .pkl, .md
+            folder = out / fr_model.name
+            fr_model.output_file = str(folder / Path(fr_model.output_file).name)
             fr_model.save2file()
             pickle = Path(fr_model.save2pickle())
             report = pickle.with_suffix('.md')
             report.write_text(model_report(fr_model))
-            print(f'{fr_model.output_file}  {pickle.name}  {report.name}  [{multiplets}]')
+            print(f'{folder}/  {Path(fr_model.output_file).name}  {pickle.name}  {report.name}  [{multiplets}]')
         count += 1
     if not count:
         print('no valid model (run with -v to see why the candidates were rejected)')
@@ -133,10 +160,11 @@ def main(argv=None) -> int:
     p.add_argument('--author', action='append',
                    help='author of the models (default: UVBuilder); repeat for several')
     p.add_argument('--version', help='version of the models (default: 1.0)')
-    p.add_argument('--out', help='folder for the .fr, .pkl and .md files (default: none written)')
-    p.add_argument('--dm-spin', choices=['scalar', 'fermion', 'both'],
+    p.add_argument('-o', '--out', help='folder for the models, one subfolder each with its .fr, .pkl '
+                   'and .md (default: none written)')
+    p.add_argument('-s', '--dm-spin', choices=['scalar', 'fermion', 'both'],
                    help='spin of the DM candidate (default: both)')
-    p.add_argument('--dm-charges', type=_dm_charges, action='append', metavar='CHARGES',
+    p.add_argument('-q', '--dm-charges', type=_dm_charges, action='append', metavar='CHARGES',
                    help='global charges of the DM: none (default), or e.g. B=0,D=1 '
                         '(charges not given are not tracked); repeat for alternatives')
     p.set_defaults(run=build)
