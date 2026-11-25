@@ -347,6 +347,29 @@ class Multiplet(object):
             return self.components[U1Rep(-i3)], su2_reality_phase(self.isospin, i3)
         return self.components[U1Rep(i3)].conjugateField, 1
 
+    def mass_partner(self, other: 'Multiplet', i3) -> Tuple[Field, int]:
+        '''(field, phase) paired with component i3 in the mass term of self and other:
+        -L = M sum_i3 phase self[i3] field (1/2 M if other is self). This is the one
+        convention of the mass terms, chosen so that a positive M gives positive masses.
+        Scalars: the conjugate component (conjugate_component), so -L = M^2 X* X.
+        Fermions: the component -i3 of other with phase s (-1)^(j+m) (su2_conj_phase),
+        the SU(2) singlet; s makes the leading pair positive: the neutral component of a
+        Majorana mass (it is paired with itself), the most charged pair of a Dirac mass
+        (the neutral pairs of a Dirac mass are pseudo-Dirac, masses +-M in any case).
+        The other pairs have the signs the SU(2) singlet fixes relative to the leading one
+        (e.g. -M for the charged pair of a Majorana triplet). These Dirac signs, and the
+        masses of negative inputs, are made positive by the phases of the mass eigenstates
+        (MultipletModel.mass_phases, and the Takagi / singular value decomposition of the
+        mixing blocks).'''
+        if isinstance(self.rep.spin, Scalar):
+            return self.conjugate_component(i3)
+        if other is self:
+            lead = U1Rep(0)
+        else:
+            lead = max(self.components, key=lambda m: (abs(self.components[m].eCharge), m))
+        sign = su2_conj_phase(self.isospin, lead)
+        return other.components[U1Rep(-i3)], sign * su2_conj_phase(self.isospin, i3)
+
     @property
     def fields(self) -> List[Field]:
         return [f for f in self._components.values() if f is not None]

@@ -48,11 +48,11 @@ def test_majorana_block_and_dirac_pair():
     y, yp, M = S('yChiI1Y0ChiI2Y3'), S('yChiI1Y0ChiI2Ym3'), S('MChiI2Y3ChiI2Ym3')
     assert _same(_matrix(MAJORANA, 'UMixMZ1Z2Z3'), [
         [S('MChiI1Y0'), -v * y / r2, v * yp / r2],
-        [-v * y / r2, 0, M],
-        [v * yp / r2, M, 0]])
+        [-v * y / r2, 0, -M],
+        [v * yp / r2, -M, 0]])
     blocks, matrix = mass_matrices(_sddm_model(MAJORANA))['UMixDW1']
     assert [b.standard_symbol for b in blocks] == ['UMixDW1', 'VMixDW1']
-    assert _same(matrix, [[-M]])
+    assert _same(matrix, [[M]])
 
 
 def test_dirac_block_rows_left_columns_right():
@@ -62,7 +62,7 @@ def test_dirac_block_rows_left_columns_right():
         [S('MChiI1Y0D1F1ChiI1Y0Dm1F1'), 0, v * S('yChiI1Y0D1F1ChiI2Ym3Dm1') / r2],
         [0, S('MChiI1Y0D1F2ChiI1Y0Dm1F2'), v * S('yChiI1Y0D1F2ChiI2Ym3Dm1') / r2],
         [-v * S('yChiI2Y3D1ChiI1Y0Dm1F1') / r2, -v * S('yChiI2Y3D1ChiI1Y0Dm1F2') / r2,
-         S('MChiI2Y3D1ChiI2Ym3Dm1')]])
+         -S('MChiI2Y3D1ChiI2Ym3Dm1')]])
 
 
 def test_scalar_blocks_with_hermitian_conjugate_and_real_parts():
@@ -102,9 +102,9 @@ def test_numeric_majorana_matrices():
     w = VEV
     matrices = evaluate(_majorana_values())
     assert np.allclose(matrices['UMixMZ1Z2Z3'], [[100, -w * 0.5 / np.sqrt(2), w * 0.3 / np.sqrt(2)],
-                                                [-w * 0.5 / np.sqrt(2), 0, 200],
-                                                [w * 0.3 / np.sqrt(2), 200, 0]])
-    assert np.allclose(matrices['UMixDW1'], [[-200]])
+                                                [-w * 0.5 / np.sqrt(2), 0, -200],
+                                                [w * 0.3 / np.sqrt(2), -200, 0]])
+    assert np.allclose(matrices['UMixDW1'], [[200]])
     complex_y = evaluate(_majorana_values(IyChiI1Y0ChiI2Y3=0.1))['UMixMZ1Z2Z3']
     assert np.isclose(complex_y[0, 1], -w * (0.5 + 0.1j) / np.sqrt(2))
 
@@ -123,13 +123,14 @@ def test_numeric_matrices_at_the_default_values():
     frm = _sddm_model(MAJORANA)
     values = {p.name: float(p.value) for p in input_parameters(frm)}
     matrices = numeric_mass_matrices(frm)(values)
-    assert np.allclose(matrices['UMixDW1'], [[-1]])
+    assert np.allclose(matrices['UMixDW1'], [[1]])
 
 
 # top-down point MB0 = 250, M = 200, y(B0 Hd) = 1.5, y(B0 Hu) = 0.2: here ChiI2Ym3 = Hd,
-# ChiI2Y3 = Hu, rows (B0, Hu0, Hd0)
+# ChiI2Y3 = Hu, rows (B0, Hu0, Hd0). With positive masses (Multiplet.mass_partner) the
+# point has theta = arg(M_B0 M y_u* y_d*) = pi, carried by y(B0 Hd) = -1.5
 SDDM_POINT = {'MChiI1Y0': 250.0, 'MChiI2Y3ChiI2Ym3': 200.0,
-              'RyChiI1Y0ChiI2Ym3': 1.5, 'IyChiI1Y0ChiI2Ym3': 0.0,
+              'RyChiI1Y0ChiI2Ym3': -1.5, 'IyChiI1Y0ChiI2Ym3': 0.0,
               'RyChiI1Y0ChiI2Y3': 0.2, 'IyChiI1Y0ChiI2Y3': 0.0}
 
 
@@ -148,7 +149,11 @@ def test_spectrum_reproduces_the_top_down_sddm_point():
     top_down = np.array([[-0.46777138, 0.35969618, 0.80734664],     # columns (B0, Hd0, Hu0)
                          [0.39122139, -0.73482453, 0.55405661],
                          [0.79255016, 0.5750231, 0.20300905]])
-    assert np.allclose(N.real, top_down[:, [0, 2, 1]], atol=1e-7)
+    # the notebook's point with Hd0 -> -Hd0 (y(B0 Hd) -> -y(B0 Hd), mu -> -mu), up to the
+    # sign of each eigenvector
+    expected = top_down[:, [0, 2, 1]] * [1, 1, -1]
+    rows = np.sign(np.sum(N.real * expected, axis=1))[:, None]
+    assert np.allclose(N.real, rows * expected, atol=1e-7)
     assert np.allclose(N.imag, 0) and list(signs) == [1, -1, 1]
 
 
@@ -230,7 +235,7 @@ def test_card_of_the_top_down_sddm_point(tmp_path):
     card = _read_card(write_card(frm, template, tmp_path / 'card.dat', SDDM_POINT))
     assert template.read_text() == before
     assert card[('BSMMASS', 1)] == 250 and card[('BSMMASS', 2)] == 200
-    assert card[('BSMYUKAWA', 2)] == 1.5 and card[('IMBSMYUKAWA', 2)] == 0
+    assert card[('BSMYUKAWA', 2)] == -1.5 and card[('IMBSMYUKAWA', 2)] == 0
     assert np.allclose([card[('MASS', p)] for p in (1000022, 1000023, 1000025, 1000024)],
                        [109.28073066, 289.83963497, 430.55890431, 200.0])
     U = numeric_spectrum(frm)(SDDM_POINT)[1]['UMixMZ1Z2Z3']
@@ -238,7 +243,7 @@ def test_card_of_the_top_down_sddm_point(tmp_path):
         assert card[('UMIXMZ1Z2Z3', i + 1, j + 1)] == U[i, j].real
         assert card[('IMUMIXMZ1Z2Z3', i + 1, j + 1)] == U[i, j].imag
     assert np.allclose([card[('IMUMIXMZ1Z2Z3', i, 2)] for i in (1, 2, 3)],    # rows B0 Hu0 Hd0
-                       [-0.39122139, -0.55405661, 0.73482453])
+                       [0.39122139, 0.55405661, 0.73482453])
     assert card[('MASS', 23)] == 91.1876 and card[('DECAY', 23)] == '2.441404e+00'
     assert all(card[('DECAY', p)] == 'Auto' for p in (1000022, 1000023, 1000024, 1000025))
     text = (tmp_path / 'card.dat').read_text()
@@ -294,7 +299,7 @@ def test_card_filled_in_place_from_its_own_inputs(tmp_path):
 
 
 def test_card_uses_the_output_names_of_renamed_particles(tmp_path):
-    from tests.test_golden import STOP, _stop_model
+    from tests._reference import STOP, _stop_model
     frm = _stop_model(STOP['stop_weylstop_scalargluino'])
     assert frm.renames['particle'] == {'B': 'B1'}               # B is reserved in SMMod.fr
     values, k = {}, 0

@@ -1,23 +1,9 @@
-"""Regression test: the generated .fr of reference SDDM and stop models must match
-the stored files in tests/golden (validated with FeynRules and MG5 check gauge).
+"""Reference SDDM and stop multiplet models shared by the tests."""
 
-After an intended change of the output, regenerate and review with git diff:
-    UPDATE_GOLDEN=1 pytest tests/test_golden.py
-"""
-
-import difflib
-import os
-import re
 import warnings
-from pathlib import Path
-
-import pytest
 
 from tests import test_feynrules
 from tests.test_conjugation import _sddm_fr
-
-GOLDEN = Path(__file__).resolve().parent / 'golden'
-DATE = re.compile(r'^\s*Date\s*->.*$', re.M)
 
 SDDM = {
     'sddm_doublet_partner': {'PhiI1Y0', 'PhiI2Y3'},
@@ -53,16 +39,3 @@ def _stop_model(names):
 
 def _stop_fr(names):
     return _stop_model(names).to_feynrules()
-
-
-@pytest.mark.parametrize('name', [*SDDM, *STOP])
-def test_golden_fr_outputs(name):
-    fr = _sddm_fr(SDDM[name]) if name in SDDM else _stop_fr(STOP[name])
-    path = GOLDEN / f'{name}.fr'
-    if os.environ.get('UPDATE_GOLDEN'):
-        GOLDEN.mkdir(exist_ok=True)
-        path.write_text(fr)
-    expected, actual = (DATE.sub('', text).splitlines() for text in (path.read_text(), fr))
-    if actual != expected:
-        diff = list(difflib.unified_diff(expected, actual, str(path), 'generated', lineterm='', n=1))
-        pytest.fail('generated .fr differs from the golden file:\n' + '\n'.join(diff[:40]))

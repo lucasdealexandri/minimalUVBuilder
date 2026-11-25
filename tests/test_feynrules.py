@@ -418,14 +418,14 @@ class TestInteractionTerms:
         joined = ''.join(terms)
         bilinear = [t for t in terms if 'MDuDd' in t][0]
         assert '(DdLw[sp' in bilinear and '.DuLw[sp' in bilinear
-        assert ' - HC[' in bilinear
+        assert ' + HC[' in bilinear            # mass convention: charged Dirac mass +M
         assert 'ncc[' not in joined
         yukawa = [t for t in terms if 'yDuS0' in t][0]
         assert '(S0Lw[sp' in yukawa and '.DuLw[sp' in yukawa
         assert 'Phitilde[' in yukawa        # conjugate Higgs as H~, never Phibar
         assert ' - HC[' in yukawa
         lint = frm.get_lagrangian()
-        assert '- MDuDd SU2CG22[i1, i2] (DdLw[sp1, i1].DuLw[sp1, i2]) - HC[' \
+        assert '+ MDuDd SU2CG22[i1, i2] (DdLw[sp1, i1].DuLw[sp1, i2]) + HC[' \
                'MDuDd SU2CG22[i1, i2] (DdLw[sp1, i1].DuLw[sp1, i2])]' in lint
 
     def test_flavor_expand_includes_su2w(self):

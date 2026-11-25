@@ -38,8 +38,8 @@ def test_only_the_neutral_higgs_component_survives_at_the_vev():
 
 def test_mass_terms_of_the_singlet_doublet_model():
     '''-L = sum of the terms below + h.c., i.e. the neutral mass matrix in the basis
-    (singlet, Y = -1/2, Y = +1/2) is [[M_s, y_d v/sqrt2, -y_u v/sqrt2], [., 0, mu], [., mu, 0]]
-    and the charged state has Dirac mass -mu.'''
+    (singlet, Y = -1/2, Y = +1/2) is [[M_s, y_d v/sqrt2, -y_u v/sqrt2], [., 0, -mu], [., -mu, 0]]
+    and the charged state has Dirac mass +mu (Multiplet.mass_partner).'''
     v, Ms, mu, yu, yd = sp.symbols('v MChiI1Y0 MChiI2Y3ChiI2Ym3 yChiI1Y0ChiI2Y3 yChiI1Y0ChiI2Ym3')
     terms = {tuple(f.label for f in term.fields): term.coeff
              for op in multiplet_model(MAJORANA).operators
@@ -47,8 +47,8 @@ def test_mass_terms_of_the_singlet_doublet_model():
     expected = {('ChiI1Y0q0', 'ChiI1Y0q0'): Ms / 2,
                 ('ChiI1Y0q0', 'ChiI2Ym3q0'): yd * v / sp.sqrt(2),
                 ('ChiI1Y0q0', 'ChiI2Y3q0'): -yu * v / sp.sqrt(2),
-                ('ChiI2Ym3q0', 'ChiI2Y3q0'): mu,
-                ('ChiI2Ym3qm6', 'ChiI2Y3q6'): -mu}
+                ('ChiI2Ym3q0', 'ChiI2Y3q0'): -mu,
+                ('ChiI2Ym3qm6', 'ChiI2Y3q6'): mu}
     assert terms.keys() == expected.keys()
     assert all(sp.simplify(terms[key] - expected[key]) == 0 for key in expected)
 
@@ -99,3 +99,22 @@ def test_lagrangian_terms_add_the_hc_exactly_where_the_fr_writes_it():
                                   if k.endswith('Terms'))
             with_hc = len(op.lagrangian_terms()) > len(op.expand_singlets())
             assert with_hc == ('HC[' in interaction), op._description()
+
+
+def test_majorana_mass_of_a_fermion_triplet_is_positive_for_every_component():
+    '''The CG singlet of a real triplet is 2 X+ X- - X0 X0; the mass term pairs each component
+    with its partner (Multiplet.mass_partner), so a positive mass gives +M to the neutral
+    component, which is its own partner.'''
+    from uvbuilder.models.feynrulesmodel import IndexTracker
+    from uvbuilder.states.multiplet import Multiplet
+    from uvbuilder.tools.operators import Operator
+    from uvbuilder.tools.reps import WEYL_LEFT, BrokenRep, SU2Rep, SU3Rep, U1Rep
+    W = Multiplet(BrokenRep(spin=WEYL_LEFT, colordim=SU3Rep(0, 0), isospin=SU2Rep(2,),
+                            hypercharge=U1Rep(0,)), label='W', fillMultiplet=True)
+    M = sp.Symbol('M')
+    op = Operator(W, W, parameter=M / 2)
+    plus, zero, minus = (W.components[U1Rep(q)] for q in (1, 0, -1))
+    assert {tuple(sorted(t.fields, key=str)): t.coeff for t in op.expand_singlets()} == {
+        tuple(sorted((minus, plus), key=str)): -M, (zero, zero): M / 2}
+    interaction = op.to_feynrules(IndexTracker())['MassTerms'][0]
+    assert interaction.startswith('+ (1/2)*M SU2CG33') and '+ HC[' in interaction

@@ -207,8 +207,35 @@ class Operator:
                     phase *= non_singlet[j].phase(i3)
                 key = tuple(sorted(fields + singletons, key=canonical_sort))
                 merged[key] = sp.simplify(merged.get(key, 0) + phase * coeff)
-        self._singlets = {k: c for k, c in merged.items() if c != 0}
+        merged = {k: c for k, c in merged.items() if c != 0}
+        self._flipped = False
+        if self.is_fermion_mass_term:
+            # the convention of the mass terms (Multiplet.mass_partner); the .fr writes the
+            # CG singlet, which is the same up to its sign
+            partner = self._partner_singlets()
+            ratios = {sp.simplify(partner.get(k, 0) / merged[k]) for k in merged}
+            assert partner.keys() == merged.keys() and len(ratios) == 1 and abs(*ratios) == 1, \
+                f'{self.pretty_print()}: mass term is not the CG singlet'
+            self._flipped, merged = ratios == {-1}, partner
+        self._singlets = merged
         return self._singlets
+
+    def _partner_singlets(self) -> Dict[Tuple[Field, ...], sp.Expr]:
+        '''sum_i3 phase self[i3] partner of a fermion mass term (Multiplet.mass_partner).'''
+        first, second = self.multiplets
+        merged: Dict[Tuple[Field, ...], sp.Expr] = {}
+        for i3, f in first.components.items():
+            g, phase = first.mass_partner(second, i3)
+            phase *= first.phase(i3) * second.phase(-i3)
+            key = tuple(sorted((f, g), key=canonical_sort))
+            merged[key] = merged.get(key, 0) + phase
+        return {k: c for k, c in merged.items() if c != 0}
+
+    @property
+    def is_fermion_mass_term(self) -> bool:
+        '''Majorana or Dirac mass of BSM Weyl multiplets.'''
+        return (len(self.multiplets) == 2 and not any(m.isSM for m in self.multiplets)
+                and all(isinstance(m.rep.spin, WeylSpinor) for m in self.multiplets))
 
     def _mass_singlets(self) -> Dict[Tuple[Field, ...], sp.Expr]:
         '''sum_i X^*_i X_i of a scalar mass term, the term fr_mass_term writes (the CG
@@ -516,6 +543,10 @@ class Operator:
         if self.is_scalar_mass_term:
             term = self.fr_mass_term(tracker)
             interaction = f'- {term}'
+        elif self.singlets and self._flipped:
+            # the CG singlet with the sign of the mass convention (Multiplet.mass_partner)
+            term = self.fr_term(tracker)
+            interaction = f'+ {term} + HC[{term}]'
         else:
             term = self.fr_term(tracker)
             interaction = f'- {term}' if self.is_hermitian else f'- {term} - HC[{term}]'

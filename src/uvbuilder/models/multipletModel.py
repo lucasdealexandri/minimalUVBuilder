@@ -613,10 +613,12 @@ class MultipletModel:
     @staticmethod
     def mass_phases(operators, mixings, tracker) -> dict:
         '''{particle: (symbol, FRParameter)} for each fermion mass eigenstate alone in
-        its block. With m its mass coefficient in the Lagrangian, -m chi eta + h.c.
-        (Dirac) or -1/2 m chi chi + h.c. (Majorana), summed over the operators at the
-        vev, the phase P = m*/|m| (on the right-handed partner) or P = sqrt(m*/|m|)
-        (on the field) makes the mass positive. Massless states get no phase.'''
+        its block. Its Lagrangian mass, -m chi eta + h.c. (Dirac) or -1/2 m chi chi + h.c.
+        (Majorana), is m = +-M with M a (real) mass parameter; the phase P = sign(m) (on
+        the right-handed partner) or P = sqrt(sign(m)) (on the field) makes the mass
+        positive. With the convention of the mass terms (Multiplet.mass_partner) P = 1
+        for M > 0, except for Dirac pairs whose SU(2) singlet fixes the opposite sign.
+        Massless states get no phase.'''
         from uvbuilder.tools.fr_utils import FRParameter
         blocks = {f: mm for mm in mixings.get_mixing_matrices() for f in mm.f_components}
         rename = {sp.Symbol(old): sp.Symbol(new)
@@ -644,6 +646,8 @@ class MultipletModel:
                 majorana = particle.selfConjugate and sides == {False}
                 if not (majorana or (not particle.selfConjugate and sides == {False, True})):
                     continue
+                if op.sector != 'Mass':
+                    raise ValueError(f'{particle} alone in its block gets a mass from {op}')
                 coeff = term.coeff.xreplace(rename)
                 masses[particle] = masses.get(particle, 0) + (2 * coeff if majorana else coeff)
 
@@ -652,12 +656,16 @@ class MultipletModel:
             mass = sp.simplify(mass)
             if mass == 0:
                 continue
-            ratio = sp.conjugate(mass) / sp.Abs(mass)
-            value = sp.sqrt(ratio) if particle.selfConjugate else ratio
+            sign, parameter = mass.as_coeff_Mul()
+            if not isinstance(parameter, sp.Symbol):
+                raise ValueError(f'mass of {particle} is not one mass parameter: {mass}')
+            # sign(m) as m/|m|: FeynRules exports Abs and Sqrt to the UFO, not Sign
+            value = f'{"-" if sign < 0 else ""}{parameter}/Abs[{parameter}]'
+            value = f'Sqrt[{value}]' if particle.selfConjugate else value
             symbol = f'P{particle.label}'
             kind = 'Majorana' if particle.selfConjugate else 'Dirac'
             phases[particle] = (symbol, FRParameter(symbol, 'Phase', (
-                ('ParameterType', 'Internal'), ('Value', mathematica_code(value)),
+                ('ParameterType', 'Internal'), ('Value', value),
                 ('ComplexParameter', True),
                 ('Description', f'"Phase of {particle.label}: positive {kind} mass"')),
                 (symbol, 0)))
