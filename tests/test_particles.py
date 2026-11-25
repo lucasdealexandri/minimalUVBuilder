@@ -6,7 +6,7 @@ def test_SM():
     assert em.isSM
     assert em.chargeConjugate().isSM
 
-    # Flavour
+    # Flavor
     assert em.chargeConjugate().pdg < 0
     assert isinstance(em.chargeConjugate().pdgList, list)
     assert em.chargeConjugate().pdgList[0] < 0

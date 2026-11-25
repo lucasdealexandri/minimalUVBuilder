@@ -523,12 +523,12 @@ class TestSMTranslation:
     def test_render_index_order_and_generation(self, sm_map):
         from uvbuilder.states.SMfields import SM_MULTIPLETS
         by_label = {m.label: m for m in SM_MULTIPLETS}
-        assert sm_map.render(by_label['QL3'], spin='sp1', colour='c1', isospin='i1') == 'QLw[sp1, i1, 3, c1]'
+        assert sm_map.render(by_label['QL3'], spin='sp1', color='c1', isospin='i1') == 'QLw[sp1, i1, 3, c1]'
         assert sm_map.render(by_label['lL2'], spin='sp1', isospin='i2') == 'LLw[sp1, i2, 2]'
-        assert sm_map.render(by_label['tRbar'], spin='sp2', colour='c1') == 'uRwbar[sp2, 3, c1]'
-        assert sm_map.render(by_label['tRbar'], spin='sp2', colour='c1', bar=True) == 'uRw[sp2, 3, c1]'
+        assert sm_map.render(by_label['tRbar'], spin='sp2', color='c1') == 'uRwbar[sp2, 3, c1]'
+        assert sm_map.render(by_label['tRbar'], spin='sp2', color='c1', bar=True) == 'uRw[sp2, 3, c1]'
         with pytest.raises(ValueError):
-            sm_map.render(by_label['QL1'], spin='sp1', isospin='i1')     # colour index missing
+            sm_map.render(by_label['QL1'], spin='sp1', isospin='i1')     # color index missing
 
     def test_no_match_is_an_error(self, sm_map):
         weird = Multiplet(BrokenRep(spin=WEYL_LEFT, colordim=SU3Rep(0, 0), isospin=SU2Rep(1,),
@@ -547,7 +547,7 @@ class TestSMTranslation:
         term = Operator(eta, N, by_label['lL2']).fr_term(IndexTracker(sm=sm_map))
         assert re.search(r'\(NLw\[sp1\]\.LLw\[sp1, i\d, 2\]\)', term), term
         assert 'lL2Lw' not in term
-        # coloured: a BSM triplet with Y = 2/3 pairs with tRbar (3bar, Y = -2/3)
+        # colored: a BSM triplet with Y = 2/3 pairs with tRbar (3bar, Y = -2/3)
         X = Multiplet(BrokenRep(spin=WEYL_LEFT, colordim=SU3Rep(1, 0), isospin=SU2Rep(0,),
                                 hypercharge=U1Rep(2, 3)), label='X', fillMultiplet=True)
         term = Operator(X, by_label['tRbar']).fr_term(IndexTracker(sm=sm_map))
@@ -654,18 +654,18 @@ def test_default_gauge_labels():
     assert T.fr_symbol() == 'ChiC3I1Y4B1Lw'
 
 
-@pytest.mark.parametrize('charge, colour, glob, tag', [
+@pytest.mark.parametrize('charge, color, glob, tag', [
     (U1Rep(2, 3), SU3Rep(1, 0), None, 'Q2C3'),
     (U1Rep(-1, 3), SU3Rep(0, 1), None, 'Qm1C3b'),
     (U1Rep(1), SU3Rep(0, 0), None, 'Q3C1'),
     (U1Rep(0), SU3Rep(0, 0), {'D': U1Rep(1)}, 'Q0C1D1'),
     (U1Rep(2, 3), SU3Rep(1, 0), {'B': U1Rep(1, 3)}, 'Q2C3B1'),
 ])
-def test_physical_class_tag(charge, colour, glob, tag):
+def test_physical_class_tag(charge, color, glob, tag):
     from types import SimpleNamespace
     from uvbuilder.models.particleModel import ParticleModel
     from uvbuilder.tools.reps import SCALAR, GlobalU1s
-    rep = UnbrokenRep(spin=SCALAR, colordim=colour, eCharge=charge,
+    rep = UnbrokenRep(spin=SCALAR, colordim=color, eCharge=charge,
                       globalU1s=GlobalU1s(**(glob or {})))
     assert ParticleModel._gauge_name([SimpleNamespace(rep=rep)]) == tag
 
@@ -679,14 +679,14 @@ def test_physical_class_tag_rejects_non_third_charges():
         ParticleModel._gauge_name([SimpleNamespace(rep=rep)])
 
 
-def test_unsupported_colour_and_lone_complex_scalar_raise():
+def test_unsupported_color_and_lone_complex_scalar_raise():
     from uvbuilder.tools.cg_tensors import feyn_index_type
     from uvbuilder.tools.fr_utils import formatVariable
     from uvbuilder.models.multipletModel import MultipletModel
     from uvbuilder.tools.reps import SCALAR
     for f in (feyn_index_type, formatVariable):
         with pytest.raises(ValueError):
-            f(SU3Rep(3, 0))                                  # colour 10
+            f(SU3Rep(3, 0))                                  # color 10
     X = Multiplet(BrokenRep(spin=SCALAR, colordim=SU3Rep(1, 0), isospin=SU2Rep(0,),
                             hypercharge=U1Rep(2, 3)), label='X', fillMultiplet=True)
     with pytest.raises(ValueError, match='without its conjugate'):
@@ -709,9 +709,9 @@ def _stop_dirac_model():
         warnings.simplefilter('ignore')
         for pm in builder.generateParticleModels():
             for mm in PartitionsBuilder(pm).get_multipletModels():
-                if mm.is_valid and any(m.is_colour_conjugated for m in mm.non_conjugated_multiplets):
+                if mm.is_valid and any(m.is_color_conjugated for m in mm.non_conjugated_multiplets):
                     return FeynRulesModel(mm, pm, mm.possible_mixings[0], 'test.fr')
-    raise AssertionError('no stop model with a colour-antitriplet Weyl field')
+    raise AssertionError('no stop model with a color-antitriplet Weyl field')
 
 
 def test_antitriplet_weyl_declared_through_rh_conjugate():
@@ -756,7 +756,7 @@ def test_rh_conjugate_name_is_checked():
 def test_antitriplet_doublet_helper_phases():
     X = Multiplet(BrokenRep(spin=WEYL_LEFT, colordim=SU3Rep(0, 1), isospin=SU2Rep(1,),
                             hypercharge=U1Rep(1, 6)), label='X', fillMultiplet=True)
-    assert X.is_colour_conjugated
+    assert X.is_color_conjugated
     # X_m = (-1)^(j+m) (X^c_{-m})^*
     assert X.conjugate_helper_definitions('XRw') == \
         '{XLw[s_, c_, 1] :> -XRwbar[s, c, 2], XLw[s_, c_, 2] :> XRwbar[s, c, 1]}'
@@ -765,7 +765,7 @@ def test_antitriplet_doublet_helper_phases():
 def test_weyl_kinetic_terms_use_sibar():
     R = Multiplet(BrokenRep(spin=WEYL_RIGHT, colordim=SU3Rep(0, 0), isospin=SU2Rep(0,),
                             hypercharge=U1Rep(0,)), label='R', fillMultiplet=True)
-    assert not R.is_colour_conjugated
+    assert not R.is_color_conjugated
     assert R.generate_fr_kinetic(IndexTracker()) == \
         ' + I sibar[mu, sp1, sp2] (RRw[sp1].DC[RRwbar[sp2], mu])'
 

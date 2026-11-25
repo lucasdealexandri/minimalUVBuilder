@@ -4,7 +4,7 @@ Covers:
   * the FeynRules index-type mapping (SU2D/SU2W/SU2d{dim}, Colour/Gluon/...),
   * the SU(2) singlet tensor (su2_singlet_coeff) against hand CG values,
   * SU2CGTensor naming/ordering and its FeynRules External definition,
-  * SU3CGTensor head resolution from the colour reps (K3/K6/T/... and the
+  * SU3CGTensor head resolution from the color reps (K3/K6/T/... and the
     composite J heads), the trivial delta/trace contraction, and the escape
     warning.
 """
@@ -160,22 +160,22 @@ def test_su3_trivial_conjugate_pairs():
     assert t2.trivial_pairs == ((0, 2), (1, 3))
 
 
-def test_su3_no_colour_singlets_is_trivial():
+def test_su3_no_color_singlets_is_trivial():
     t = SU3CGTensor([])
     assert t.is_trivial
     assert t.trivial_pairs == ()
     assert t.render(()) == ''
-    # colour singlets are dropped entirely
+    # color singlets are dropped entirely
     assert SU3CGTensor([SU3Rep(0, 0), SU3Rep(0, 0)]).is_trivial
 
 
 def test_su3_escape_warns():
-    # 3 x 3 x 8 has no colour singlet and no matching head: escape.
+    # 3 x 3 x 8 has no color singlet and no matching head: escape.
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter('always')
         t = SU3CGTensor([SU3Rep(1, 0), SU3Rep(1, 0), SU3Rep(1, 1)])
         assert t.is_notimplemented
-        assert any('no colour contraction' in str(x.message) for x in w)
+        assert any('no color contraction' in str(x.message) for x in w)
     assert t.name == ''
     assert t.render(()) == ''
 

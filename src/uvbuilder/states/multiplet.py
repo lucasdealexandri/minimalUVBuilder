@@ -172,7 +172,7 @@ class Multiplet(object):
         return self.selfConjugate and isinstance(self.rep.spin, Scalar) and self.isospin.dim > 1
 
     @property
-    def is_colour_conjugated(self) -> bool:
+    def is_color_conjugated(self) -> bool:
         '''LH Weyl multiplet in 3bar or 6bar. FeynRules only has generators for 3 and 6,
         so it is declared through its RH conjugate (see to_feynrules).'''
         return self.rep.spin == WEYL_LEFT and self.colordim.lower > self.colordim.upper
@@ -237,13 +237,13 @@ class Multiplet(object):
                      rh_symbol: Optional[str] = None) -> Dict[str, List[str]]:
         '''FeynRules chunk for this multiplet: the W/S class block and its
         kinetic term. The index ``tracker`` is duck-typed (class numbers,
-        gauge indices). Colour-conjugated multiplets need ``rh_symbol``, the
+        gauge indices). Color-conjugated multiplets need ``rh_symbol``, the
         name of their RH conjugate class.'''
 
         from uvbuilder.tools.fr_utils import formatClassBlock, fr_quantum_numbers
 
-        if self.is_colour_conjugated:
-            return self._colour_conjugated_feynrules(tracker, mixings, rh_symbol)
+        if self.is_color_conjugated:
+            return self._color_conjugated_feynrules(tracker, mixings, rh_symbol)
 
         spin_label = formatVariable(self.rep.spin)
         header = f"{spin_label}[{tracker.class_number(spin_label)}]"
@@ -276,7 +276,7 @@ class Multiplet(object):
             'KineticTerms': [kinetic] if kinetic else [],
         }
 
-    def _colour_conjugated_feynrules(self, tracker, mixings, rh_symbol) -> Dict[str, List[str]]:
+    def _color_conjugated_feynrules(self, tracker, mixings, rh_symbol) -> Dict[str, List[str]]:
         '''Two classes: the RH conjugate rh_symbol = X^c in 3/6, which carries the
         kinetic term and the physical definitions, and X itself as an unphysical
         class defined through rh_symbol-bar, used by the operators.'''

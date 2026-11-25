@@ -10,7 +10,7 @@ from uvbuilder.models.slhaBuilder import VEV, _declared, input_parameters, mass_
 
 KIND = {'MajoranaSpinor': 'Majorana fermion', 'DiracSpinor': 'Dirac fermion',
         'RealScalar': 'real scalar', 'ComplexScalar': 'complex scalar'}
-DIAGONALISATION = {'MajoranaSpinor': 'Takagi', 'DiracSpinor': 'SVD',
+DIAGONALIZATION = {'MajoranaSpinor': 'Takagi', 'DiracSpinor': 'SVD',
                    'RealScalar': 'orthogonal', 'ComplexScalar': 'unitary'}
 
 
@@ -46,7 +46,7 @@ def _card_symbols(fr_model):
 
 
 def _matrix_latex(M, rows, columns, names) -> list:
-    '''M as a LaTeX array, the rows and columns labelled by the gauge components.'''
+    '''M as a LaTeX array, the rows and columns labeled by the gauge components.'''
     entry = lambda x: sp.latex(x, symbol_names=names)
     lines = [r'\begin{array}{c|' + 'c' * len(columns) + '}',
              ' & ' + ' & '.join(_mathrm(str(c)) for c in columns) + r' \\ \hline']
@@ -105,14 +105,14 @@ def model_report(fr_model) -> str:
             columns = [f.label for f in block.f_components]
         else:
             columns = rows_
-        how = DIAGONALISATION[block.type] if block.dim > 1 else 'single state'
+        how = DIAGONALIZATION[block.type] if block.dim > 1 else 'single state'
         states = ', '.join(label(q) for q in block.particles)
         out += [f'### {key}: {KIND[block.type]}, {how} → {states}', '']
         out += _matrix_latex(M, rows_, columns, names) + ['']
     out += ['## Multiplets', '']
     out += _table([[m.fr_symbol(), str(m.rep.spin), str(m.rep.isospin.dim), str(m.rep.hypercharge),
                     str(m.rep.colordim), str(m.rep.globalU1s)] for m in mm.non_conjugated_multiplets],
-                  ['multiplet', 'spin', 'SU(2)', 'Y', 'colour', 'global charges']) + ['']
+                  ['multiplet', 'spin', 'SU(2)', 'Y', 'color', 'global charges']) + ['']
     notes = [f'- v = {VEV} GeV (G_F).']
     if any(p.part for p in input_parameters(fr_model)):
         notes.append('- Complex couplings: y = Re y + i Im y, card entries `Ry...`, `Iy...`.')

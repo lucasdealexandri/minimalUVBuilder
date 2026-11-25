@@ -39,7 +39,7 @@ def test_partition_needs_the_conjugate_of_every_multiplet(partitions):
     assert not check([up]) and not check([up, up, down])
 
 
-def _labelled(partitions, content, labeler):
+def _labeled(partitions, content, labeler):
     particle_model, found = partitions
     with warnings.catch_warnings():
         warnings.simplefilter('ignore')
@@ -49,7 +49,7 @@ def _labelled(partitions, content, labeler):
 
 def test_automatic_labels_are_accepted(partitions):
     for content in (SINGLETS, TRIPLET, DOUBLETS):
-        assert _labelled(partitions, content, default_component_label) is not None
+        assert _labeled(partitions, content, default_component_label) is not None
 
 
 def test_label_of_a_standard_model_field_is_rejected(partitions):
@@ -58,7 +58,7 @@ def test_label_of_a_standard_model_field_is_rejected(partitions):
             return 'Phi'
         return default_component_label(rep, i3, family_index)
     with pytest.raises(ValueError, match='SM field labels'):
-        _labelled(partitions, DOUBLETS, labeler)
+        _labeled(partitions, DOUBLETS, labeler)
 
 
 def test_label_of_a_particle_is_rejected(partitions):
@@ -67,13 +67,13 @@ def test_label_of_a_particle_is_rejected(partitions):
             return 'Z1'
         return default_component_label(rep, i3, family_index)
     with pytest.raises(ValueError, match='particle labels'):
-        _labelled(partitions, DOUBLETS, labeler)
+        _labeled(partitions, DOUBLETS, labeler)
 
 
 def test_labeler_must_use_the_family_index(partitions):
     labeler = lambda rep, i3=None, family_index=None: default_component_label(rep, i3, None)
     with pytest.raises(ValueError, match='family_index'):
-        _labelled(partitions, TRIPLET, labeler)
+        _labeled(partitions, TRIPLET, labeler)
 
 
 def test_two_multiplets_cannot_share_a_component_label(partitions):
@@ -82,4 +82,4 @@ def test_two_multiplets_cannot_share_a_component_label(partitions):
             return 'Neutral'
         return default_component_label(rep, i3, family_index)
     with pytest.raises(ValueError, match='Duplicate'):
-        _labelled(partitions, DOUBLETS, labeler)
+        _labeled(partitions, DOUBLETS, labeler)

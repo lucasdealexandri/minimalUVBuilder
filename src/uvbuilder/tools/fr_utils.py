@@ -130,7 +130,7 @@ def formatVariable(obj) -> str:
             return "Sextet"  # Declared in SMMod.fr (representation T6)
         elif (obj.upper, obj.lower) in ((0, 1), (0, 2)):
             return f"SU3d{obj.dim}bar"
-        raise ValueError(f'No FeynRules index type for colour {obj!r} '
+        raise ValueError(f'No FeynRules index type for color {obj!r} '
                          f'(supported: 3, 3bar, 6, 6bar, 8)')
     elif isinstance(obj, SU2Rep):
         return su2_index_type(obj.dim)

@@ -1,4 +1,4 @@
-"""Diagonalisation of the mass matrices (tools/spectrum.py)."""
+"""Diagonalization of the mass matrices (tools/spectrum.py)."""
 
 import numpy as np
 import pytest

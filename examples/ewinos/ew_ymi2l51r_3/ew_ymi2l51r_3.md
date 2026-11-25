@@ -60,7 +60,7 @@ $$
 
 ## Multiplets
 
-| multiplet | spin | SU(2) | Y | colour | global charges |
+| multiplet | spin | SU(2) | Y | color | global charges |
 | --- | --- | --- | --- | --- | --- |
 | PhiI2Y3F1 | Scalar | 2 | 1/2 | 1 | () |
 | PhiI2Y3F2 | Scalar | 2 | 1/2 | 1 | () |

@@ -1,4 +1,4 @@
-'''Diagonalisation of the mass matrices of the mixing blocks, in the conventions of the
+'''Diagonalization of the mass matrices of the mixing blocks, in the conventions of the
 FeynRules output: the gauge eigenstates are U times the mass eigenstates, columns in
 ascending mass.
 
@@ -125,7 +125,7 @@ def takagi(M, block='Majorana block', max_sweeps=50):
                 A = (A + A.T) / 2
                 W = R @ W
     else:
-        raise ValueError(f'{block}: Takagi factorisation did not converge')
+        raise ValueError(f'{block}: Takagi factorization did not converge')
     sigma = np.diag(A)
     W = np.exp(1j * np.angle(sigma) / 2)[:, None] * W  # (P W)^* M (P W)^dag = diag(|sigma|)
     masses, U = np.abs(sigma), W.conj().T

@@ -2,7 +2,7 @@
 
 Covers:
   * the cached CG block against hand-computed Clebsch-Gordan values,
-  * the Operator.expand / expand_singlets contract-and-join behaviour,
+  * the Operator.expand / expand_singlets contract-and-join behavior,
   * equal-field monomial merging (and zero cancellation),
   * repeated identical multiplets (representative, no over-counting),
   * the 0-tolerant coupling (a vacuum-check that missing lines vanish).
@@ -145,7 +145,7 @@ class TestFrTerm:
         assert Operator(A, B, C).fr_term() == \
             '1 SU2CG223[m1, m2, m3] A[m1] C[m2] B[m3]'
 
-    def test_colour_head_and_su2_none(self):
+    def test_color_head_and_su2_none(self):
         T3 = self._multiplet('T3', SCALAR, SU3Rep(1, 0), SU2Rep(0,), U1Rep(0,), 1)
         A3 = self._multiplet('A3', SCALAR, SU3Rep(0, 1), SU2Rep(0,), U1Rep(0,), 2)
         O8 = self._multiplet('O8', SCALAR, SU3Rep(1, 1), SU2Rep(0,), U1Rep(0,), 3)
@@ -181,7 +181,7 @@ class TestFrTerm:
             '1 SU2CG2233[m1, m2, m3, m4] SI3Y0[m3] SI3Y0[m4] Phitilde[m1] Phi[m2]'
 
     def test_repeated_colored_multiplet_distinct_indices(self):
-        # Two identical colour triplets under K3: per-occurrence colour labels.
+        # Two identical color triplets under K3: per-occurrence color labels.
         P = self._multiplet('P', SCALAR, SU3Rep(1, 0), SU2Rep(0,), U1Rep(0,), 1)
         R = self._multiplet('R', SCALAR, SU3Rep(1, 0), SU2Rep(0,), U1Rep(0,), 2)
         op = Operator(P, P, R)

@@ -148,7 +148,7 @@ class IndexTracker(object):
         return index
 
     def gauge(self, rep) -> List[FRIndex]:
-        '''Gauge FRIndex objects for a BrokenRep (colour, then isospin).'''
+        '''Gauge FRIndex objects for a BrokenRep (color, then isospin).'''
         indices = []
         if rep.colordim.dim > 1:
             indices.append(self.index(
@@ -377,7 +377,7 @@ class FeynRulesModel(object):
                             ('M' + container, True), ('W' + container, True),
                             (ParticleModel._family_name(members), False)]
         for m in self.multiplet_model.non_conjugated_multiplets:
-            if m.is_colour_conjugated:
+            if m.is_color_conjugated:
                 rh = self.multiplet_model.rh_conjugate_symbol(m)
                 derived += [(rh, False), (rh + 'bar', False)]
         for mm in self._mixing_matrices:

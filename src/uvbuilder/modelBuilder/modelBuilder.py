@@ -211,8 +211,8 @@ class ModelBuilder(object):
             model, conserved = self._project_global_u1s(eChargeRes)
             filled = fillGlobalU1s(model) if conserved else [model]
             for globalU1Res in filled:
-                for colourRes in explodeColordim(globalU1Res):
-                    for model in explodeSpin(colourRes):
+                for colorRes in explodeColordim(globalU1Res):
+                    for model in explodeSpin(colorRes):
                         assert isinstance(model, ParticleModel)
                         yield model
 

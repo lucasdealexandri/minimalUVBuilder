@@ -8,7 +8,7 @@ Kept: the BSM states (|PDG| > 1000000) lighter than --max-mass; the lightest neu
 one, 1000022, is the DM. Masses are taken as |m| (SLHA neutralino masses carry signs).
 Decays of the kept states to kept states are converted to two-body decays:
   - two-body channels are kept as they are;
-  - an off-shell three-body decay X -> Y f f' of colourless states, with f f' an SM
+  - an off-shell three-body decay X -> Y f f' of colorless states, with f f' an SM
     fermion pair, becomes X -> Y V with the virtual boson V that carries the charge
     Q(X) - Q(Y) of the MSSM states (PDG convention: 1000024 and 1000037 are the
     positive charginos): a W+- for an SU(2) doublet pair (u d~, e- nu_e~, ...), a Z
@@ -28,7 +28,7 @@ CHARGE = {1: -1/3, 3: -1/3, 5: -1/3, 2: 2/3, 4: 2/3, 6: 2/3,
           11: -1, 13: -1, 15: -1, 12: 0, 14: 0, 16: 0}
 # SU(2) doublet partners (up-type, down-type) of each generation
 DOUBLETS = {frozenset(p) for p in ((2, 1), (4, 3), (6, 5), (12, 11), (14, 13), (16, 15))}
-# electric charge of the colourless MSSM states (particles; antiparticles opposite)
+# electric charge of the colorless MSSM states (particles; antiparticles opposite)
 BSM_CHARGE = {**{p: 0 for p in (1000022, 1000023, 1000025, 1000035, 1000012, 1000014, 1000016)},
               **{p: 1 for p in (1000024, 1000037)},
               **{p: -1 for p in (1000011, 1000013, 1000015, 2000011, 2000013, 2000015)}}

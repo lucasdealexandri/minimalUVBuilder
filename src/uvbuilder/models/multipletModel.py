@@ -136,31 +136,31 @@ def fr_component_label(
     for a multiplet, plus q{6q} for one component (e.g. ChiC3I2Y1q4).
 
     Encodes the spin (Phi scalar, Chi fermion; Weyl chirality is the Lw/Rw suffix
-    added by Multiplet.fr_symbol), colour (dimension, conjugate marked with 'b',
+    added by Multiplet.fr_symbol), color (dimension, conjugate marked with 'b',
     omitted for singlets), isospin dimension, hypercharge, non-zero tracked
     global charges (B scaled by 3), the family index and the component electric
     charge q = i3 + Y (charges scaled by 6, 'm' = minus). The result is a valid
     bare Mathematica symbol: only ASCII letters and digits. Example labels::
 
         PhiI2Y3       # scalar doublet, Y = 1/2 (component PhiI2Y3q6: q = 1)
-        ChiC3I1Y4B1   # fermion, colour 3, singlet, Y = 2/3, B = 1/3
-        ChiC3bI1Ym4Bm1  # its conjugate rep (colour 3bar, Y = -2/3, B = -1/3)
+        ChiC3I1Y4B1   # fermion, color 3, singlet, Y = 2/3, B = 1/3
+        ChiC3bI1Ym4Bm1  # its conjugate rep (color 3bar, Y = -2/3, B = -1/3)
         PhiI1Y0F2     # second family of a real singlet
     '''
     prefix = _spin_prefix(rep.spin)
 
     if rep.colordim == SU3Rep(0, 0):
-        colour = ''
+        color = ''
     else:
         bar = 'b' if rep.colordim.lower > rep.colordim.upper else ''
-        colour = f'C{rep.colordim.dim}{bar}'
+        color = f'C{rep.colordim.dim}{bar}'
 
     isospin = f'I{rep.isospin.dim}'
     hyper = f'Y{_charge_tag(rep.hypercharge)}'
 
     family = f'F{family_index}' if family_index is not None else ''
 
-    base = f'{prefix}{colour}{isospin}{hyper}'
+    base = f'{prefix}{color}{isospin}{hyper}'
     if not rep.globalU1s.is_zero:
         base += _global_u1_tag(rep.globalU1s)
     if i3 is None:
@@ -296,11 +296,11 @@ class MultipletModel:
                         # A given operator might contain a singlet, but have its
                         # Clebsch-Gordan coefficients equaling 0. This is not a valid operator.
                         kept = [op for op in candidates if op.dim <= 4 and op.contains_singlet]
-                        # An operator without an implemented colour contraction cannot be
+                        # An operator without an implemented color contraction cannot be
                         # written, so it is not part of the model.
                         for op in kept:
                             if op.su3_tensor.is_notimplemented:
-                                warnings.warn(f'{op.pretty_print()}: colour contraction '
+                                warnings.warn(f'{op.pretty_print()}: color contraction '
                                               f'{tuple(m.colordim for m in op.multiplets)} '
                                               f'not implemented; operator dropped.')
                         kept = [op for op in kept if not op.su3_tensor.is_notimplemented]
@@ -331,7 +331,7 @@ class MultipletModel:
     @property
     def interactions_graph(self) -> Graph:
         '''Fields joined by a coupling. Each edge holds in `emits` what the coupling can
-        emit at tree level: 'W' for the gauge link of neighbouring components, 'h' for
+        emit at tree level: 'W' for the gauge link of neighboring components, 'h' for
         a term with a neutral Higgs component (v + h)/sqrt(2), and the other SM fields
         of the term (e.g. tR of a Yukawa). Terms with a charged Higgs component (the
         Goldstone eaten by the W) emit nothing.'''
@@ -488,11 +488,11 @@ class MultipletModel:
 
 
     def valid_decays(self, mixing: ParticleMixing) -> List[ParticleVertex]:
-        '''Decay vertices realised by `mixing`. A vertex with two BSM particles
+        '''Decay vertices realized by `mixing`. A vertex with two BSM particles
         needs a gauge coupling or an operator joining a field of each (tree level);
         one with more BSM particles needs them all in one interaction cluster.
         The emitted SM particles are not checked. Vertices with fewer than two
-        BSM particles (X -> SM SM) are never realised: every operator contains a
+        BSM particles (X -> SM SM) are never realized: every operator contains a
         pair of BSM fields (implicit Z2), so they are skipped here and rejected
         explicitly in `valid_mixing`.'''
 
@@ -523,7 +523,7 @@ class MultipletModel:
         '''Valid iff (i) every BSM particle is assigned, (ii) particles of the same
         rep (one physical FeynRules class) sit in the same mixing block, so the
         block's column index is the class family index, and (iii) every decay
-        vertex is realised by a tree-level coupling (which excludes decays with
+        vertex is realized by a tree-level coupling (which excludes decays with
         fewer than two BSM particles, see `valid_decays`).'''
         # Z2-even decays (X -> SM SM) cannot come from BSM-pair operators
         if any(sum(not p.isSM for p in v.getParticles()) < 2
@@ -551,7 +551,7 @@ class MultipletModel:
 
     @property
     def is_valid(self) -> bool:
-        '''True if a mixing realises every decay with tree-level couplings
+        '''True if a mixing realizes every decay with tree-level couplings
         (valid_mixing). The masses are not checked: a valid model may not reproduce
         the protomodel spectrum, e.g. a doublet pair alone has a single mass
         parameter, so its neutral and charged states are degenerate.'''
@@ -580,7 +580,7 @@ class MultipletModel:
         chunks.append({'Parameters': [parameter for _, parameter in phases.values()]})
 
         for multiplet in self.non_conjugated_multiplets:
-            rh = self.rh_conjugate_symbol(multiplet) if multiplet.is_colour_conjugated else None
+            rh = self.rh_conjugate_symbol(multiplet) if multiplet.is_color_conjugated else None
             chunks.append(multiplet.to_feynrules(tracker, mixings, rh_symbol=rh))
             emitted.add(multiplet.fr_symbol())
 
@@ -672,7 +672,7 @@ class MultipletModel:
         return phases
 
     def rh_conjugate_symbol(self, m: Multiplet) -> str:
-        '''FeynRules name of the RH conjugate of a colour-conjugated multiplet: the
+        '''FeynRules name of the RH conjugate of a color-conjugated multiplet: the
         default label of the conjugate rep + Rw, e.g. ChiC3bI1Ym4Bm1 -> ChiC3I1Y4B1Rw.'''
         family = m.index if self.counter[m.rep] > 1 else None
         return fr_component_label(m.rep.conjRep, family_index=family) + RIGHT_SUFFIX
@@ -724,12 +724,12 @@ def tilde_class(multiplet: Multiplet, name: str, tracker) -> str:
     conj = multiplet.conjugateMultiplet
     bar = multiplet.fr_symbol() + DAGGER_SUFFIX
     indices = tracker.gauge(multiplet.rep)
-    coloured = multiplet.colordim.dim > 1
+    colored = multiplet.colordim.dim > 1
     defs = []
     for field in conj.fields:
         sign = '-' if conj.phase(field.i3) == -1 else ''
-        lhs = (['c_'] if coloured else []) + [str(getSU2Index(field))]
-        rhs = (['c'] if coloured else []) + [str(getSU2Index(field.conjugateField))]
+        lhs = (['c_'] if colored else []) + [str(getSU2Index(field))]
+        rhs = (['c'] if colored else []) + [str(getSU2Index(field.conjugateField))]
         defs.append(f'{name}[{", ".join(lhs)}] :> {sign}{bar}[{", ".join(rhs)}]')
     blockDict = {
         'ClassName': name,

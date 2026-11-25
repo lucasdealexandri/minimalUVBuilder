@@ -132,7 +132,7 @@ def test_labeler_is_applied_to_valid_models_only():
 
 
 def test_decays_need_a_direct_coupling():
-    # coloured MSSM: b1 -> t1 W needs the W coupling of a squark doublet; SU(2)-singlet
+    # colored MSSM: b1 -> t1 W needs the W coupling of a squark doublet; SU(2)-singlet
     # squarks are joined only through the gluino Yukawas (loop level)
     T1, T2, B1, GO, DM = 1000006, 2000006, 1000005, 1000021, 1000022
     data = {'masses': {DM: 100., T1: 540., T2: 790., B1: 750., GO: 1400.},
@@ -209,7 +209,7 @@ def test_feynrules_model_is_saved_to_its_output_file(tmp_path):
         assert written.read_text() == model.to_feynrules()
 
 
-# -- operators without an implemented colour contraction are dropped --
+# -- operators without an implemented color contraction are dropped --
 
 _M368 = {"masses": {1000022: 100.0, 1000003: 400.0, 1000021: 800.0, 9000006: 1200.0},
          "decays": {1000022: {}, 1000003: {(1000022, 6): 1.0}, 1000021: {(1000003, -6): 1.0},
@@ -217,8 +217,8 @@ _M368 = {"masses": {1000022: 100.0, 1000003: 400.0, 1000021: 800.0, 9000006: 120
          "labels": {1000022: 'X1', 1000003: 'S3', 1000021: 'O8', 9000006: 'P6'}}
 
 
-def test_unimplemented_colour_contraction_drops_operator_and_model():
-    '''P6 -> O8 tbar allows P6 in 3bar, 6 or 15. No colour contraction exists for (15, 8, 3bar),
+def test_unimplemented_color_contraction_drops_operator_and_model():
+    '''P6 -> O8 tbar allows P6 in 3bar, 6 or 15. No color contraction exists for (15, 8, 3bar),
     so the 15 models lose their decay operator and are invalid; the 6 model keeps its Jbar operator.'''
     import warnings
     from uvbuilder.tools.reps import DIRAC_SPINOR
@@ -373,7 +373,7 @@ def test_inert_doublet_and_no_singlet_triplet():
 
 
 def test_no_model_emits_a_photon():
-    # (a gluon is read as a jet, which a coloured state emits as a quark)
+    # (a gluon is read as a jet, which a colored state emits as a quark)
     data = {'masses': {1000022: 100., 1000023: 300.},
             'decays': {1000022: {}, 1000023: {(1000022, 22): 1.0}}}
     assert _valid(data) == set()

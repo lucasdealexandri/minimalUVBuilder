@@ -63,7 +63,7 @@ class Term(NamedTuple):
     coeff            - sympy coefficient (already includes the operator parameter)
     fields           - Field objects, canonically ordered (unique per monomial)
 
-    Colour contraction is resolved only at the multiplet level (Operator.fr_term);
+    Color contraction is resolved only at the multiplet level (Operator.fr_term);
     the algebraic expansion carries no SU(3) data.
     '''
     coeff: sp.Expr
@@ -163,7 +163,7 @@ class Operator:
 
     @property
     def su3_tensor(self) -> SU3CGTensor:
-        '''The SU(3) colour contraction of this operator (colour singlets dropped).'''
+        '''The SU(3) color contraction of this operator (color singlets dropped).'''
         return SU3CGTensor([m.colordim for m in self.multiplets])
 
     @property
@@ -345,7 +345,7 @@ class Operator:
 
         The SU(3) contraction head (if any) is emitted first, then the SU(2)
         singlet CG tensor (if any non-singlet isospin), then the multiplets in
-        canonical order. Each multiplet symbol carries ``[colour, isospin]``
+        canonical order. Each multiplet symbol carries ``[color, isospin]``
         index labels. The SU(2) tensor is ordered by isospin dimension
         ascending (ties by canonical field order), so e.g. canonical
         A(2), B(3), C(2) gives ``SU2CG223[m1, m2, m3] A[m1] B[m3] C[m2]``.
@@ -369,7 +369,7 @@ class Operator:
         su3 = self.su3_tensor
         if su3.is_notimplemented:
             warnings.warn(
-                f'{self.pretty_print()}: Unresolved colour contraction; '
+                f'{self.pretty_print()}: Unresolved color contraction; '
                 f'no term produced.')
             return ''
 
@@ -377,7 +377,7 @@ class Operator:
         su2 = self.su2_tensor
 
         if tracker is not None:
-            # Unique labels from the index tracker. Every colour index,
+            # Unique labels from the index tracker. Every color index,
             # including the dummy indices of a composite head, comes from the
             # tracker's 'c' pool (externals first, then dummies).
             # Field j gets iso_labels[j]; tensor slot k belongs to the field slots[k]
@@ -408,19 +408,19 @@ class Operator:
                 dummy = []
 
         su3_render = ''
-        colour: Dict = {}
+        color: Dict = {}
         if su3.is_head:
             su3_render = su3.render(fresh + dummy)
             for (rep, _), lab in zip(su3.external_slots, fresh):
-                colour.setdefault(rep, []).append(lab)
-            colour = {rep: iter(labs) for rep, labs in colour.items()}
+                color.setdefault(rep, []).append(lab)
+            color = {rep: iter(labs) for rep, labs in color.items()}
         elif su3.is_trivial:
             # Pure conjugate pairs contract through the identity/trace: each
             # pair shares one index (delta_{i j*} / adjoint trace a == a).
             for (i, j), lab in zip(su3.trivial_pairs, fresh):
-                colour.setdefault(su3.reps[i], []).append(lab)
-                colour.setdefault(su3.reps[j], []).append(lab)
-            colour = {rep: iter(labs) for rep, labs in colour.items()}
+                color.setdefault(su3.reps[i], []).append(lab)
+                color.setdefault(su3.reps[j], []).append(lab)
+            color = {rep: iter(labs) for rep, labs in color.items()}
 
         parts = [mathematica_code(self.output_parameter(tracker))]
         if su3_render:
@@ -434,14 +434,14 @@ class Operator:
         def emit(m: Multiplet, sp: Union[str, None] = None,
                  bar: bool = False) -> str:
             iso_idx = next(iso, None) if m.isospin.dim > 1 else None
-            idx = [next(colour[m.colordim], None) if m.colordim in colour else None,
+            idx = [next(color[m.colordim], None) if m.colordim in color else None,
                    iso_idx]
             symbol = m.fr_symbol() + (DAGGER_SUFFIX if bar else '')   # FeynRules conjugate: always append
             # SM multiplets are written as the classes of the SM model file the
             # tracker knows about (e.g. QLw[sp, i, 3, c], uRwbar[sp, 3, c]).
             sm_map = getattr(tracker, 'sm', None)
             if m.isSM and sm_map is not None:
-                return sm_map.render(m, spin=sp, colour=idx[0], isospin=iso_idx, bar=bar)
+                return sm_map.render(m, spin=sp, color=idx[0], isospin=iso_idx, bar=bar)
             # A conjugate-partner multiplet enters as its tilde class psi^c = C psi-bar
             tilde = (getattr(tracker, 'conjugate_symbols', None) or {}).get(m)
             if tilde is not None:

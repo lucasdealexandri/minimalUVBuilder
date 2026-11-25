@@ -419,7 +419,7 @@ class BrokenRep(Rep):
     i3: Optional[U1Rep] = None
 
     def __post_init__(self) -> None:
-        # Normalise i3 to a physical U1Rep value (e.g. -1/2 for a doublet component).
+        # Normalize i3 to a physical U1Rep value (e.g. -1/2 for a doublet component).
         if self.i3 is not None and not isinstance(self.i3, U1Rep):
             object.__setattr__(self, 'i3', U1Rep(self.i3))
 

@@ -73,8 +73,8 @@ def test_toggle_dagger_is_an_involution():
 
 
 def test_index_types_of_gauge_representations():
-    colours = [SU3Rep(1, 0), SU3Rep(1, 1), SU3Rep(2, 0), SU3Rep(0, 1), SU3Rep(0, 2)]
-    assert [formatVariable(c) for c in colours] == ['Colour', 'Gluon', 'Sextet', 'SU3d3bar', 'SU3d6bar']
+    colors = [SU3Rep(1, 0), SU3Rep(1, 1), SU3Rep(2, 0), SU3Rep(0, 1), SU3Rep(0, 2)]
+    assert [formatVariable(c) for c in colors] == ['Colour', 'Gluon', 'Sextet', 'SU3d3bar', 'SU3d6bar']
     assert formatVariable(SU2Rep(2)) == 'SU2d3'
     assert formatVariable([SU3Rep(1, 0), 'x']) == '{ Colour, x }'
     with pytest.raises(ValueError):

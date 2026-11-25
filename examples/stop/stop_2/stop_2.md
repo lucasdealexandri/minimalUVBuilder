@@ -45,7 +45,7 @@ $$
 
 ## Multiplets
 
-| multiplet | spin | SU(2) | Y | colour | global charges |
+| multiplet | spin | SU(2) | Y | color | global charges |
 | --- | --- | --- | --- | --- | --- |
 | PhiC3I1Y4 | Scalar | 1 | 2/3 | 3 | () |
 | ChiI1Y0Lw | LH WeylSpinor | 1 | 0 | 1 | () |

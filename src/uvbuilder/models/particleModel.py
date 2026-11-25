@@ -141,8 +141,8 @@ class ParticleModel:
 
     @staticmethod
     def _gauge_name(members: List[Particle]) -> str:
-        '''Tag of a physical class: charge x 3, colour (b = conjugate), non-zero global
-        charges, e.g. Q2C3 (Q = 2/3, colour 3), Qm1C3b (Q = -1/3, colour 3bar),
+        '''Tag of a physical class: charge x 3, color (b = conjugate), non-zero global
+        charges, e.g. Q2C3 (Q = 2/3, color 3), Qm1C3b (Q = -1/3, color 3bar),
         Q0C1D1 (neutral, DarkCharge 1).'''
         from uvbuilder.models.multipletModel import _global_u1_tag   # local: avoids circular import
         rep = members[0].rep
@@ -151,8 +151,8 @@ class ParticleModel:
             raise ValueError(f'Electric charge {rep.eCharge} of {members[0]} is not a multiple of 1/3')
         n = q3.numerator
         charge = f'Q{n}' if n >= 0 else f'Qm{-n}'
-        colour = f'C{rep.colordim.dim}' + ('b' if rep.colordim.lower > rep.colordim.upper else '')
-        return charge + colour + _global_u1_tag(rep.globalU1s)
+        color = f'C{rep.colordim.dim}' + ('b' if rep.colordim.lower > rep.colordim.upper else '')
+        return charge + color + _global_u1_tag(rep.globalU1s)
 
     @staticmethod
     def _family_name(members: List[Particle]) -> str:

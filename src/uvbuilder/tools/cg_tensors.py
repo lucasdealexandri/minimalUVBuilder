@@ -127,7 +127,7 @@ def feyn_index_type(rep) -> str:
             return 'Sextet'     # declared in SMMod.fr (representation T6)
         if (rep.upper, rep.lower) in ((0, 1), (0, 2)):
             return f'SU3d{rep.dim}bar'
-        raise ValueError(f'No FeynRules index type for colour {rep!r} '
+        raise ValueError(f'No FeynRules index type for color {rep!r} '
                          f'(supported: 3, 3bar, 6, 6bar, 8)')
     if isinstance(rep, SU2Rep):
         return su2_index_type(rep.dim)
@@ -159,7 +159,7 @@ class SU2CGTensor(CGTensor):
     ``SU2CG222345``. Values are numeric (used for Python contractions) and
     declared in FeynRules through ``fr_definition``. Slot/index assignment
     to fields is done by the Operator/FeynRulesModel. Two-index tensors are the
-    plain invariant (entries +-1, e.g. X^dagger X); larger ones are unit-normalised.
+    plain invariant (entries +-1, e.g. X^dagger X); larger ones are unit-normalized.
     '''
 
     def __init__(self, isospins: Sequence[SU2Rep], path: Optional[Tuple[SU2Rep, ...]] = None):
@@ -225,13 +225,13 @@ class SU2CGTensor(CGTensor):
 
 
 class SU3CGTensor(CGTensor):
-    '''FeynRules SU(3) colour contraction, resolved from the colour reps.
+    '''FeynRules SU(3) color contraction, resolved from the color reps.
 
     Mirrors ``SU2CGTensor``: takes the reps and derives everything itself,
     carrying no index names. Resolution is one of: a genuine head (K3, K3bar,
     K6, K6bar, T, T6, J, Jbar), a trivial delta/trace contraction (pure
     conjugate pairs, no symbol, one shared index per pair), or a notimplemented
-    (colour singlet but no known head / not pure pairs -> ``UserWarning``).
+    (color singlet but no known head / not pure pairs -> ``UserWarning``).
 
     ``external_slots`` are the field reps in head-argument order (render order
     and per-rep label iterators); ``dummy_count`` is the number of internal
@@ -358,7 +358,7 @@ _HEAD_CASES = {
 
 @lru_cache(maxsize=None)
 def _su3_case(reps: Tuple[SU3Rep, ...]) -> Tuple[str, dict]:
-    '''Resolve a sorted colour-rep tuple into ('head'|'trivial'|'notimplemented', data).'''
+    '''Resolve a sorted color-rep tuple into ('head'|'trivial'|'notimplemented', data).'''
     if not reps:
         return 'trivial', {'pairs': ()}
     if reps in _HEAD_CASES:
@@ -376,6 +376,6 @@ def _su3_case(reps: Tuple[SU3Rep, ...]) -> Tuple[str, dict]:
             used[i] = used[j] = True
         return 'trivial', {'pairs': tuple(tuple(p) for p in pairs)}
     warnings.warn(
-        f'SU3CGTensor: no colour contraction known for {tuple(reps)}; '
+        f'SU3CGTensor: no color contraction known for {tuple(reps)}; '
         f'no term produced.')
     return 'notimplemented', {}

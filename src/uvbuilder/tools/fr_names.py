@@ -781,7 +781,7 @@ class SMClassMap:
 
     Besides Y, only the global charges (LeptonNumber, BaryonNumber, ...) that the
     file actually uses are compared, and the non-generation index types must agree
-    (SU2D for doublets, Colour for coloured fields). The family index of the
+    (SU2D for doublets, Colour for colored fields). The family index of the
     multiplet (``multiplet.index``) fills the ``Generation`` index.
     '''
 
@@ -843,7 +843,7 @@ class SMClassMap:
         elif rep.colordim.dim == 8:
             wanted.add('Gluon')
         elif rep.colordim.dim > 1:
-            raise LookupError(f'No SM index type for colour {rep.colordim} ({multiplet.label})')
+            raise LookupError(f'No SM index type for color {rep.colordim} ({multiplet.label})')
 
         def candidates(chirality, conjugate):
             out = []
@@ -869,12 +869,12 @@ class SMClassMap:
         cls, conjugated = self.lookup(multiplet)
         return cls.name + ('bar' if conjugated != bar else '')
 
-    def render(self, multiplet, spin: Optional[str] = None, colour: Optional[str] = None,
+    def render(self, multiplet, spin: Optional[str] = None, color: Optional[str] = None,
                isospin: Optional[str] = None, bar: bool = False) -> str:
         '''The multiplet with its indices in the class' declared order, e.g.
         ``QLw[sp1, i1, 3, c1]`` or ``uRwbar[sp1, 3, c2]``.'''
         cls, _ = self.lookup(multiplet)
-        values = {'Colour': colour, 'Gluon': colour, 'Sextet': colour,
+        values = {'Colour': color, 'Gluon': color, 'Sextet': color,
                   'Generation': str(multiplet.index)}
         idx = [spin] if cls.kind == 'W' else []
         for index_type in cls.indices:
