@@ -1,16 +1,10 @@
 {
-    "masses": {
-        1000022: 200.0,
-        1000006: 1000.0
-    },
-    "decays": {
-        1000022: {},
-        1000006: {
-            (1000022, 6): 1.0
-        }
-    },
-    "labels": {
-        1000022: 'X1',
-        1000006: 'T1'
-    }
+    "masses": {1000022: 200.0, 1000006: 1000.0},          # GeV
+    "decays": {1000022: {}, 1000006: {(1000022, 6): 1.0}}, # {mother: {(daughters): BR}}
+    "labels": {1000022: 'X1', 1000006: 'T1'},              # default X<pdg>
+    "name": 'stop',                                        # (optional)
+    "author": ['Andre Lessa', 'Lucas Heck'],               # (optional) default UVBuilder
+    "version": '1.0',                                      # (optional)
+    "dm_spin": 'both',                                     # (optional) scalar, fermion or both
+    "dm_charges": ['none'],                                # (optional) e.g. ['B=0,D=1']
 }
