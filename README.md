@@ -1,7 +1,7 @@
 <h1>
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/design/logo/UVBuilderLogo-dark.png">
-    <img src="docs/design/logo/UVBuilderLogo-light.png" alt="UV Builder logo" width="140" align="middle">
+    <img src="docs/design/logo/UVBuilderLogo-dark.png" alt="UV Builder logo" width="140" align="middle">
   </picture>
   Minimal UV Builder
 </h1>
