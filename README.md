@@ -8,7 +8,7 @@
 
 Minimal UV Lagrangians from LHC signatures. Given a *protomodel* (the masses of new
 states and their decays, e.g. from the SModelS protomodel builder), `uvbuilder` finds
-the minimal sets of SU(3) x SU(2) x U(1) multiplets whose renormalisable couplings
+the minimal sets of SU(3) x SU(2) x U(1) multiplets whose renormalizable couplings
 produce every decay at tree level, and writes each as a FeynRules (`.fr`) file, along
 with its object representation (`.pkl`) and a model report (`.md`).
 
@@ -116,7 +116,7 @@ Note: nothing is written without `--out`.
 
 The conventions are listed in `docs/conventions.md`. They comprise the convention of the
 mass terms, under which positive mass parameters give positive masses; the
-diagonalisation of each type of mass matrix (Majorana and Dirac fermions, real and
+diagonalization of each type of mass matrix (Majorana and Dirac fermions, real and
 complex scalars) and the ordering and phases of its mixing matrix, with the gauge
 eigenstates given by U times the mass eigenstates and the columns in ascending mass; the
 param_card blocks of the mixing matrices; the real basis of neutral complex scalars; the
@@ -158,7 +158,7 @@ src/uvbuilder/
   states/             SM and BSM fields, particles, multiplets
   vertices/           decay and particle vertices
   tools/              representations, operators, Clebsch-Gordan tensors, FeynRules names,
-                      spectrum (diagonalisation)
+                      spectrum (diagonalization)
   paramCard.py        ParamCardGenerator (uvbuilder fill)
   report.py           model report (.md)
   data/SMMod.fr       SM model file for FeynRules
