@@ -4,11 +4,11 @@
 (***************************************************************)
 (********************** Multiplet States ***********************)
 (***************************************************************)
-(* Multiplet         | SU3C,SU2L,Y,Lorentz      | Particles         *)
-(* -----------------------------------------------------------------*)
-(* PhiI1Y0           | 1,1,0,Scalar             | PhiI1Y0q0         *)
-(* ChiC3bI1Ym4Bm1Lw  | 3*,1,-2/3,LH WeylSpinor  | ChiC3bI1Ym4Bm1qm4 *)
-(* ChiC3I1Y4B1Lw     | 3,1,2/3,LH WeylSpinor    | ChiC3I1Y4B1q4     *)
+(* Multiplet      | SU3C,SU2L,Y,Lorentz      | Particles      *)
+(* -----------------------------------------------------------*)
+(* PhiI1Y0        | 1,1,0,Scalar             | PhiI1Y0q0      *)
+(* ChiC3bI1Ym4Lw  | 3*,1,-2/3,LH WeylSpinor  | ChiC3bI1Ym4qm4 *)
+(* ChiC3I1Y4Lw    | 3,1,2/3,LH WeylSpinor    | ChiC3I1Y4q4    *)
 (***************************************************************)
 (***************************************************************)
 (*********************** Physical States ***********************)
@@ -26,7 +26,7 @@ M$ModelName = "stop_1";
 M$Information = {
   Authors -> {"Andre Lessa & Lucas Heck"},
   Version -> "1.0",
-  Date    -> "24.11.2026"
+  Date    -> "25.11.2026"
 };
 
 FeynmanGauge = True;
@@ -44,13 +44,13 @@ FeynmanGauge = True;
 M$Parameters = {
 
   (* Mass terms: external parameters *)
-  MChiC3I1Y4B1ChiC3bI1Ym4Bm1 == {
+  MChiC3I1Y4ChiC3bI1Ym4 == {
     ParameterType    -> External,
     BlockName        -> BSMMASS,
     OrderBlock       -> 1,
     Value            -> 1,
     ComplexParameter -> False,
-    Description      -> "Dirac mass of ChiC3bI1Ym4Bm1 ChiC3I1Y4B1"
+    Description      -> "Dirac mass of ChiC3bI1Ym4 ChiC3I1Y4"
   },
   MPhiI1Y0 == {
     ParameterType    -> External,
@@ -62,76 +62,76 @@ M$Parameters = {
   },
 
   (* Yukawa couplings: external parameters *)
-  RzChiC3I1Y4B1PhiI1Y0cRbar == {
+  RzChiC3I1Y4PhiI1Y0cRbar == {
     ParameterType    -> External,
     BlockName        -> BSMYUKAWA,
     OrderBlock       -> 1,
     Value            -> 1,
     ComplexParameter -> False,
-    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4B1 cRbar (real part)"
+    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4 cRbar (real part)"
   },
-  IzChiC3I1Y4B1PhiI1Y0cRbar == {
+  IzChiC3I1Y4PhiI1Y0cRbar == {
     ParameterType    -> External,
     BlockName        -> IMBSMYUKAWA,
     OrderBlock       -> 1,
     Value            -> 0,
     ComplexParameter -> False,
-    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4B1 cRbar (imaginary part)"
+    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4 cRbar (imaginary part)"
   },
-  RzChiC3I1Y4B1PhiI1Y0tRbar == {
+  RzChiC3I1Y4PhiI1Y0tRbar == {
     ParameterType    -> External,
     BlockName        -> BSMYUKAWA,
     OrderBlock       -> 2,
     Value            -> 1,
     ComplexParameter -> False,
-    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4B1 tRbar (real part)"
+    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4 tRbar (real part)"
   },
-  IzChiC3I1Y4B1PhiI1Y0tRbar == {
+  IzChiC3I1Y4PhiI1Y0tRbar == {
     ParameterType    -> External,
     BlockName        -> IMBSMYUKAWA,
     OrderBlock       -> 2,
     Value            -> 0,
     ComplexParameter -> False,
-    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4B1 tRbar (imaginary part)"
+    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4 tRbar (imaginary part)"
   },
-  RzChiC3I1Y4B1PhiI1Y0uRbar == {
+  RzChiC3I1Y4PhiI1Y0uRbar == {
     ParameterType    -> External,
     BlockName        -> BSMYUKAWA,
     OrderBlock       -> 3,
     Value            -> 1,
     ComplexParameter -> False,
-    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4B1 uRbar (real part)"
+    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4 uRbar (real part)"
   },
-  IzChiC3I1Y4B1PhiI1Y0uRbar == {
+  IzChiC3I1Y4PhiI1Y0uRbar == {
     ParameterType    -> External,
     BlockName        -> IMBSMYUKAWA,
     OrderBlock       -> 3,
     Value            -> 0,
     ComplexParameter -> False,
-    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4B1 uRbar (imaginary part)"
+    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4 uRbar (imaginary part)"
   },
 
   (* Yukawa couplings: internal parameters *)
-  zChiC3I1Y4B1PhiI1Y0cRbar == {
+  zChiC3I1Y4PhiI1Y0cRbar == {
     ParameterType    -> Internal,
-    Value            -> RzChiC3I1Y4B1PhiI1Y0cRbar + I*IzChiC3I1Y4B1PhiI1Y0cRbar,
+    Value            -> RzChiC3I1Y4PhiI1Y0cRbar + I*IzChiC3I1Y4PhiI1Y0cRbar,
     ComplexParameter -> True,
     InteractionOrder -> {QED, 1},
-    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4B1 cRbar"
+    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4 cRbar"
   },
-  zChiC3I1Y4B1PhiI1Y0tRbar == {
+  zChiC3I1Y4PhiI1Y0tRbar == {
     ParameterType    -> Internal,
-    Value            -> RzChiC3I1Y4B1PhiI1Y0tRbar + I*IzChiC3I1Y4B1PhiI1Y0tRbar,
+    Value            -> RzChiC3I1Y4PhiI1Y0tRbar + I*IzChiC3I1Y4PhiI1Y0tRbar,
     ComplexParameter -> True,
     InteractionOrder -> {QED, 1},
-    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4B1 tRbar"
+    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4 tRbar"
   },
-  zChiC3I1Y4B1PhiI1Y0uRbar == {
+  zChiC3I1Y4PhiI1Y0uRbar == {
     ParameterType    -> Internal,
-    Value            -> RzChiC3I1Y4B1PhiI1Y0uRbar + I*IzChiC3I1Y4B1PhiI1Y0uRbar,
+    Value            -> RzChiC3I1Y4PhiI1Y0uRbar + I*IzChiC3I1Y4PhiI1Y0uRbar,
     ComplexParameter -> True,
     InteractionOrder -> {QED, 1},
-    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4B1 uRbar"
+    Description      -> "Yukawa coupling PhiI1Y0 ChiC3I1Y4 uRbar"
   },
 
   (* Quartic couplings: external parameters *)
@@ -148,7 +148,7 @@ M$Parameters = {
   (* Mass-eigenstate phases: internal parameters *)
   PT1 == {
     ParameterType    -> Internal,
-    Value            -> Conjugate[MChiC3I1Y4B1ChiC3bI1Ym4Bm1]/Abs[MChiC3I1Y4B1ChiC3bI1Ym4Bm1],
+    Value            -> MChiC3I1Y4ChiC3bI1Ym4/Abs[MChiC3I1Y4ChiC3bI1Ym4],
     ComplexParameter -> True,
     Description      -> "Phase of T1: positive Dirac mass"
   },
@@ -181,7 +181,7 @@ M$ClassesDescription = {
               },
    W[101] == {
                ClassName      -> T1Lw,
-               QuantumNumbers -> {Q -> 2/3, BaryonNumber -> 1/3},
+               QuantumNumbers -> {Q -> 2/3},
                SelfConjugate  -> False,
                Unphysical     -> True,
                Chirality      -> Left,
@@ -189,7 +189,7 @@ M$ClassesDescription = {
               },
    W[102] == {
                ClassName      -> T1Rw,
-               QuantumNumbers -> {Q -> 2/3, BaryonNumber -> 1/3},
+               QuantumNumbers -> {Q -> 2/3},
                SelfConjugate  -> False,
                Unphysical     -> True,
                Chirality      -> Right,
@@ -197,7 +197,7 @@ M$ClassesDescription = {
               },
    F[101] == {
                ClassName      -> T1,
-               QuantumNumbers -> {Q -> 2/3, BaryonNumber -> 1/3},
+               QuantumNumbers -> {Q -> 2/3},
                SelfConjugate  -> False,
                WeylComponents -> {T1Lw, T1Rw},
                Mass           -> {MT1, 1000.0},
@@ -214,31 +214,31 @@ M$ClassesDescription = {
                Definitions    -> {PhiI1Y0 :> X1}
               },
    W[103] == {
-               ClassName      -> ChiC3I1Y4B1Rw,
-               QuantumNumbers -> {Y -> 2/3, BaryonNumber -> 1/3},
+               ClassName      -> ChiC3I1Y4Rw,
+               QuantumNumbers -> {Y -> 2/3},
                SelfConjugate  -> False,
                Unphysical     -> True,
                Chirality      -> Right,
                Indices        -> {Index[Colour]},
-               Definitions    -> {ChiC3I1Y4B1Rw[s_, c_] :> Conjugate[PT1] T1Rw[s, c]}
+               Definitions    -> {ChiC3I1Y4Rw[s_, c_] :> Conjugate[PT1] T1Rw[s, c]}
               },
    W[104] == {
-               ClassName      -> ChiC3bI1Ym4Bm1Lw,
-               QuantumNumbers -> {Y -> -2/3, BaryonNumber -> -1/3},
+               ClassName      -> ChiC3bI1Ym4Lw,
+               QuantumNumbers -> {Y -> -2/3},
                SelfConjugate  -> False,
                Unphysical     -> True,
                Chirality      -> Left,
                Indices        -> {Index[Colour]},
-               Definitions    -> {ChiC3bI1Ym4Bm1Lw[s_, c_] :> ChiC3I1Y4B1Rwbar[s, c]}
+               Definitions    -> {ChiC3bI1Ym4Lw[s_, c_] :> ChiC3I1Y4Rwbar[s, c]}
               },
    W[105] == {
-               ClassName      -> ChiC3I1Y4B1Lw,
-               QuantumNumbers -> {Y -> 2/3, BaryonNumber -> 1/3},
+               ClassName      -> ChiC3I1Y4Lw,
+               QuantumNumbers -> {Y -> 2/3},
                SelfConjugate  -> False,
                Unphysical     -> True,
                Chirality      -> Left,
                Indices        -> {Index[Colour]},
-               Definitions    -> {ChiC3I1Y4B1Lw[s_, c_] :> T1Lw[s, c]}
+               Definitions    -> {ChiC3I1Y4Lw[s_, c_] :> T1Lw[s, c]}
               }
 };
 
@@ -249,22 +249,22 @@ M$ClassesDescription = {
 (* Kinetic terms *)
 LBSMKin := Block[{mu}, ExpandIndices[
     + 1/2 DC[PhiI1Y0, mu].DC[PhiI1Y0, mu]
-    + I sibar[mu, sp1, sp2] (ChiC3I1Y4B1Lwbar[sp1, c1].DC[ChiC3I1Y4B1Lw[sp2, c1], mu])
-    + I sibar[mu, sp1, sp2] (ChiC3I1Y4B1Rw[sp1, c1].DC[ChiC3I1Y4B1Rwbar[sp2, c1], mu])
+    + I sibar[mu, sp1, sp2] (ChiC3I1Y4Lwbar[sp1, c1].DC[ChiC3I1Y4Lw[sp2, c1], mu])
+    + I sibar[mu, sp1, sp2] (ChiC3I1Y4Rw[sp1, c1].DC[ChiC3I1Y4Rwbar[sp2, c1], mu])
   , FlavorExpand -> {SU2D, SU2W}]];
 
 (* Mass terms *)
 LBSMMass := ExpandIndices[
     - (1/2)*MPhiI1Y0^2 PhiI1Y0 PhiI1Y0
-    - MChiC3I1Y4B1ChiC3bI1Ym4Bm1 (ChiC3bI1Ym4Bm1Lw[sp1, c1].ChiC3I1Y4B1Lw[sp1, c1]) - HC[MChiC3I1Y4B1ChiC3bI1Ym4Bm1 (ChiC3bI1Ym4Bm1Lw[sp1, c1].ChiC3I1Y4B1Lw[sp1, c1])]
+    - MChiC3I1Y4ChiC3bI1Ym4 (ChiC3bI1Ym4Lw[sp1, c1].ChiC3I1Y4Lw[sp1, c1]) - HC[MChiC3I1Y4ChiC3bI1Ym4 (ChiC3bI1Ym4Lw[sp1, c1].ChiC3I1Y4Lw[sp1, c1])]
   , FlavorExpand -> {SU2D, SU2W}];
 
 (* Interactions *)
 LBSMInt := ExpandIndices[
     (* Yukawa couplings *)
-    - zChiC3I1Y4B1PhiI1Y0cRbar PhiI1Y0 (ChiC3I1Y4B1Lw[sp1, c1].uRwbar[sp1, 2, c1]) - HC[zChiC3I1Y4B1PhiI1Y0cRbar PhiI1Y0 (ChiC3I1Y4B1Lw[sp1, c1].uRwbar[sp1, 2, c1])]
-    - zChiC3I1Y4B1PhiI1Y0tRbar PhiI1Y0 (ChiC3I1Y4B1Lw[sp1, c1].uRwbar[sp1, 3, c1]) - HC[zChiC3I1Y4B1PhiI1Y0tRbar PhiI1Y0 (ChiC3I1Y4B1Lw[sp1, c1].uRwbar[sp1, 3, c1])]
-    - zChiC3I1Y4B1PhiI1Y0uRbar PhiI1Y0 (ChiC3I1Y4B1Lw[sp1, c1].uRwbar[sp1, 1, c1]) - HC[zChiC3I1Y4B1PhiI1Y0uRbar PhiI1Y0 (ChiC3I1Y4B1Lw[sp1, c1].uRwbar[sp1, 1, c1])]
+    - zChiC3I1Y4PhiI1Y0cRbar PhiI1Y0 (ChiC3I1Y4Lw[sp1, c1].uRwbar[sp1, 2, c1]) - HC[zChiC3I1Y4PhiI1Y0cRbar PhiI1Y0 (ChiC3I1Y4Lw[sp1, c1].uRwbar[sp1, 2, c1])]
+    - zChiC3I1Y4PhiI1Y0tRbar PhiI1Y0 (ChiC3I1Y4Lw[sp1, c1].uRwbar[sp1, 3, c1]) - HC[zChiC3I1Y4PhiI1Y0tRbar PhiI1Y0 (ChiC3I1Y4Lw[sp1, c1].uRwbar[sp1, 3, c1])]
+    - zChiC3I1Y4PhiI1Y0uRbar PhiI1Y0 (ChiC3I1Y4Lw[sp1, c1].uRwbar[sp1, 1, c1]) - HC[zChiC3I1Y4PhiI1Y0uRbar PhiI1Y0 (ChiC3I1Y4Lw[sp1, c1].uRwbar[sp1, 1, c1])]
     (* Quartic couplings *)
     - lambdaPhiI1Y0PhiI1Y0 SU2CG22[i1, i2] PhiI1Y0 PhiI1Y0 Phitilde[i1] Phi[i2]
   , FlavorExpand -> {SU2D, SU2W}];

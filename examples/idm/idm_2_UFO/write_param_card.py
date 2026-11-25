@@ -109,7 +109,9 @@ class ParamCardWriter(object):
         else:
             text = '''DECAY %s %e \n''' % (lhacode, complex(param.value).real)
         self.fsock.write(text) 
+                    
         
+
     def write_dep_param_block(self, lhablock):
         import cmath
         from parameters import all_parameters
@@ -141,7 +143,7 @@ class ParamCardWriter(object):
             
             text += """%s %s %f # %s : %s \n""" % (prefix, part.pdg_code,
                         value, part.name, param.value)
-        self.fsock.write(text) 
+        self.fsock.write(text)
     
     sm_pdg = [1,2,3,4,5,6,11,12,13,13,14,15,16,21,22,23,24,25]
     data="""Block QNUMBERS %(pdg)d  # %(name)s 

@@ -25,7 +25,7 @@ M$ModelName = "idm_2";
 M$Information = {
   Authors -> {"Andre Lessa & Lucas Heck"},
   Version -> "1.0",
-  Date    -> "24.11.2026"
+  Date    -> "25.11.2026"
 };
 
 FeynmanGauge = True;
@@ -86,7 +86,7 @@ M$Parameters = {
   (* Mass-eigenstate phases: internal parameters *)
   PHp == {
     ParameterType    -> Internal,
-    Value            -> -Conjugate[MChiI2Y3ChiI2Ym3]/Abs[MChiI2Y3ChiI2Ym3],
+    Value            -> MChiI2Y3ChiI2Ym3/Abs[MChiI2Y3ChiI2Ym3],
     ComplexParameter -> True,
     Description      -> "Phase of Hp: positive Dirac mass"
   },
@@ -189,7 +189,7 @@ LBSMKin := Block[{mu}, ExpandIndices[
 
 (* Mass terms *)
 LBSMMass := ExpandIndices[
-    - MChiI2Y3ChiI2Ym3 SU2CG22[i1, i2] (ChiI2Ym3Lw[sp1, i1].ChiI2Y3Lw[sp1, i2]) - HC[MChiI2Y3ChiI2Ym3 SU2CG22[i1, i2] (ChiI2Ym3Lw[sp1, i1].ChiI2Y3Lw[sp1, i2])]
+    + MChiI2Y3ChiI2Ym3 SU2CG22[i1, i2] (ChiI2Ym3Lw[sp1, i1].ChiI2Y3Lw[sp1, i2]) + HC[MChiI2Y3ChiI2Ym3 SU2CG22[i1, i2] (ChiI2Ym3Lw[sp1, i1].ChiI2Y3Lw[sp1, i2])]
   , FlavorExpand -> {FGenQ0C1, SU2D, SU2W}];
 
 (* Interactions *)
