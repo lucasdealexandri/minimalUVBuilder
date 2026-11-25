@@ -25,7 +25,7 @@ M$ModelName = "sddm_1";
 M$Information = {
   Authors -> {"Andre Lessa & Lucas Heck"},
   Version -> "1.0",
-  Date    -> "24.11.2026"
+  Date    -> "25.11.2026"
 };
 
 FeynmanGauge = True;

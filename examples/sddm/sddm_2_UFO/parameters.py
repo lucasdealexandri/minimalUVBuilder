@@ -1,6 +1,6 @@
 # This file was automatically created by FeynRules 2.3.49
 # Mathematica version: 14.3.0 for Mac OS X ARM (64-bit) (July 8, 2025)
-# Date: Tue 24 Nov 2026 14:16:22
+# Date: Wed 25 Nov 2026 09:30:04
 
 
 
@@ -632,7 +632,7 @@ UMixMZ1Z2Z33x3 = Parameter(name = 'UMixMZ1Z2Z33x3',
 PW1 = Parameter(name = 'PW1',
                 nature = 'internal',
                 type = 'complex',
-                value = '-(MChiI2Y3ChiI2Ym3/abs(MChiI2Y3ChiI2Ym3))',
+                value = 'MChiI2Y3ChiI2Ym3/abs(MChiI2Y3ChiI2Ym3)',
                 texname = '\\text{PW1}')
 
 MW = Parameter(name = 'MW',

@@ -1,0 +1,386 @@
+(***************************************************************)
+(***************************************************************)
+(***** FeynRules model file automatically generated      *******)
+(***************************************************************)
+(********************** Multiplet States ***********************)
+(***************************************************************)
+(* Multiplet  | SU3C,SU2L,Y,Lorentz  | Particles                *)
+(* -------------------------------------------------------------*)
+(* PhiI2Y3F1  | 1,2,1/2,Scalar       | PhiI2Y3q6F1, PhiI2Y3q0F1 *)
+(* PhiI2Y3F2  | 1,2,1/2,Scalar       | PhiI2Y3q6F2, PhiI2Y3q0F2 *)
+(***************************************************************)
+(***************************************************************)
+(*********************** Physical States ***********************)
+(***************************************************************)
+(* States          | SU3C,Q,Lorentz  | Particles      *)
+(* ---------------------------------------------------*)
+(* N1, N2, N3, N4  | 1,0,Scalar      | N1, N2, N3, N4 *)
+(* C1, C2          | 1,1,Scalar      | C1, C2         *)
+(***************************************************************)
+
+
+
+M$ModelName = "ew_ymi2l51r_3";
+
+M$Information = {
+  Authors -> {"Andre Lessa & Lucas Heck"},
+  Version -> "1.0",
+  Date    -> "25.11.2026"
+};
+
+FeynmanGauge = True;
+
+(* ************************** *)
+(* *****    Indices     ***** *)
+(* ************************** *)
+
+IndexRange[Index[SGenQ0C1]] = Range[4];
+IndexRange[Index[SGenQ3C1]] = Range[2];
+IndexStyle[SGenQ0C1,A];
+IndexStyle[SGenQ3C1,A];
+
+(* ************************** *)
+(* *****   Parameters   ***** *)
+(* ************************** *)
+
+M$Parameters = {
+
+  (* Mass terms: external parameters *)
+  MPhiI2Y3F1 == {
+    ParameterType    -> External,
+    BlockName        -> BSMMASS,
+    OrderBlock       -> 1,
+    Value            -> 1,
+    ComplexParameter -> False,
+    Description      -> "Mass of PhiI2Y3F1"
+  },
+  MPhiI2Y3F2 == {
+    ParameterType    -> External,
+    BlockName        -> BSMMASS,
+    OrderBlock       -> 2,
+    Value            -> 1,
+    ComplexParameter -> False,
+    Description      -> "Mass of PhiI2Y3F2"
+  },
+
+  (* Quartic couplings: external parameters *)
+  RlambdaPhiI2Y3F1PhiI2Y3F1 == {
+    ParameterType    -> External,
+    BlockName        -> BSMQUARTIC,
+    OrderBlock       -> 1,
+    Value            -> 1,
+    ComplexParameter -> False,
+    Description      -> "Quartic coupling PhiI2Y3F1 PhiI2Y3F1 Phibar Phibar (real part)"
+  },
+  IlambdaPhiI2Y3F1PhiI2Y3F1 == {
+    ParameterType    -> External,
+    BlockName        -> IMBSMQUARTIC,
+    OrderBlock       -> 1,
+    Value            -> 0,
+    ComplexParameter -> False,
+    Description      -> "Quartic coupling PhiI2Y3F1 PhiI2Y3F1 Phibar Phibar (imaginary part)"
+  },
+  lambdaPhiI2Y3F1PhiI2Y3F1barP1 == {
+    ParameterType    -> External,
+    BlockName        -> BSMQUARTIC,
+    OrderBlock       -> 2,
+    Value            -> 1,
+    ComplexParameter -> False,
+    InteractionOrder -> {QED, 2},
+    Description      -> "Quartic coupling PhiI2Y3F1bar PhiI2Y3F1 Phibar Phi (SU(2) invariant P1)"
+  },
+  lambdaPhiI2Y3F1PhiI2Y3F1barP2 == {
+    ParameterType    -> External,
+    BlockName        -> BSMQUARTIC,
+    OrderBlock       -> 3,
+    Value            -> 1,
+    ComplexParameter -> False,
+    InteractionOrder -> {QED, 2},
+    Description      -> "Quartic coupling PhiI2Y3F1bar PhiI2Y3F1 Phibar Phi (SU(2) invariant P2)"
+  },
+  RlambdaPhiI2Y3F1PhiI2Y3F2 == {
+    ParameterType    -> External,
+    BlockName        -> BSMQUARTIC,
+    OrderBlock       -> 4,
+    Value            -> 1,
+    ComplexParameter -> False,
+    Description      -> "Quartic coupling PhiI2Y3F1 PhiI2Y3F2 Phibar Phibar (real part)"
+  },
+  IlambdaPhiI2Y3F1PhiI2Y3F2 == {
+    ParameterType    -> External,
+    BlockName        -> IMBSMQUARTIC,
+    OrderBlock       -> 4,
+    Value            -> 0,
+    ComplexParameter -> False,
+    Description      -> "Quartic coupling PhiI2Y3F1 PhiI2Y3F2 Phibar Phibar (imaginary part)"
+  },
+  RlambdaPhiI2Y3F1PhiI2Y3F2barP1 == {
+    ParameterType    -> External,
+    BlockName        -> BSMQUARTIC,
+    OrderBlock       -> 5,
+    Value            -> 1,
+    ComplexParameter -> False,
+    Description      -> "Quartic coupling PhiI2Y3F2bar PhiI2Y3F1 Phibar Phi (SU(2) invariant P1) (real part)"
+  },
+  IlambdaPhiI2Y3F1PhiI2Y3F2barP1 == {
+    ParameterType    -> External,
+    BlockName        -> IMBSMQUARTIC,
+    OrderBlock       -> 5,
+    Value            -> 0,
+    ComplexParameter -> False,
+    Description      -> "Quartic coupling PhiI2Y3F2bar PhiI2Y3F1 Phibar Phi (SU(2) invariant P1) (imaginary part)"
+  },
+  RlambdaPhiI2Y3F1PhiI2Y3F2barP2 == {
+    ParameterType    -> External,
+    BlockName        -> BSMQUARTIC,
+    OrderBlock       -> 6,
+    Value            -> 1,
+    ComplexParameter -> False,
+    Description      -> "Quartic coupling PhiI2Y3F2bar PhiI2Y3F1 Phibar Phi (SU(2) invariant P2) (real part)"
+  },
+  IlambdaPhiI2Y3F1PhiI2Y3F2barP2 == {
+    ParameterType    -> External,
+    BlockName        -> IMBSMQUARTIC,
+    OrderBlock       -> 6,
+    Value            -> 0,
+    ComplexParameter -> False,
+    Description      -> "Quartic coupling PhiI2Y3F2bar PhiI2Y3F1 Phibar Phi (SU(2) invariant P2) (imaginary part)"
+  },
+  RlambdaPhiI2Y3F2PhiI2Y3F2 == {
+    ParameterType    -> External,
+    BlockName        -> BSMQUARTIC,
+    OrderBlock       -> 7,
+    Value            -> 1,
+    ComplexParameter -> False,
+    Description      -> "Quartic coupling PhiI2Y3F2 PhiI2Y3F2 Phibar Phibar (real part)"
+  },
+  IlambdaPhiI2Y3F2PhiI2Y3F2 == {
+    ParameterType    -> External,
+    BlockName        -> IMBSMQUARTIC,
+    OrderBlock       -> 7,
+    Value            -> 0,
+    ComplexParameter -> False,
+    Description      -> "Quartic coupling PhiI2Y3F2 PhiI2Y3F2 Phibar Phibar (imaginary part)"
+  },
+  lambdaPhiI2Y3F2PhiI2Y3F2barP1 == {
+    ParameterType    -> External,
+    BlockName        -> BSMQUARTIC,
+    OrderBlock       -> 8,
+    Value            -> 1,
+    ComplexParameter -> False,
+    InteractionOrder -> {QED, 2},
+    Description      -> "Quartic coupling PhiI2Y3F2bar PhiI2Y3F2 Phibar Phi (SU(2) invariant P1)"
+  },
+  lambdaPhiI2Y3F2PhiI2Y3F2barP2 == {
+    ParameterType    -> External,
+    BlockName        -> BSMQUARTIC,
+    OrderBlock       -> 9,
+    Value            -> 1,
+    ComplexParameter -> False,
+    InteractionOrder -> {QED, 2},
+    Description      -> "Quartic coupling PhiI2Y3F2bar PhiI2Y3F2 Phibar Phi (SU(2) invariant P2)"
+  },
+
+  (* Quartic couplings: internal parameters *)
+  lambdaPhiI2Y3F1PhiI2Y3F1 == {
+    ParameterType    -> Internal,
+    Value            -> RlambdaPhiI2Y3F1PhiI2Y3F1 + I*IlambdaPhiI2Y3F1PhiI2Y3F1,
+    ComplexParameter -> True,
+    InteractionOrder -> {QED, 2},
+    Description      -> "Quartic coupling PhiI2Y3F1 PhiI2Y3F1 Phibar Phibar"
+  },
+  lambdaPhiI2Y3F1PhiI2Y3F2 == {
+    ParameterType    -> Internal,
+    Value            -> RlambdaPhiI2Y3F1PhiI2Y3F2 + I*IlambdaPhiI2Y3F1PhiI2Y3F2,
+    ComplexParameter -> True,
+    InteractionOrder -> {QED, 2},
+    Description      -> "Quartic coupling PhiI2Y3F1 PhiI2Y3F2 Phibar Phibar"
+  },
+  lambdaPhiI2Y3F1PhiI2Y3F2barP1 == {
+    ParameterType    -> Internal,
+    Value            -> RlambdaPhiI2Y3F1PhiI2Y3F2barP1 + I*IlambdaPhiI2Y3F1PhiI2Y3F2barP1,
+    ComplexParameter -> True,
+    InteractionOrder -> {QED, 2},
+    Description      -> "Quartic coupling PhiI2Y3F2bar PhiI2Y3F1 Phibar Phi (SU(2) invariant P1)"
+  },
+  lambdaPhiI2Y3F1PhiI2Y3F2barP2 == {
+    ParameterType    -> Internal,
+    Value            -> RlambdaPhiI2Y3F1PhiI2Y3F2barP2 + I*IlambdaPhiI2Y3F1PhiI2Y3F2barP2,
+    ComplexParameter -> True,
+    InteractionOrder -> {QED, 2},
+    Description      -> "Quartic coupling PhiI2Y3F2bar PhiI2Y3F1 Phibar Phi (SU(2) invariant P2)"
+  },
+  lambdaPhiI2Y3F2PhiI2Y3F2 == {
+    ParameterType    -> Internal,
+    Value            -> RlambdaPhiI2Y3F2PhiI2Y3F2 + I*IlambdaPhiI2Y3F2PhiI2Y3F2,
+    ComplexParameter -> True,
+    InteractionOrder -> {QED, 2},
+    Description      -> "Quartic coupling PhiI2Y3F2 PhiI2Y3F2 Phibar Phibar"
+  },
+
+  (* Mixing matrices: external parameters *)
+  RUMixCC1C2 == {
+    ParameterType    -> External,
+    BlockName        -> UMIXCC1C2,
+    Indices          -> {Index[SGenQ3C1], Index[SGenQ3C1]},
+    Value            -> {RUMixCC1C2[1, 1] -> 1, RUMixCC1C2[1, 2] -> 0,
+                         RUMixCC1C2[2, 1] -> 0, RUMixCC1C2[2, 2] -> 1},
+    ComplexParameter -> False,
+    Description      -> "Mixing matrix of C1, C2 (real part)"
+  },
+  IUMixCC1C2 == {
+    ParameterType    -> External,
+    BlockName        -> IMUMIXCC1C2,
+    Indices          -> {Index[SGenQ3C1], Index[SGenQ3C1]},
+    Value            -> {IUMixCC1C2[1, 1] -> 0, IUMixCC1C2[1, 2] -> 0,
+                         IUMixCC1C2[2, 1] -> 0, IUMixCC1C2[2, 2] -> 0},
+    ComplexParameter -> False,
+    Description      -> "Mixing matrix of C1, C2 (imaginary part)"
+  },
+  UMixRN1N2N3N4 == {
+    ParameterType    -> External,
+    BlockName        -> UMIXRN1N2N3N4,
+    Indices          -> {Index[SGenQ0C1], Index[SGenQ0C1]},
+    Unitary          -> True,
+    Value            -> {UMixRN1N2N3N4[1, 1] -> 1, UMixRN1N2N3N4[1, 2] -> 0, UMixRN1N2N3N4[1, 3] -> 0, UMixRN1N2N3N4[1, 4] -> 0,
+                         UMixRN1N2N3N4[2, 1] -> 0, UMixRN1N2N3N4[2, 2] -> 1, UMixRN1N2N3N4[2, 3] -> 0, UMixRN1N2N3N4[2, 4] -> 0,
+                         UMixRN1N2N3N4[3, 1] -> 0, UMixRN1N2N3N4[3, 2] -> 0, UMixRN1N2N3N4[3, 3] -> 1, UMixRN1N2N3N4[3, 4] -> 0,
+                         UMixRN1N2N3N4[4, 1] -> 0, UMixRN1N2N3N4[4, 2] -> 0, UMixRN1N2N3N4[4, 3] -> 0, UMixRN1N2N3N4[4, 4] -> 1},
+    ComplexParameter -> False,
+    Description      -> "Mixing matrix of N1, N2, N3, N4 (real orthogonal)"
+  },
+
+  (* Mixing matrices: internal parameters *)
+  UMixCC1C2 == {
+    ParameterType    -> Internal,
+    Indices          -> {Index[SGenQ3C1], Index[SGenQ3C1]},
+    Unitary          -> True,
+    Value            -> {UMixCC1C2[i_, j_] :> RUMixCC1C2[i, j] + I*IUMixCC1C2[i, j]},
+    ComplexParameter -> True,
+    Description      -> "Mixing matrix of C1, C2"
+  },
+
+  (* SU(2) Clebsch-Gordan tensors: internal parameters *)
+  SU2CG2222P1 == {
+    ParameterType    -> Internal,
+    Indices          -> {Index[SU2D], Index[SU2D], Index[SU2D], Index[SU2D]},
+    Definitions      -> {SU2CG2222P1[1, 2, 1, 2] -> 1/2,
+                         SU2CG2222P1[1, 2, 2, 1] -> -1/2,
+                         SU2CG2222P1[2, 1, 1, 2] -> -1/2,
+                         SU2CG2222P1[2, 1, 2, 1] -> 1/2,
+                         SU2CG2222P1[i1_?NumericQ, i2_?NumericQ, i3_?NumericQ, i4_?NumericQ] :> 0},
+    ComplexParameter -> False
+  },
+  SU2CG2222P2 == {
+    ParameterType    -> Internal,
+    Indices          -> {Index[SU2D], Index[SU2D], Index[SU2D], Index[SU2D]},
+    Definitions      -> {SU2CG2222P2[1, 1, 2, 2] -> (1/3)*3^(1/2),
+                         SU2CG2222P2[1, 2, 1, 2] -> -1/6*3^(1/2),
+                         SU2CG2222P2[1, 2, 2, 1] -> -1/6*3^(1/2),
+                         SU2CG2222P2[2, 1, 1, 2] -> -1/6*3^(1/2),
+                         SU2CG2222P2[2, 1, 2, 1] -> -1/6*3^(1/2),
+                         SU2CG2222P2[2, 2, 1, 1] -> (1/3)*3^(1/2),
+                         SU2CG2222P2[i1_?NumericQ, i2_?NumericQ, i3_?NumericQ, i4_?NumericQ] :> 0},
+    ComplexParameter -> False
+  }
+
+};
+
+(* ************************** *)
+(* **** Particle classes **** *)
+(* ************************** *)
+
+M$ClassesDescription = {
+
+(***  Physical (mass eigenstates) Fields ***)
+   S[101] == {
+               ClassName      -> PhiQ0C1,
+               ClassMembers   -> {N1,N2,N3,N4},
+               SelfConjugate  -> True,
+               Mass           -> {MPhiQ0C1, {MN1, 256.924777}, {MN2, 617.426187}, {MN3, 1638.2255}, {MN4, 1641.63702}},
+               Width          -> {WPhiQ0C1, {WN1, 0.0}, {WN2, 6.1742618700000005}, {WN3, 16.382255}, {WN4, 16.4163702}},
+               PDG            -> {1000022, 1000023, 1000025, 1000035},
+               Indices        -> {Index[SGenQ0C1]},
+               FlavorIndex    -> SGenQ0C1
+              },
+   S[102] == {
+               ClassName      -> PhiQ3C1,
+               ClassMembers   -> {C1,C2},
+               QuantumNumbers -> {Q -> 1},
+               SelfConjugate  -> False,
+               Mass           -> {MPhiQ3C1, {MC1, 617.58599}, {MC2, 1642.09149}},
+               Width          -> {WPhiQ3C1, {WC1, 6.175859900000001}, {WC2, 16.4209149}},
+               PDG            -> {1000024, 1000037},
+               Indices        -> {Index[SGenQ3C1]},
+               FlavorIndex    -> SGenQ3C1
+              },
+
+(***  Multiplet (gauge eigenstates) Fields ***)
+   S[103] == {
+               ClassName      -> PhiI2Y3F1,
+               QuantumNumbers -> {Y -> 1/2},
+               SelfConjugate  -> False,
+               Unphysical     -> True,
+               Indices        -> {Index[SU2D]},
+               FlavorIndex    -> SU2D,
+               Definitions    -> {PhiI2Y3F1[1] :> Module[{j}, UMixCC1C2[1, j] PhiQ3C1[j]], PhiI2Y3F1[2] :> Module[{j}, (UMixRN1N2N3N4[1, j] + I*UMixRN1N2N3N4[2, j])/Sqrt[2] PhiQ0C1[j]]}
+              },
+   S[104] == {
+               ClassName      -> PhiI2Y3F2,
+               QuantumNumbers -> {Y -> 1/2},
+               SelfConjugate  -> False,
+               Unphysical     -> True,
+               Indices        -> {Index[SU2D]},
+               FlavorIndex    -> SU2D,
+               Definitions    -> {PhiI2Y3F2[1] :> Module[{j}, UMixCC1C2[2, j] PhiQ3C1[j]], PhiI2Y3F2[2] :> Module[{j}, (UMixRN1N2N3N4[3, j] + I*UMixRN1N2N3N4[4, j])/Sqrt[2] PhiQ0C1[j]]}
+              },
+   S[105] == {
+               ClassName      -> PhiI2Y3F1tilde,
+               QuantumNumbers -> {Y -> -1/2},
+               SelfConjugate  -> False,
+               Unphysical     -> True,
+               Indices        -> {Index[SU2D]},
+               FlavorIndex    -> SU2D,
+               Definitions    -> {PhiI2Y3F1tilde[2] :> -PhiI2Y3F1bar[1], PhiI2Y3F1tilde[1] :> PhiI2Y3F1bar[2]}
+              },
+   S[106] == {
+               ClassName      -> PhiI2Y3F2tilde,
+               QuantumNumbers -> {Y -> -1/2},
+               SelfConjugate  -> False,
+               Unphysical     -> True,
+               Indices        -> {Index[SU2D]},
+               FlavorIndex    -> SU2D,
+               Definitions    -> {PhiI2Y3F2tilde[2] :> -PhiI2Y3F2bar[1], PhiI2Y3F2tilde[1] :> PhiI2Y3F2bar[2]}
+              }
+};
+
+(* ************************** *)
+(* *****   Lagrangian   ***** *)
+(* ************************** *)
+
+(* Kinetic terms *)
+LBSMKin := Block[{mu}, ExpandIndices[
+    + DC[PhiI2Y3F1bar[i1], mu].DC[PhiI2Y3F1[i1], mu]
+    + DC[PhiI2Y3F2bar[i1], mu].DC[PhiI2Y3F2[i1], mu]
+  , FlavorExpand -> {SGenQ0C1, SGenQ3C1, SU2D, SU2W}]];
+
+(* Mass terms *)
+LBSMMass := ExpandIndices[
+    - MPhiI2Y3F1^2 PhiI2Y3F1bar[i1] PhiI2Y3F1[i1]
+    - MPhiI2Y3F2^2 PhiI2Y3F2bar[i1] PhiI2Y3F2[i1]
+  , FlavorExpand -> {SGenQ0C1, SGenQ3C1, SU2D, SU2W}];
+
+(* Interactions *)
+LBSMInt := ExpandIndices[
+    - lambdaPhiI2Y3F1PhiI2Y3F1 SU2CG2222P2[i1, i2, i3, i4] PhiI2Y3F1[i1] PhiI2Y3F1[i2] Phitilde[i3] Phitilde[i4] - HC[lambdaPhiI2Y3F1PhiI2Y3F1 SU2CG2222P2[i1, i2, i3, i4] PhiI2Y3F1[i1] PhiI2Y3F1[i2] Phitilde[i3] Phitilde[i4]]
+    - lambdaPhiI2Y3F1PhiI2Y3F1barP1 SU2CG2222P1[i1, i2, i3, i4] PhiI2Y3F1tilde[i1] PhiI2Y3F1[i2] Phitilde[i3] Phi[i4]
+    - lambdaPhiI2Y3F1PhiI2Y3F1barP2 SU2CG2222P2[i1, i2, i3, i4] PhiI2Y3F1tilde[i1] PhiI2Y3F1[i2] Phitilde[i3] Phi[i4]
+    - lambdaPhiI2Y3F1PhiI2Y3F2 SU2CG2222P2[i1, i2, i3, i4] PhiI2Y3F1[i1] PhiI2Y3F2[i2] Phitilde[i3] Phitilde[i4] - HC[lambdaPhiI2Y3F1PhiI2Y3F2 SU2CG2222P2[i1, i2, i3, i4] PhiI2Y3F1[i1] PhiI2Y3F2[i2] Phitilde[i3] Phitilde[i4]]
+    - lambdaPhiI2Y3F1PhiI2Y3F2barP1 SU2CG2222P1[i1, i2, i3, i4] PhiI2Y3F2tilde[i1] PhiI2Y3F1[i2] Phitilde[i3] Phi[i4] - HC[lambdaPhiI2Y3F1PhiI2Y3F2barP1 SU2CG2222P1[i1, i2, i3, i4] PhiI2Y3F2tilde[i1] PhiI2Y3F1[i2] Phitilde[i3] Phi[i4]]
+    - lambdaPhiI2Y3F1PhiI2Y3F2barP2 SU2CG2222P2[i1, i2, i3, i4] PhiI2Y3F2tilde[i1] PhiI2Y3F1[i2] Phitilde[i3] Phi[i4] - HC[lambdaPhiI2Y3F1PhiI2Y3F2barP2 SU2CG2222P2[i1, i2, i3, i4] PhiI2Y3F2tilde[i1] PhiI2Y3F1[i2] Phitilde[i3] Phi[i4]]
+    - lambdaPhiI2Y3F2PhiI2Y3F2 SU2CG2222P2[i1, i2, i3, i4] PhiI2Y3F2[i1] PhiI2Y3F2[i2] Phitilde[i3] Phitilde[i4] - HC[lambdaPhiI2Y3F2PhiI2Y3F2 SU2CG2222P2[i1, i2, i3, i4] PhiI2Y3F2[i1] PhiI2Y3F2[i2] Phitilde[i3] Phitilde[i4]]
+    - lambdaPhiI2Y3F2PhiI2Y3F2barP1 SU2CG2222P1[i1, i2, i3, i4] PhiI2Y3F2tilde[i1] PhiI2Y3F2[i2] Phitilde[i3] Phi[i4]
+    - lambdaPhiI2Y3F2PhiI2Y3F2barP2 SU2CG2222P2[i1, i2, i3, i4] PhiI2Y3F2tilde[i1] PhiI2Y3F2[i2] Phitilde[i3] Phi[i4]
+  , FlavorExpand -> {SGenQ0C1, SGenQ3C1, SU2D, SU2W}];
+
+LBSM := LBSMKin + LBSMMass + LBSMInt;
