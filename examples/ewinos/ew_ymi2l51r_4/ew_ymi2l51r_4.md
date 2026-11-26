@@ -71,5 +71,5 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ## Notes
 
-- v = 246.220569073486 GeV (G_F).
+- v = 246.220569073486 GeV.
 - Complex couplings: y = Re y + i Im y, card entries `Ry...`, `Iy...`.

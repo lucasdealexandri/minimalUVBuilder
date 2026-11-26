@@ -122,7 +122,7 @@ def model_report(fr_model) -> str:
     out += _table([[m.fr_symbol(), str(m.rep.spin), str(m.rep.isospin.dim), str(m.rep.hypercharge),
                     str(m.rep.colordim), str(m.rep.globalU1s)] for m in mm.non_conjugated_multiplets],
                   ['multiplet', 'spin', 'SU(2)', 'Y', 'color', 'global charges']) + ['']
-    notes = [f'- v = {VEV} GeV (G_F).']
+    notes = [f'- v = {VEV} GeV.']
     if any(p.part for p in input_parameters(fr_model)):
         notes.append('- Complex couplings: y = Re y + i Im y, card entries `Ry...`, `Iy...`.')
     if any(b.type == 'RealScalar' for (b, *_), _ in blocks.values()):

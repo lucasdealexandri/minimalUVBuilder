@@ -94,7 +94,7 @@ and negative inputs are absorbed into the mass eigenstates:
 
 ## Parameters
 
-- Higgs vev $v = 246.220569$ GeV, fixed by $G_F$ (SMINPUTS 2).
+- Higgs vev $v = 246.220569$ GeV.
 - Couplings to the Higgs carry the Clebsch-Gordan normalization of their SU(2) invariant:
   factors such as $\sqrt2/2$ (doublet), $\sqrt3/6$ (neutral triplet), $\sqrt6/6$ (charged
   triplet) in the mass matrices.

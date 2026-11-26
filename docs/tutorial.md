@@ -35,19 +35,20 @@ the UFO steps. The conventions are in [`docs/conventions.md`](conventions.md).
     "author": ['Andre Lessa', 'Lucas Heck'],               # (optional) default UVBuilder
     "version": '1.0',                                      # (optional)
     "dm_spin": 'both',                                     # (optional) scalar, fermion or both
-    "dm_charges": ['none'],                                # (optional) e.g. ['B=0,D=1']
+    "dm_charges": ['B=0'],                                 # (optional) e.g. ['B=0,D=1']
 }
 ```
 
 A state T1 of 1000 GeV decays to a top quark and the dark matter (DM) candidate X1 of
-200 GeV; PDG 1000022 is always the DM candidate. The last two entries are the defaults
-of the command-line options `-s` (`--dm-spin`) and `-q` (`--dm-charges`):
+200 GeV; PDG 1000022 is always the DM candidate. The last two entries set the options
+`-s` (`--dm-spin`) and `-q` (`--dm-charges`), which the command line overrides:
 
-- `-s both`: the DM candidate may be a scalar or a fermion; `-s scalar` or
-  `-s fermion` keeps one;
-- `-q none`: no global charge is tracked. `-q B=0` gives the DM a baryon number 0 and
-  tracks baryon number: every new multiplet is assigned the baryon number its couplings
-  require, and only couplings that conserve it are written.
+- `dm_spin: 'both'` (`-s both`, the default): the DM candidate may be a scalar or a
+  fermion; `-s scalar` or `-s fermion` keeps one;
+- `dm_charges: ['B=0']` (`-q B=0`): the DM has baryon number 0 and baryon number is
+  tracked: every new multiplet is assigned the baryon number its couplings require, and
+  only couplings that conserve it are written. The default, `-q none`, tracks no global
+  charge.
 
 ### Building the models
 
@@ -57,43 +58,45 @@ uvbuilder build stop.dict
 ```
 
 ```
-stop_1  [ChiC3I1Y4Lw, ChiC3bI1Ym4Lw, PhiI1Y0]
-stop_2  [ChiI1Y0Lw, PhiC3I1Y4]
-nothing written: use --out FOLDER to write the .fr, .pkl and .md files
+stop_1  [ChiC3I1Y4B1Lw, ChiC3bI1Ym4Bm1Lw, PhiI1Y0]
+stop_2  [ChiI1Y0Lw, PhiC3I1Y4B1]
+nothing written: use -o FOLDER to write each model's .fr, .pkl and .md
 ```
 
 The builder finds two models in which T1 -> t X1 comes from a renormalizable coupling:
 
-- `stop_1`: T1 is a Dirac fermion, a color triplet with hypercharge 2/3 (the pair of
-  Weyl spinors `ChiC3I1Y4Lw`, `ChiC3bI1Ym4Lw`), and X1 a real scalar singlet (`PhiI1Y0`);
+- `stop_1`: T1 is a Dirac fermion, a color triplet with hypercharge 2/3 and baryon
+  number 1/3 (the pair of Weyl spinors `ChiC3I1Y4B1Lw`, `ChiC3bI1Ym4Bm1Lw`), and X1 a
+  real scalar singlet (`PhiI1Y0`);
 - `stop_2`: T1 is a complex scalar with the quantum numbers of a right-handed stop
-  (`PhiC3I1Y4`), and X1 a Majorana fermion singlet (`ChiI1Y0Lw`).
+  (`PhiC3I1Y4B1`), and X1 a Majorana fermion singlet (`ChiI1Y0Lw`).
 
 The names encode the representations (see [`docs/conventions.md`](conventions.md#field-names)): `Phi` a scalar, `Chi`
 a fermion, `Lw` a left-handed Weyl spinor, `C3` (`C3b`) a color triplet (antitriplet),
-`I<n>` the SU(2) dimension, `Y<k>` the hypercharge in units of 1/6, `m` a minus sign.
+`I<n>` the SU(2) dimension, `Y<k>` the hypercharge in units of 1/6, `B<k>` the baryon
+number in units of 1/3, `m` a minus sign.
 
-With baryon number tracked, the same models carry it in their names:
-
-```
-uvbuilder build stop.dict -q B=0
-```
+Without baryon number, the same models are found, without the `B` tags:
 
 ```
-stop_1  [ChiC3I1Y4B1Lw, ChiC3bI1Ym4Bm1Lw, PhiI1Y0]
-stop_2  [ChiI1Y0Lw, PhiC3I1Y4B1]
+uvbuilder build stop.dict -q none
+```
+
+```
+stop_1  [ChiC3I1Y4Lw, ChiC3bI1Ym4Lw, PhiI1Y0]
+stop_2  [ChiI1Y0Lw, PhiC3I1Y4]
 ```
 
 Here the Lagrangians are the same: no coupling of these fields violates baryon number.
-The rest of this section uses the default. Write the models:
+The rest of this section uses `stop.dict` as it is. Write the models:
 
 ```
 uvbuilder build stop.dict -o .
 ```
 
 ```
-stop_1/  stop_1.fr  stop_1.pkl  stop_1.md  [ChiC3I1Y4Lw, ChiC3bI1Ym4Lw, PhiI1Y0]
-stop_2/  stop_2.fr  stop_2.pkl  stop_2.md  [ChiI1Y0Lw, PhiC3I1Y4]
+stop_1/  stop_1.fr  stop_1.pkl  stop_1.md  [ChiC3I1Y4B1Lw, ChiC3bI1Ym4Bm1Lw, PhiI1Y0]
+stop_2/  stop_2.fr  stop_2.pkl  stop_2.md  [ChiI1Y0Lw, PhiC3I1Y4B1]
 ```
 
 Each folder holds the FeynRules model file (`.fr`), its object representation (`.pkl`,
@@ -108,17 +111,17 @@ param_card entries, and the mass matrices. The inputs:
 | name | card | type | enters |
 | --- | --- | --- | --- |
 | MChiI1Y0 | BSMMASS 1 | mass | MX1 |
-| MPhiC3I1Y4 | BSMMASS 2 | M² | CT1 |
-| RzPhiC3I1Y4ChiI1Y0cRbar | BSMYUKAWA 1 | Re | - |
-| IzPhiC3I1Y4ChiI1Y0cRbar | IMBSMYUKAWA 1 | Im | - |
-| RzPhiC3I1Y4ChiI1Y0tRbar | BSMYUKAWA 2 | Re | - |
-| IzPhiC3I1Y4ChiI1Y0tRbar | IMBSMYUKAWA 2 | Im | - |
-| RzPhiC3I1Y4ChiI1Y0uRbar | BSMYUKAWA 3 | Re | - |
-| IzPhiC3I1Y4ChiI1Y0uRbar | IMBSMYUKAWA 3 | Im | - |
-| lambdaPhiC3I1Y4PhiC3I1Y4bar | BSMQUARTIC 1 | coupling | CT1 |
+| MPhiC3I1Y4B1 | BSMMASS 2 | M² | CT1 |
+| RzPhiC3I1Y4B1ChiI1Y0cRbar | BSMYUKAWA 1 | Re | - |
+| IzPhiC3I1Y4B1ChiI1Y0cRbar | IMBSMYUKAWA 1 | Im | - |
+| RzPhiC3I1Y4B1ChiI1Y0tRbar | BSMYUKAWA 2 | Re | - |
+| IzPhiC3I1Y4B1ChiI1Y0tRbar | IMBSMYUKAWA 2 | Im | - |
+| RzPhiC3I1Y4B1ChiI1Y0uRbar | BSMYUKAWA 3 | Re | - |
+| IzPhiC3I1Y4B1ChiI1Y0uRbar | IMBSMYUKAWA 3 | Im | - |
+| lambdaPhiC3I1Y4B1PhiC3I1Y4B1bar | BSMQUARTIC 1 | coupling | CT1 |
 
 - `MChiI1Y0`: the Majorana mass of X1.
-- `MPhiC3I1Y4`: the mass parameter of the stop, which enters squared.
+- `MPhiC3I1Y4B1`: the mass parameter of the stop, which enters squared.
 - `z...tRbar`, `z...cRbar`, `z...uRbar`: the couplings of the stop to X1 and the
   right-handed top, charm and up quarks. They are complex, so their real (`R`) and
   imaginary (`I`) parts are separate entries, in the blocks `BSMYUKAWA` and
@@ -130,7 +133,7 @@ alone in its mass matrix, so its mass is a single entry of the report:
 
 ```math
 m_{X1} = |M_{\mathrm{ChiI1Y0}}|, \qquad
-m_{T1}^2 = M_{\mathrm{PhiC3I1Y4}}^2 + \frac{\lambda_{\mathrm{PhiC3I1Y4PhiC3I1Y4bar}}\, v^2}{2},
+m_{T1}^2 = M_{\mathrm{PhiC3I1Y4B1}}^2 + \frac{\lambda_{\mathrm{PhiC3I1Y4B1PhiC3I1Y4B1bar}}\, v^2}{2},
 ```
 
 with the Higgs vev v = 246.22 GeV.
@@ -177,25 +180,26 @@ the top and to the Higgs at 0.5; the stop mass parameter then follows from the f
 above:
 
 ```math
-M_{\mathrm{PhiC3I1Y4}} = \sqrt{1000^2 - 0.5\, v^2/2} = 992.392996 \ \mathrm{GeV}.
+M_{\mathrm{PhiC3I1Y4B1}} = \sqrt{1000^2 - 0.5\, v^2/2} = 992.392996 \ \mathrm{GeV}.
 ```
 
-In `stop_2_UFO/param_card.dat`:
+The couplings to the charm and up quarks are set to zero, so that T1 decays only to the
+top. In [`stop_2_UFO/param_card.dat`](../examples/stop/stop_2/stop_2_UFO/param_card.dat):
 
 ```
 Block BSMMASS
-    1 2.000000e+02 # MChiI1Y0
-    2 9.92392996e+02 # MPhiC3I1Y4
+    1 2.00000000e+02 # MChiI1Y0
+    2 9.92392996e+02 # MPhiC3I1Y4B1
 Block BSMQUARTIC
-    1 5.000000e-01 # lambdaPhiC3I1Y4PhiC3I1Y4bar
+    1 5.00000000e-01 # lambdaPhiC3I1Y4B1PhiC3I1Y4B1bar
 Block BSMYUKAWA
-    1 0.000000e+00 # RzPhiC3I1Y4ChiI1Y0cRbar
-    2 5.000000e-01 # RzPhiC3I1Y4ChiI1Y0tRbar
-    3 0.000000e+00 # RzPhiC3I1Y4ChiI1Y0uRbar
+    1 0.00000000e+00 # RzPhiC3I1Y4B1ChiI1Y0cRbar
+    2 5.00000000e-01 # RzPhiC3I1Y4B1ChiI1Y0tRbar
+    3 0.00000000e+00 # RzPhiC3I1Y4B1ChiI1Y0uRbar
 Block IMBSMYUKAWA
-    1 0.000000e+00 # IzPhiC3I1Y4ChiI1Y0cRbar
-    2 0.000000e+00 # IzPhiC3I1Y4ChiI1Y0tRbar
-    3 0.000000e+00 # IzPhiC3I1Y4ChiI1Y0uRbar
+    1 0.000000e+00 # IzPhiC3I1Y4B1ChiI1Y0cRbar
+    2 0.000000e+00 # IzPhiC3I1Y4B1ChiI1Y0tRbar
+    3 0.000000e+00 # IzPhiC3I1Y4B1ChiI1Y0uRbar
 ```
 
 ### Filling the param_card
@@ -220,8 +224,15 @@ T1 is at 1000 GeV up to the rounding of the input. The card is ready for
 [MadGraph5_aMC@NLO](https://launchpad.net/mg5amcnlo), which computes the widths, branching ratios and cross sections.
 
 For `stop_1` the steps are the same. There X1 is a real scalar with
-m_X1² = M² + λ v²; with λ = 0.1, the input `MPhiI1Y0` = 184.221451 gives 200 GeV, and
-the Dirac mass `MChiC3I1Y4ChiC3bI1Ym4` = 1000 gives T1.
+
+```math
+m_{X1}^2 = M_{\mathrm{PhiI1Y0}}^2 + \lambda_{\mathrm{PhiI1Y0PhiI1Y0}}\, v^2,
+```
+
+so with λ = 0.1 the input `MPhiI1Y0` = 184.221451 gives 200 GeV; the Dirac mass
+`MChiC3I1Y4B1ChiC3bI1Ym4Bm1` = 1000 gives T1, and the coupling to the top
+`RzChiC3I1Y4B1PhiI1Y0tRbar` is 0.5, the others zero
+([`stop_1_UFO/param_card.dat`](../examples/stop/stop_1/stop_1_UFO/param_card.dat)).
 
 ## 2. Singlet-doublet dark matter: mixing
 

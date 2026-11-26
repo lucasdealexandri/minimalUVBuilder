@@ -13,14 +13,14 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 | name | card | type | enters |
 | --- | --- | --- | --- |
-| MChiC3I1Y4ChiC3bI1Ym4 | BSMMASS 1 | mass | DT1 |
+| MChiC3I1Y4B1ChiC3bI1Ym4Bm1 | BSMMASS 1 | mass | DT1 |
 | MPhiI1Y0 | BSMMASS 2 | M² | RX1 |
-| RzChiC3I1Y4PhiI1Y0cRbar | BSMYUKAWA 1 | Re | - |
-| IzChiC3I1Y4PhiI1Y0cRbar | IMBSMYUKAWA 1 | Im | - |
-| RzChiC3I1Y4PhiI1Y0tRbar | BSMYUKAWA 2 | Re | - |
-| IzChiC3I1Y4PhiI1Y0tRbar | IMBSMYUKAWA 2 | Im | - |
-| RzChiC3I1Y4PhiI1Y0uRbar | BSMYUKAWA 3 | Re | - |
-| IzChiC3I1Y4PhiI1Y0uRbar | IMBSMYUKAWA 3 | Im | - |
+| RzChiC3I1Y4B1PhiI1Y0cRbar | BSMYUKAWA 1 | Re | - |
+| IzChiC3I1Y4B1PhiI1Y0cRbar | IMBSMYUKAWA 1 | Im | - |
+| RzChiC3I1Y4B1PhiI1Y0tRbar | BSMYUKAWA 2 | Re | - |
+| IzChiC3I1Y4B1PhiI1Y0tRbar | IMBSMYUKAWA 2 | Im | - |
+| RzChiC3I1Y4B1PhiI1Y0uRbar | BSMYUKAWA 3 | Re | - |
+| IzChiC3I1Y4B1PhiI1Y0uRbar | IMBSMYUKAWA 3 | Im | - |
 | lambdaPhiI1Y0PhiI1Y0 | BSMQUARTIC 1 | coupling | RX1 |
 
 ## Mass matrices
@@ -29,8 +29,8 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ```math
 \begin{array}{c|c}
- & \mathrm{ChiC3bI1Ym4qm2} \\ \hline
-\mathrm{ChiC3I1Y4q2} & M_{\mathrm{ChiC3I1Y4ChiC3bI1Ym4}} \\
+ & \mathrm{ChiC3bI1Ym4Bm1qm2} \\ \hline
+\mathrm{ChiC3I1Y4B1q2} & M_{\mathrm{ChiC3I1Y4B1ChiC3bI1Ym4Bm1}} \\
 \end{array}
 ```
 
@@ -47,12 +47,12 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 | multiplet | spin | SU(2) | Y | color | global charges |
 | --- | --- | --- | --- | --- | --- |
-| PhiI1Y0 | Scalar | 1 | 0 | 1 | () |
-| ChiC3bI1Ym4Lw | LH WeylSpinor | 1 | -2/3 | 3* | () |
-| ChiC3I1Y4Lw | LH WeylSpinor | 1 | 2/3 | 3 | () |
+| PhiI1Y0 | Scalar | 1 | 0 | 1 | (B=0) |
+| ChiC3bI1Ym4Bm1Lw | LH WeylSpinor | 1 | -2/3 | 3* | (B=-1/3) |
+| ChiC3I1Y4B1Lw | LH WeylSpinor | 1 | 2/3 | 3 | (B=1/3) |
 
 ## Notes
 
-- v = 246.220569073486 GeV (G_F).
+- v = 246.220569073486 GeV.
 - Complex couplings: y = Re y + i Im y, card entries `Ry...`, `Iy...`.
 - Real scalar blocks are in the real basis Phi = (Phi_R + i Phi_I)/sqrt(2).

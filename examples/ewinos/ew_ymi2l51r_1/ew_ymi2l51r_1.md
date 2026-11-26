@@ -71,6 +71,6 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ## Notes
 
-- v = 246.220569073486 GeV (G_F).
+- v = 246.220569073486 GeV.
 - Complex couplings: y = Re y + i Im y, card entries `Ry...`, `Iy...`.
 - Real scalar blocks are in the real basis Phi = (Phi_R + i Phi_I)/sqrt(2).

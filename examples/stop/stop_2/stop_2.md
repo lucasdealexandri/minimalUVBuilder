@@ -14,14 +14,14 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 | name | card | type | enters |
 | --- | --- | --- | --- |
 | MChiI1Y0 | BSMMASS 1 | mass | MX1 |
-| MPhiC3I1Y4 | BSMMASS 2 | M² | CT1 |
-| RzPhiC3I1Y4ChiI1Y0cRbar | BSMYUKAWA 1 | Re | - |
-| IzPhiC3I1Y4ChiI1Y0cRbar | IMBSMYUKAWA 1 | Im | - |
-| RzPhiC3I1Y4ChiI1Y0tRbar | BSMYUKAWA 2 | Re | - |
-| IzPhiC3I1Y4ChiI1Y0tRbar | IMBSMYUKAWA 2 | Im | - |
-| RzPhiC3I1Y4ChiI1Y0uRbar | BSMYUKAWA 3 | Re | - |
-| IzPhiC3I1Y4ChiI1Y0uRbar | IMBSMYUKAWA 3 | Im | - |
-| lambdaPhiC3I1Y4PhiC3I1Y4bar | BSMQUARTIC 1 | coupling | CT1 |
+| MPhiC3I1Y4B1 | BSMMASS 2 | M² | CT1 |
+| RzPhiC3I1Y4B1ChiI1Y0cRbar | BSMYUKAWA 1 | Re | - |
+| IzPhiC3I1Y4B1ChiI1Y0cRbar | IMBSMYUKAWA 1 | Im | - |
+| RzPhiC3I1Y4B1ChiI1Y0tRbar | BSMYUKAWA 2 | Re | - |
+| IzPhiC3I1Y4B1ChiI1Y0tRbar | IMBSMYUKAWA 2 | Im | - |
+| RzPhiC3I1Y4B1ChiI1Y0uRbar | BSMYUKAWA 3 | Re | - |
+| IzPhiC3I1Y4B1ChiI1Y0uRbar | IMBSMYUKAWA 3 | Im | - |
+| lambdaPhiC3I1Y4B1PhiC3I1Y4B1bar | BSMQUARTIC 1 | coupling | CT1 |
 
 ## Mass matrices
 
@@ -29,8 +29,8 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ```math
 \begin{array}{c|c}
- & \mathrm{PhiC3I1Y4q2} \\ \hline
-\mathrm{PhiC3I1Y4q2bar} & M_{\mathrm{PhiC3I1Y4}}^{2} + \frac{\lambda_{\mathrm{PhiC3I1Y4PhiC3I1Y4bar}} v^{2}}{2} \\
+ & \mathrm{PhiC3I1Y4B1q2} \\ \hline
+\mathrm{PhiC3I1Y4B1q2bar} & M_{\mathrm{PhiC3I1Y4B1}}^{2} + \frac{\lambda_{\mathrm{PhiC3I1Y4B1PhiC3I1Y4B1bar}} v^{2}}{2} \\
 \end{array}
 ```
 
@@ -47,10 +47,10 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 | multiplet | spin | SU(2) | Y | color | global charges |
 | --- | --- | --- | --- | --- | --- |
-| PhiC3I1Y4 | Scalar | 1 | 2/3 | 3 | () |
-| ChiI1Y0Lw | LH WeylSpinor | 1 | 0 | 1 | () |
+| PhiC3I1Y4B1 | Scalar | 1 | 2/3 | 3 | (B=1/3) |
+| ChiI1Y0Lw | LH WeylSpinor | 1 | 0 | 1 | (B=0) |
 
 ## Notes
 
-- v = 246.220569073486 GeV (G_F).
+- v = 246.220569073486 GeV.
 - Complex couplings: y = Re y + i Im y, card entries `Ry...`, `Iy...`.

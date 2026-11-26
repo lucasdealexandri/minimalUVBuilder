@@ -1,6 +1,6 @@
 # This file was automatically created by FeynRules 2.3.49
 # Mathematica version: 14.3.0 for Mac OS X ARM (64-bit) (July 8, 2025)
-# Date: Tue 24 Nov 2026 13:51:01
+# Date: Thu 26 Nov 2026 14:44:09
 
 
 from object_library import all_couplings, Coupling
@@ -70,147 +70,147 @@ GC_15 = Coupling(name = 'GC_15',
                  order = {'QCD':2})
 
 GC_16 = Coupling(name = 'GC_16',
-                 value = 'I1b11',
+                 value = 'I1a11',
                  order = {'QED':1})
 
 GC_17 = Coupling(name = 'GC_17',
-                 value = 'I1b12',
+                 value = 'I1a12',
                  order = {'QED':1})
 
 GC_18 = Coupling(name = 'GC_18',
-                 value = 'I1b13',
+                 value = 'I1a13',
                  order = {'QED':1})
 
 GC_19 = Coupling(name = 'GC_19',
-                 value = 'I1b21',
+                 value = 'I1a21',
                  order = {'QED':1})
 
 GC_20 = Coupling(name = 'GC_20',
-                 value = 'I1b22',
+                 value = 'I1a22',
                  order = {'QED':1})
 
 GC_21 = Coupling(name = 'GC_21',
-                 value = 'I1b23',
+                 value = 'I1a23',
                  order = {'QED':1})
 
 GC_22 = Coupling(name = 'GC_22',
-                 value = 'I1b31',
+                 value = 'I1a31',
                  order = {'QED':1})
 
 GC_23 = Coupling(name = 'GC_23',
-                 value = 'I1b32',
+                 value = 'I1a32',
                  order = {'QED':1})
 
 GC_24 = Coupling(name = 'GC_24',
-                 value = 'I1b33',
+                 value = 'I1a33',
                  order = {'QED':1})
 
 GC_25 = Coupling(name = 'GC_25',
-                 value = '-I2b11',
+                 value = '-I2a11',
                  order = {'QED':1})
 
 GC_26 = Coupling(name = 'GC_26',
-                 value = '-I2b12',
+                 value = '-I2a12',
                  order = {'QED':1})
 
 GC_27 = Coupling(name = 'GC_27',
-                 value = '-I2b13',
+                 value = '-I2a13',
                  order = {'QED':1})
 
 GC_28 = Coupling(name = 'GC_28',
-                 value = '-I2b21',
+                 value = '-I2a21',
                  order = {'QED':1})
 
 GC_29 = Coupling(name = 'GC_29',
-                 value = '-I2b22',
+                 value = '-I2a22',
                  order = {'QED':1})
 
 GC_30 = Coupling(name = 'GC_30',
-                 value = '-I2b23',
+                 value = '-I2a23',
                  order = {'QED':1})
 
 GC_31 = Coupling(name = 'GC_31',
-                 value = '-I2b31',
+                 value = '-I2a31',
                  order = {'QED':1})
 
 GC_32 = Coupling(name = 'GC_32',
-                 value = '-I2b32',
+                 value = '-I2a32',
                  order = {'QED':1})
 
 GC_33 = Coupling(name = 'GC_33',
-                 value = '-I2b33',
+                 value = '-I2a33',
                  order = {'QED':1})
 
 GC_34 = Coupling(name = 'GC_34',
-                 value = 'I3b11',
+                 value = 'I3a11',
                  order = {'QED':1})
 
 GC_35 = Coupling(name = 'GC_35',
-                 value = 'I3b12',
+                 value = 'I3a12',
                  order = {'QED':1})
 
 GC_36 = Coupling(name = 'GC_36',
-                 value = 'I3b13',
+                 value = 'I3a13',
                  order = {'QED':1})
 
 GC_37 = Coupling(name = 'GC_37',
-                 value = 'I3b21',
+                 value = 'I3a21',
                  order = {'QED':1})
 
 GC_38 = Coupling(name = 'GC_38',
-                 value = 'I3b22',
+                 value = 'I3a22',
                  order = {'QED':1})
 
 GC_39 = Coupling(name = 'GC_39',
-                 value = 'I3b23',
+                 value = 'I3a23',
                  order = {'QED':1})
 
 GC_40 = Coupling(name = 'GC_40',
-                 value = 'I3b31',
+                 value = 'I3a31',
                  order = {'QED':1})
 
 GC_41 = Coupling(name = 'GC_41',
-                 value = 'I3b32',
+                 value = 'I3a32',
                  order = {'QED':1})
 
 GC_42 = Coupling(name = 'GC_42',
-                 value = 'I3b33',
+                 value = 'I3a33',
                  order = {'QED':1})
 
 GC_43 = Coupling(name = 'GC_43',
-                 value = '-I4b11',
+                 value = '-I4a11',
                  order = {'QED':1})
 
 GC_44 = Coupling(name = 'GC_44',
-                 value = '-I4b12',
+                 value = '-I4a12',
                  order = {'QED':1})
 
 GC_45 = Coupling(name = 'GC_45',
-                 value = '-I4b13',
+                 value = '-I4a13',
                  order = {'QED':1})
 
 GC_46 = Coupling(name = 'GC_46',
-                 value = '-I4b21',
+                 value = '-I4a21',
                  order = {'QED':1})
 
 GC_47 = Coupling(name = 'GC_47',
-                 value = '-I4b22',
+                 value = '-I4a22',
                  order = {'QED':1})
 
 GC_48 = Coupling(name = 'GC_48',
-                 value = '-I4b23',
+                 value = '-I4a23',
                  order = {'QED':1})
 
 GC_49 = Coupling(name = 'GC_49',
-                 value = '-I4b31',
+                 value = '-I4a31',
                  order = {'QED':1})
 
 GC_50 = Coupling(name = 'GC_50',
-                 value = '-I4b32',
+                 value = '-I4a32',
                  order = {'QED':1})
 
 GC_51 = Coupling(name = 'GC_51',
-                 value = '-I4b33',
+                 value = '-I4a33',
                  order = {'QED':1})
 
 GC_52 = Coupling(name = 'GC_52',

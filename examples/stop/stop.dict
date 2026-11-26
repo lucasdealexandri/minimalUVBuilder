@@ -6,5 +6,5 @@
     "author": ['Andre Lessa', 'Lucas Heck'],               # (optional) default UVBuilder
     "version": '1.0',                                      # (optional)
     "dm_spin": 'both',                                     # (optional) scalar, fermion or both
-    "dm_charges": ['none'],                                # (optional) e.g. ['B=0,D=1']
+    "dm_charges": ['B=0'],                                 # (optional) e.g. ['B=0,D=1']
 }

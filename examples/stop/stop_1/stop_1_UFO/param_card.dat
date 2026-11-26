@@ -26,7 +26,7 @@ Block MASS
    23 9.118760e+01 # MZ 
    25 1.250000e+02 # MH 
   1000006 1.0000000000000000e+03 # MT1 
-  1000022 7.7883570910609791e+01 # MX1 
+  1000022 1.9999999968008132e+02 # MX1 
 ##  Not dependent paramater.
 ## Those values should be edited following analytical the 
 ## analytical expression. Some generator could simply ignore 
@@ -76,22 +76,22 @@ DECAY  5 0.000000 # b : 0.0
 ## INFORMATION FOR BSMMASS
 ###################################
 Block BSMMASS 
-    1 1.000000e+03 # MChiC3I1Y4B1ChiC3bI1Ym4Bm1 
-    2 1.84221451e+00 # MPhiI1Y0 
+    1 1.00000000e+03 # MChiC3I1Y4B1ChiC3bI1Ym4Bm1 
+    2 1.84221451e+02 # MPhiI1Y0 
 
 ###################################
 ## INFORMATION FOR BSMQUARTIC
 ###################################
 Block BSMQUARTIC 
-    1 1.000000e-01 # lambdaPhiI1Y0PhiI1Y0 
+    1 1.00000000e-01 # lambdaPhiI1Y0PhiI1Y0 
 
 ###################################
 ## INFORMATION FOR BSMYUKAWA
 ###################################
 Block BSMYUKAWA 
-    1 0.000000e+00 # RzChiC3I1Y4B1PhiI1Y0cRbar 
-    2 5.000000e-01 # RzChiC3I1Y4B1PhiI1Y0tRbar 
-    3 0.000000e+00 # RzChiC3I1Y4B1PhiI1Y0uRbar 
+    1 0.00000000e+00 # RzChiC3I1Y4B1PhiI1Y0cRbar 
+    2 5.00000000e-01 # RzChiC3I1Y4B1PhiI1Y0tRbar 
+    3 0.00000000e+00 # RzChiC3I1Y4B1PhiI1Y0uRbar 
 
 ###################################
 ## INFORMATION FOR CKMBLOCK

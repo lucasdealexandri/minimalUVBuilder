@@ -25,7 +25,7 @@ Block MASS
    15 1.777000e+00 # MTA 
    23 9.118760e+01 # MZ 
    25 1.250000e+02 # MH 
-  1000006 1.2350962126315831e+02 # MT1 
+  1000006 1.0000000003342869e+03 # MT1 
   1000022 2.0000000000000000e+02 # MX1 
 ##  Not dependent paramater.
 ## Those values should be edited following analytical the 
@@ -76,22 +76,22 @@ DECAY  5 0.000000 # b : 0.0
 ## INFORMATION FOR BSMMASS
 ###################################
 Block BSMMASS 
-    1 2.000000e+02 # MChiI1Y0 
-    2 9.92392996e+00 # MPhiC3I1Y4B1 
+    1 2.00000000e+02 # MChiI1Y0 
+    2 9.92392996e+02 # MPhiC3I1Y4B1 
 
 ###################################
 ## INFORMATION FOR BSMQUARTIC
 ###################################
 Block BSMQUARTIC 
-    1 5.000000e-01 # lambdaPhiC3I1Y4B1PhiC3I1Y4B1bar 
+    1 5.00000000e-01 # lambdaPhiC3I1Y4B1PhiC3I1Y4B1bar 
 
 ###################################
 ## INFORMATION FOR BSMYUKAWA
 ###################################
 Block BSMYUKAWA 
-    1 0.000000e+00 # RzPhiC3I1Y4B1ChiI1Y0cRbar 
-    2 5.000000e-01 # RzPhiC3I1Y4B1ChiI1Y0tRbar 
-    3 0.000000e+00 # RzPhiC3I1Y4B1ChiI1Y0uRbar 
+    1 0.00000000e+00 # RzPhiC3I1Y4B1ChiI1Y0cRbar 
+    2 5.00000000e-01 # RzPhiC3I1Y4B1ChiI1Y0tRbar 
+    3 0.00000000e+00 # RzPhiC3I1Y4B1ChiI1Y0uRbar 
 
 ###################################
 ## INFORMATION FOR CKMBLOCK
