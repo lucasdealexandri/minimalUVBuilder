@@ -92,7 +92,7 @@ class FinalState(object):
         else:
             return self.particleList == other.particleList
     
-    def __neq__(self, other) -> bool:
+    def __ne__(self, other) -> bool:
         return not (self == other)
     
     def __lt__(self,other) -> bool:

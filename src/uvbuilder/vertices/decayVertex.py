@@ -88,7 +88,7 @@ class DecayVertex(object):
         return self.br > other.br
 
     def __lt__(self, other) -> bool:
-        return not (self > other)
+        return self != other and not (self > other)
     
     def __len__(self):
         return len(self.daughters) + 1

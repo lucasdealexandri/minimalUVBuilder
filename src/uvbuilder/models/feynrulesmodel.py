@@ -35,16 +35,6 @@ class FRIndex(object):
     Describes a single FeynRules Index and its style.
     """
 
-    _instances = {}
-
-    def __new__(cls, name, **kwargs) -> FRIndex:
-        if name in FRIndex._instances:
-            return FRIndex._instances[name]
-        newIndex = super(FRIndex, cls).__new__(cls)
-        newIndex.__init__(name, **kwargs)
-        FRIndex._instances[name] = newIndex
-        return newIndex
-
     def __init__(self, name: str, range: int, index_type):
 
         self.name = name
@@ -70,10 +60,6 @@ class FRIndex(object):
         else:
             self.style = 'a'
 
-    def __getnewargs_ex__(self):
-        # unpickling goes through __new__, which keeps one instance per name
-        return (self.name,), {'range': self.range, 'index_type': self.index_type}
-
     def __repr__(self) -> str:
         return self.full_name
 
@@ -88,7 +74,7 @@ class FRIndex(object):
     def __eq__(self, other) -> bool:
         return self.__cmp__(other) == 0
 
-    def __neq__(self, other) -> bool:
+    def __ne__(self, other) -> bool:
         return self.__cmp__(other) != 0
 
     def __hash__(self) -> int:

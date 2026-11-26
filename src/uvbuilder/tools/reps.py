@@ -929,7 +929,7 @@ class WeylSpinor(namedtuple("WeylSpinor", "left right")):
     def scalar_product(self, other: WeylSpinor) -> Scalar:
         '''Lorentz scalar of two spinors of the same chirality.'''
         assert type(self) == type(other), 'Can only scalar multiply two spinors of the same type.'
-        return Scalar
+        return SCALAR
 
     def tensor_product(self, other: WeylSpinor) -> List[LorentzRep]:
         '''Tensor product of two spins, generates list of spin reps.'''
