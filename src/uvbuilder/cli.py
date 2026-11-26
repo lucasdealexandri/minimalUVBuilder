@@ -9,45 +9,31 @@ import argparse
 import ast
 import logging
 import re
-import runpy
 import sys
 from pathlib import Path
 
 USAGE = '''
-  uvbuilder build PROTOMODEL [-o FOLDER] [-s SPIN] [-q CHARGES]
-                            [--name N] [--author A] [--version V]
+  uvbuilder build PROTOMODEL.dict [-o FOLDER] [-s SPIN] [-q CHARGES]
+                                 [--name N] [--author A] [--version V]
                                   valid models of a protomodel (<model>/<model>.fr, .pkl, .md with --out)
   uvbuilder fill MODEL.pkl CARD   masses, mixing matrices and DECAY Auto from the inputs
 '''
 
 
 def _protomodel(path: Path) -> dict:
-    '''ModelBuilder arguments of a protomodel file (a dictionary with masses, decays and
-    labels, see FinalStateModel.fromDict): a .dict file holding the dictionary (as
-    written by the SModelS protomodel builder; read as a literal, never executed), with
-    the optional keys `name`, `author`, `version`, `dm_spin` and `dm_charges` (values as
-    on the command line), or a Python file defining `protomodel` and optionally
-    `possible_dm_reps`, `dm_pdg`, `labeler`, `name`, `author` and `version`.'''
-    if path.suffix == '.dict':
-        try:
-            data = ast.literal_eval(path.read_text())
-        except (SyntaxError, ValueError) as error:
-            raise ValueError(f'{path} is not a dictionary literal: {error}') from None
-        if not isinstance(data, dict):
-            raise ValueError(f'{path} is not a dictionary literal')
-        return _dict_options(data)
-    if path.suffix != '.py':
-        raise ValueError(f'{path}: the protomodel is a .dict file or a Python file')
-    namespace = runpy.run_path(str(path))
-    if not isinstance(namespace.get('protomodel'), dict):
-        raise ValueError(f'{path} does not define the dictionary `protomodel`')
-    options = dict(modelData=namespace['protomodel'])
-    options.update({key: namespace[key] for key in ('possible_dm_reps', 'dm_pdg')
-                    if key in namespace})
-    for key in ('labeler', 'name', 'author', 'version'):
-        if key in namespace:
-            options[f'_{key}'] = namespace[key]
-    return options
+    '''ModelBuilder arguments of a .dict protomodel file: the dictionary of masses, decays
+    and labels (see FinalStateModel.fromDict), as written by the SModelS protomodel
+    builder, with the optional keys `name`, `author`, `version`, `dm_spin` and
+    `dm_charges` (values as on the command line). Read as a literal, never executed.'''
+    if path.suffix != '.dict':
+        raise ValueError(f'{path}: the protomodel is a .dict file')
+    try:
+        data = ast.literal_eval(path.read_text())
+    except (SyntaxError, ValueError) as error:
+        raise ValueError(f'{path} is not a dictionary literal: {error}') from None
+    if not isinstance(data, dict):
+        raise ValueError(f'{path} is not a dictionary literal')
+    return _dict_options(data)
 
 
 SPINS = {'scalar': 'SCALAR', 'fermion': 'DIRAC_SPINOR'}
@@ -106,11 +92,9 @@ def build(args):
     '''`uvbuilder build`: lists the valid models of the protomodel; with --out, writes each
     to <out>/<model>/ as .fr, .pkl and .md. Exit code 1 if there is no valid model.'''
     from uvbuilder.modelBuilder.modelBuilder import ModelBuilder
-    from uvbuilder.models.multipletModel import default_component_label
     from uvbuilder.report import model_report
     options = _protomodel(args.protomodel)
     options['possible_dm_reps'] = _dm_reps(args, options.get('possible_dm_reps', {}))
-    labeler = options.pop('_labeler', default_component_label)
     # the default name is the file name made a valid model name: pmodel-2 -> pmodel_2
     stem = re.sub(r'\W', '_', args.protomodel.stem)
     name = args.name or options.pop('_name', None) or (stem if stem[:1].isalpha() else f'M{stem}')
@@ -122,7 +106,7 @@ def build(args):
     options.pop('_author', None), options.pop('_version', None)
     out = Path(args.out or '.')
     models = ModelBuilder(**options).generateFeynRulesModels(
-        outputFile=str(out / f'{name}.fr'), name=name, labeler=labeler, **info)
+        outputFile=str(out / f'{name}.fr'), name=name, **info)
     count = 0
     for fr_model in models:
         multiplets = ', '.join(sorted(m.fr_symbol() for m in
@@ -166,7 +150,7 @@ def main(argv=None) -> int:
 
     p = commands.add_parser('build', help='FeynRules models of a protomodel')
     p.add_argument('protomodel', type=Path,
-                   help='.dict file, or Python file defining the dictionary `protomodel`')
+                   help='.dict file with the protomodel')
     p.add_argument('--name', help='model name (default: the protomodel file name)')
     p.add_argument('--author', action='append',
                    help='author of the models (default: UVBuilder); repeat for several')

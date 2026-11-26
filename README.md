@@ -6,11 +6,7 @@
   Minimal UV Builder
 </h1>
 
-Minimal UV Lagrangians from LHC signatures. Given a *protomodel* (the masses of new
-states and their decays, e.g. from the SModelS protomodel builder), `uvbuilder` finds
-the minimal sets of SU(3) x SU(2) x U(1) multiplets whose renormalizable couplings
-produce every decay at tree level, and writes each as a FeynRules (`.fr`) file, along
-with its object representation (`.pkl`) and a model report (`.md`).
+Minimal UV Lagrangians from LHC signatures. Given a *protomodel* (the masses of new states and their decays), `uvbuilder` finds the minimal sets of SU(3) x SU(2) x U(1) multiplets whose renormalizable couplings produce every decay at tree level, and writes each as a FeynRules (`.fr`) file, along with its object representation (`.pkl`) and a model report (`.md`).
 
 ## Installation
 
@@ -23,12 +19,12 @@ pip install -e .            # pip install -e '.[test]' for the tests
 ```
 
 FeynRules (with Mathematica 14) and MadGraph5_aMC@NLO are needed to turn a model into a
-UFO and generate its param_card.
+UFO and generate its ```param_card```.
 
 ## Workflow
 
 ```
-protomodel (.dict or .py)
+protomodel (.dict)
    |  uvbuilder build -o FOLDER
    v
 FOLDER/<model>/<model>.fr .pkl .md         one set per model
@@ -65,8 +61,9 @@ param_card with masses, mixing matrices, DECAY Auto  ->  MadGraph5
 
 ## Protomodels
 
-A protomodel is a dictionary of masses, decays and labels, with optional settings of the
-models. The stop example of the tutorial (`examples/stop/stop.dict`), with every option:
+A protomodel is a `.dict` file holding a dictionary of masses, decays and labels, with
+optional settings of the models. The stop example of the tutorial
+(`examples/stop/stop.dict`), with every option:
 
 ```
 {
@@ -77,7 +74,7 @@ models. The stop example of the tutorial (`examples/stop/stop.dict`), with every
     "author": ['Andre Lessa', 'Lucas Heck'],               # (optional) default UVBuilder
     "version": '1.0',                                      # (optional)
     "dm_spin": 'both',                                     # (optional) scalar, fermion or both
-    "dm_charges": ['none'],                                # (optional) e.g. ['B=0,D=1']
+    "dm_charges": ['B=0'],                                 # (optional) e.g. ['B=0,D=1']
 }
 ```
 
@@ -87,15 +84,11 @@ models. The stop example of the tutorial (`examples/stop/stop.dict`), with every
 - The options take the values of the command-line options of the same name, which
   override them.
 
-It is given as a `.dict` file, or as a Python file defining the dictionary `protomodel`
-and optionally `possible_dm_reps`, `dm_pdg`, `labeler`, `name`, `author` (a name or a
-list) and `version`.
-
 ## Command line
 
 ```
-uvbuilder build PROTOMODEL [-o FOLDER] [--name NAME] [-s scalar|fermion|both]
-                           [-q none|B=0,D=1 ...] [--author NAME ...] [--version V]
+uvbuilder build PROTOMODEL.dict [-o FOLDER] [--name NAME] [-s scalar|fermion|both]
+                                [-q none|B=0,D=1 ...] [--author NAME ...] [--version V]
 uvbuilder fill MODEL.pkl CARD [-o OUTPUT]
 uvbuilder -v ...             debug messages, e.g. why candidate models were rejected
 ```
@@ -124,8 +117,7 @@ treatment of complex couplings; and the notation of the model reports.
 
 Validity is checked at tree level: a decay of one new state into another and an SM
 particle needs a coupling between their fields that emits that particle. The masses are
-not checked: a valid model may be unable to reproduce the protomodel's spectrum (e.g. a
-degenerate one), which `fill` reports.
+not checked: a valid model may be unable to reproduce the protomodel's spectrum.
 
 ## Examples
 

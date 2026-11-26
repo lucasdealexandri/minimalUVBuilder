@@ -1,29 +1,28 @@
 """Command line interface (cli.py)."""
 
-import textwrap
-
 from uvbuilder.cli import main
 from uvbuilder.models.feynrulesmodel import FeynRulesModel
 from uvbuilder.paramCard import ParamCardGenerator
 from uvbuilder.models.slhaBuilder import write_card
 from tests.test_slhaBuilder import MAJORANA, SDDM_POINT, _sddm_model, _template
 
-PROTOMODEL = '''
-    from uvbuilder.tools.reps import DIRAC_SPINOR, GlobalU1s
-    protomodel = {"masses": {1000022: 100., 1000023: 300., 1000024: 200., 1000025: 400.},
-                  "decays": {1000022: {}, 1000023: {(1000022, 23): 1.0},
-                             1000024: {(1000022, 24): 1.0}, 1000025: {(1000023, 25): 1.0}},
-                  "labels": {1000022: 'Z1', 1000023: 'Z2', 1000024: 'W1', 1000025: 'Z3'}}
-    possible_dm_reps = {'spin': [DIRAC_SPINOR], 'globalU1s': [GlobalU1s()]}
-'''
 PROTOMODEL_DICT = {'masses': {1000022: 100., 1000023: 300., 1000024: 200., 1000025: 400.},
                    'decays': {1000022: {}, 1000023: {(1000022, 23): 1.0},
                               1000024: {(1000022, 24): 1.0}, 1000025: {(1000023, 25): 1.0}}}
+# fermionic DM, no charges
+PROTOMODEL = dict(PROTOMODEL_DICT, labels={1000022: 'Z1', 1000023: 'Z2', 1000024: 'W1', 1000025: 'Z3'},
+                  dm_spin='fermion', dm_charges=['none'])
+
+
+def _sddm(tmp_path, **options):
+    """The SDDM protomodel written to tmp_path/sddm.dict."""
+    source = tmp_path / 'sddm.dict'
+    source.write_text(repr(dict(PROTOMODEL, **options)))
+    return source
 
 
 def test_build_writes_the_fr_and_pickle_of_each_model(tmp_path, capsys):
-    source = tmp_path / 'sddm.py'
-    source.write_text(textwrap.dedent(PROTOMODEL))
+    source = _sddm(tmp_path)
     assert main(['build', str(source), '--out', str(tmp_path / 'out')]) == 0
     assert sorted(p.name for p in (tmp_path / 'out' / 'sddm').iterdir()) == ['sddm.fr', 'sddm.md', 'sddm.pkl']
     report = (tmp_path / 'out' / 'sddm' / 'sddm.md').read_text()
@@ -35,8 +34,7 @@ def test_build_writes_the_fr_and_pickle_of_each_model(tmp_path, capsys):
 
 
 def test_build_author_and_version_from_the_file_or_the_command_line(tmp_path):
-    source = tmp_path / 'sddm.py'
-    source.write_text(textwrap.dedent(PROTOMODEL) + "author = 'A. Lessa'\nversion = '2.0'\n")
+    source = _sddm(tmp_path, author='A. Lessa', version='2.0')
     main(['build', str(source), '--out', str(tmp_path / 'file')])
     fr = (tmp_path / 'file' / 'sddm' / 'sddm.fr').read_text()
     assert 'Authors -> {"A. Lessa"}' in fr and 'Version -> "2.0"' in fr
@@ -66,8 +64,7 @@ def test_dict_options_and_their_override_by_the_command_line(tmp_path, capsys):
     assert main(['build', str(tmp_path / 'bad.dict')]) == 1
 
 def test_fill_from_the_pickle_of_build(tmp_path):
-    source = tmp_path / 'sddm.py'
-    source.write_text(textwrap.dedent(PROTOMODEL))
+    source = _sddm(tmp_path)
     main(['build', str(source), '--out', str(tmp_path)])
     generator = ParamCardGenerator(FeynRulesModel.load(tmp_path / 'sddm' / 'sddm.pkl'))
     template = _template(generator.fr_model, tmp_path / 'template.dat')
@@ -85,13 +82,12 @@ def _models(argv, capsys):
 
 
 def test_build_writes_nothing_without_out(tmp_path, monkeypatch, capsys):
-    source = tmp_path / 'sddm.py'
-    source.write_text(textwrap.dedent(PROTOMODEL))
+    source = _sddm(tmp_path)
     monkeypatch.chdir(tmp_path)
     assert main(['build', str(source)]) == 0
     out = capsys.readouterr().out
     assert 'sddm  [ChiI1Y0Lw, ChiI2Y3Lw, ChiI2Ym3Lw]' in out and 'nothing written' in out
-    assert sorted(p.name for p in tmp_path.iterdir()) == ['sddm.py']
+    assert sorted(p.name for p in tmp_path.iterdir()) == ['sddm.dict']
 
 
 def test_dm_spins_and_charges_from_the_command_line(tmp_path, capsys):
@@ -99,8 +95,7 @@ def test_dm_spins_and_charges_from_the_command_line(tmp_path, capsys):
     from uvbuilder.cli import _dm_charges
     assert _dm_charges('none') == GlobalU1s() and _dm_charges('B=0, D=1') == GlobalU1s(B=0, D=1)
     assert _dm_charges('L=1/2') == GlobalU1s(L='1/2')
-    source = tmp_path / 'sddm.py'
-    source.write_text(textwrap.dedent(PROTOMODEL))      # fermionic DM, no charges
+    source = _sddm(tmp_path)
     fermion = _models(['build', str(source)], capsys)
     scalar = _models(['build', str(source), '--dm-spin', 'scalar'], capsys)
     both = _models(['build', str(source), '--dm-spin', 'both'], capsys)
@@ -119,12 +114,10 @@ def test_build_reads_a_dict_file(tmp_path):
     assert (tmp_path / 'out' / 'sddm_2_1' / 'sddm_2_1.pkl').is_file()
 
 
-def test_build_needs_a_python_file_with_the_protomodel(tmp_path, capsys):
+def test_build_needs_a_dict_file_with_the_protomodel(tmp_path, capsys):
     (tmp_path / 'model.slha').write_text('BLOCK MASS\n')
-    (tmp_path / 'empty.py').write_text('x = 1\n')
     assert main(['build', str(tmp_path / 'model.slha')]) == 1
-    assert main(['build', str(tmp_path / 'empty.py')]) == 1
-    assert 'does not define the dictionary `protomodel`' in capsys.readouterr().err
+    assert 'the protomodel is a .dict file' in capsys.readouterr().err
     (tmp_path / 'code.dict').write_text("__import__('os').system('echo hi')")
     assert main(['build', str(tmp_path / 'code.dict')]) == 1
     assert 'is not a dictionary literal' in capsys.readouterr().err
