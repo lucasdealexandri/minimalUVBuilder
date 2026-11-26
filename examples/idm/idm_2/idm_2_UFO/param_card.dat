@@ -78,7 +78,7 @@ DECAY  5 0.000000 # b : 0.0
 ## INFORMATION FOR BSMMASS
 ###################################
 Block BSMMASS 
-    1 1.000000e+00 # MChiI2Y3ChiI2Ym3 
+    1 1.000000e+02 # MChiI2Y3ChiI2Ym3 
 
 ###################################
 ## INFORMATION FOR CKMBLOCK
