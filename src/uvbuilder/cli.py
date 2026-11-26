@@ -88,6 +88,40 @@ def _dm_reps(args, given: dict) -> dict:
     return dm
 
 
+def _columns(rows) -> list:
+    '''rows as lines of left-aligned columns.'''
+    widths = [max(len(r[i]) for r in rows) for i in range(len(rows[0]))]
+    return ['  ' + '  '.join(c.ljust(w) for c, w in zip(r, widths)).rstrip() for r in rows]
+
+
+def _describe(fr_model) -> str:
+    '''The model's multiplets (spin, SU(3), SU(2), Y, global charges) and its states (kind
+    and the gauge components of their mixing block; the two sides of a Dirac block are
+    separated by |).'''
+    from uvbuilder.models.slhaBuilder import _declared
+    from uvbuilder.report import KIND
+    multiplets = [['multiplet', 'spin', 'SU(3)', 'SU(2)', 'Y', 'charges']]
+    for m in sorted(fr_model.multiplet_model.non_conjugated_multiplets, key=lambda m: m.fr_symbol()):
+        r = m.rep
+        multiplets.append([m.fr_symbol(), str(r.spin), str(r.colordim), str(r.isospin.dim),
+                           str(r.hypercharge), str(r.globalU1s).strip('()')])
+    label = lambda q: fr_model.renames['particle'].get(q.label, q.label)
+    declared = _declared(fr_model)
+    matrices = fr_model.mixings.get_mixing_matrices()
+    rights = {m.particles: m for m in matrices if m.is_right_block}
+    states = [['state', 'kind', 'components']]
+    for m in sorted((m for m in matrices if not m.is_right_block), key=lambda m: m.standard_symbol):
+        if m.type == 'ComplexScalar':
+            components = [f.label for f in m.f_components]
+        else:
+            components = [str(f) for f in m.real_basis(declared)[0]]
+        components = ', '.join(components)
+        if m.type == 'DiracSpinor':
+            components += ' | ' + ', '.join(f.label for f in rights[m.particles].f_components)
+        states.append([' '.join(label(q) for q in m.particles), KIND[m.type], components])
+    return '\n'.join([fr_model.name] + _columns(multiplets) + _columns(states))
+
+
 def build(args):
     '''`uvbuilder build`: lists the valid models of the protomodel; with --out, writes each
     to <out>/<model>/ as .fr, .pkl and .md. Exit code 1 if there is no valid model.'''
@@ -112,7 +146,7 @@ def build(args):
         multiplets = ', '.join(sorted(m.fr_symbol() for m in
                                       fr_model.multiplet_model.non_conjugated_multiplets))
         if args.out is None:
-            print(f'{fr_model.name}  [{multiplets}]')
+            print(_describe(fr_model) + '\n')
         else:
             # each model in its own folder: <out>/<model>/<model>.fr, .pkl, .md
             folder = out / fr_model.name

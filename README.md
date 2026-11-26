@@ -36,9 +36,10 @@ FOLDER/<model>/<model>.fr .pkl .md         one set per model
 param_card with masses, mixing matrices, DECAY Auto  ->  MadGraph5
 ```
 
-1. **Build.** `uvbuilder build PROTOMODEL` lists the models; with `-o FOLDER` it writes,
-   for each, a folder `<model>` with the FeynRules file `.fr`, its object representation
-   `.pkl` (the input of `fill`) and the model report `.md`.
+1. **Build.** `uvbuilder build PROTOMODEL.dict` lists the models, with their multiplets
+   and the gauge components of each state; with `-o FOLDER` it writes, for each, a
+   folder `<model>` with the FeynRules file `.fr`, its object representation `.pkl` (the
+   input of `fill`) and the model report `.md`.
 2. **UFO.** Load the `.fr` in FeynRules together with the SM file `SMMod.fr` (shipped in
    `src/uvbuilder/data/`; copy it to the FeynRules folder or give its full path) and
    write the UFO:

@@ -58,12 +58,30 @@ uvbuilder build stop.dict
 ```
 
 ```
-stop_1  [ChiC3I1Y4B1Lw, ChiC3bI1Ym4Bm1Lw, PhiI1Y0]
-stop_2  [ChiI1Y0Lw, PhiC3I1Y4B1]
+stop_1
+  multiplet         spin           SU(3)  SU(2)  Y     charges
+  ChiC3I1Y4B1Lw     LH WeylSpinor  3      1      2/3   B=1/3
+  ChiC3bI1Ym4Bm1Lw  LH WeylSpinor  3*     1      -2/3  B=-1/3
+  PhiI1Y0           Scalar         1      1      0     B=0
+  state  kind           components
+  T1     Dirac fermion  ChiC3I1Y4B1q2 | ChiC3bI1Ym4Bm1qm2
+  X1     real scalar    PhiI1Y0q0
+
+stop_2
+  multiplet    spin           SU(3)  SU(2)  Y    charges
+  ChiI1Y0Lw    LH WeylSpinor  1      1      0    B=0
+  PhiC3I1Y4B1  Scalar         3      1      2/3  B=1/3
+  state  kind              components
+  T1     complex scalar    PhiC3I1Y4B1q2
+  X1     Majorana fermion  ChiI1Y0q0
+
 nothing written: use -o FOLDER to write each model's .fr, .pkl and .md
 ```
 
-The builder finds two models in which T1 -> t X1 comes from a renormalizable coupling:
+Each model lists its multiplets, with their quantum numbers, and the states of the
+protomodel, with the gauge components they are made of (for a Dirac fermion, the two
+Weyl spinors separated by `|`; states that mix share a line). The builder finds two
+models in which T1 -> t X1 comes from a renormalizable coupling:
 
 - `stop_1`: T1 is a Dirac fermion, a color triplet with hypercharge 2/3 and baryon
   number 1/3 (the pair of Weyl spinors `ChiC3I1Y4B1Lw`, `ChiC3bI1Ym4Bm1Lw`), and X1 a
@@ -76,15 +94,21 @@ a fermion, `Lw` a left-handed Weyl spinor, `C3` (`C3b`) a color triplet (antitri
 `I<n>` the SU(2) dimension, `Y<k>` the hypercharge in units of 1/6, `B<k>` the baryon
 number in units of 1/3, `m` a minus sign.
 
-Without baryon number, the same models are found, without the `B` tags:
+Without baryon number, the same models are found, without the `B` tags, e.g.
 
 ```
 uvbuilder build stop.dict -q none
 ```
 
 ```
-stop_1  [ChiC3I1Y4Lw, ChiC3bI1Ym4Lw, PhiI1Y0]
-stop_2  [ChiI1Y0Lw, PhiC3I1Y4]
+...
+stop_2
+  multiplet  spin           SU(3)  SU(2)  Y    charges
+  ChiI1Y0Lw  LH WeylSpinor  1      1      0
+  PhiC3I1Y4  Scalar         3      1      2/3
+  state  kind              components
+  T1     complex scalar    PhiC3I1Y4q2
+  X1     Majorana fermion  ChiI1Y0q0
 ```
 
 Here the Lagrangians are the same: no coupling of these fields violates baryon number.

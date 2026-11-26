@@ -76,9 +76,10 @@ def test_fill_from_the_pickle_of_build(tmp_path):
 
 
 def _models(argv, capsys):
-    """Names of the models listed by build."""
+    """Names of the models listed by build (the unindented lines of their descriptions)."""
     assert main(argv) == 0
-    return [line.split()[0] for line in capsys.readouterr().out.splitlines() if '[' in line]
+    return [line for line in capsys.readouterr().out.splitlines()
+            if line and not line.startswith(' ') and not line.startswith('nothing written')]
 
 
 def test_build_writes_nothing_without_out(tmp_path, monkeypatch, capsys):
@@ -86,7 +87,10 @@ def test_build_writes_nothing_without_out(tmp_path, monkeypatch, capsys):
     monkeypatch.chdir(tmp_path)
     assert main(['build', str(source)]) == 0
     out = capsys.readouterr().out
-    assert 'sddm  [ChiI1Y0Lw, ChiI2Y3Lw, ChiI2Ym3Lw]' in out and 'nothing written' in out
+    assert out.startswith('sddm\n') and 'nothing written' in out
+    assert '  ChiI2Ym3Lw  LH WeylSpinor  1      2      -1/2' in out
+    assert '  W1        Dirac fermion     ChiI2Y3q3 | ChiI2Ym3qm3' in out
+    assert '  Z1 Z2 Z3  Majorana fermion  ChiI1Y0q0, ChiI2Y3q0, ChiI2Ym3q0' in out
     assert sorted(p.name for p in tmp_path.iterdir()) == ['sddm.dict']
 
 
