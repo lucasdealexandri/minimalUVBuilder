@@ -505,11 +505,11 @@ class Operator:
     @property
     def sector(self) -> str:
         '''Mass (two fields), Trilinear (three scalars), Yukawa (two fermions and
-        a scalar), Quartic (four scalars) or Other.'''
+        a scalar) or Quartic (four scalars): the renormalizable operators.'''
         n = len(self.multiplets)
         n_fermions = sum(not isinstance(m.rep.spin, Scalar) for m in self.multiplets)
         return {(2, 0): 'Mass', (2, 2): 'Mass', (3, 0): 'Trilinear',
-                (3, 2): 'Yukawa', (4, 0): 'Quartic'}.get((n, n_fermions), 'Other')
+                (3, 2): 'Yukawa', (4, 0): 'Quartic'}[(n, n_fermions)]
 
     def _description(self) -> str:
         '''Description of the parameter in the .fr, e.g. Dirac mass of X Y.'''

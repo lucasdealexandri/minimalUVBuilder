@@ -472,7 +472,7 @@ class FeynRulesModel(object):
             return f'{name} := ' + (f'Block[{{{block}}}, {body}];' if block else f'{body};')
 
         chunks = self._chunks
-        interactions = [(title, chunks.get(f'{key}Terms', [])) for key, title, _ in SECTORS[1:5]]
+        interactions = [(title, chunks.get(f'{key}Terms', [])) for key, title, block in SECTORS[1:] if block]
         interactions = [(title, terms) for title, terms in interactions if terms]
         out = ["(* ************************** *)",
                "(* *****   Lagrangian   ***** *)",

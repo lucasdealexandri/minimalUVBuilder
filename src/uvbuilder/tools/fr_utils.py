@@ -71,7 +71,6 @@ SECTORS = (
     ('Trilinear', 'Trilinear couplings', 'BSMTRILINEAR'),
     ('Yukawa', 'Yukawa couplings', 'BSMYUKAWA'),
     ('Quartic', 'Quartic couplings', 'BSMQUARTIC'),
-    ('Other', 'Other couplings', 'BSMOTHER'),
     ('Mixing', 'Mixing matrices', None),
     ('Phase', 'Mass-eigenstate phases', None),
     ('CG', 'SU(2) Clebsch-Gordan tensors', None),
@@ -82,7 +81,7 @@ SECTION_KEYS = (
     'Classes',
     'Parameters',
     'KineticTerms',
-) + tuple(f'{key}Terms' for key, _, _ in SECTORS[:5])
+) + tuple(f'{key}Terms' for key, _, block in SECTORS if block)
 
 
 def merge_chunks(*chunks: FRChunk) -> FRChunk:

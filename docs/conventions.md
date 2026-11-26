@@ -1,4 +1,4 @@
-# uvbuilder conventions
+# UV Builder Conventions
 
 The conventions of the models `uvbuilder build` writes and of the masses and mixing
 matrices `uvbuilder fill` computes. Each model report (`<model>.md`) lists the model's
@@ -19,7 +19,7 @@ singlet; the formulas below are those of `Multiplet.mass_partner`.
 
 where a real multiplet ($Y = 0$, integer $j$) satisfies $\phi_m^* = (-1)^m \phi_{-m}$, so
 that the second form is also $\frac12 M^2 \sum_m |\phi_m|^2$. A real singlet has
-$-\mathcal{L} \supset \frac12 M^2 \phi^2$. The input is $M$, which enters squared.
+$-\mathcal{L} \supset \frac12 M^2 \phi^2$. The input to the param_card is $M$, which enters squared.
 
 ### Fermions
 
@@ -115,8 +115,8 @@ A multiplet name lists its quantum numbers, e.g. `ChiC3I1Y4Lw`, `PhiI2Y3`:
 | part | meaning |
 |---|---|
 | `Phi`, `Chi` | scalar, fermion |
-| `C3`, `C3b`, ... | color representation (`b`: conjugate); absent for a singlet |
-| `I<n>` | SU(2) dimension |
+| `C<c>`, `C<c>b`, ... | color representation of dimension $c$ (`b`: conjugate); absent for a singlet |
+| `I<n>` | SU(2) dimension $n$ |
 | `Y<k>` | hypercharge $k/6$; `m` stands for a minus sign (`Ym3`: $-1/2$) |
 | `B<k>`, `L<k>`, `D<k>` | global charges, when tracked (`-q`): baryon number $k/3$, lepton number and dark charge $k$ (`Bm1`: $B = -1/3$) |
 | `F1`, `F2`, ... | copies of the same representation |
@@ -157,7 +157,6 @@ The inputs are grouped by the fields of their term:
 | `BSMTRILINEAR` | three scalars |
 | `BSMYUKAWA` | two fermions and a scalar |
 | `BSMQUARTIC` | four scalars |
-| `BSMOTHER` | any other term |
 
 The imaginary parts of complex couplings are in the same entry of `IM<block>`
 (`IMBSMYUKAWA`, ...).
