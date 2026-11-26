@@ -13,10 +13,9 @@ from dataclasses import replace
 
 from unum import Unum
 
-from uvbuilder.tools.reps import (DIRAC_SPINOR, SCALAR, LEFT_SPINOR, RIGHT_SPINOR,
-                        WEYL_LEFT, WEYL_RIGHT, VECTOR, LorentzRep, U1Rep,
-                        SU3Rep, UnbrokenRep, BrokenRep, DiracSpinor, WeylSpinor, Scalar,
-                        AllReps)
+from uvbuilder.tools.reps import (DIRAC_SPINOR, LEFT_SPINOR, RIGHT_SPINOR, WEYL_LEFT,
+                        WEYL_RIGHT, LorentzRep, U1Rep, SU3Rep, UnbrokenRep,
+                        DiracSpinor, WeylSpinor, Scalar, AllReps)
 from uvbuilder.tools.reps import GlobalU1s
 from uvbuilder.tools.components import ScalarComponent, WeylComponent, _fr_charge
 from uvbuilder.tools.fr_utils import (formatClassBlock, LEFT_SUFFIX, RIGHT_SUFFIX,
@@ -240,10 +239,6 @@ class Particle(object):
     @property
     def pdgList(self) -> List[int]:
         return [self._pdg]
-
-    def chargeConjugate(self) -> "Particle":
-        '''The antiparticle.'''
-        return self.antiParticle
 
     @property
     def isSM(self) -> Union[bool, None]:
@@ -625,37 +620,6 @@ class Particle(object):
             if f.field.representation == field.representation:
                 return i
         return None
-
-    def fieldExpansionProduct(self, other: "Particle") -> List[fTerm]:
-        """
-        Compute the product of the field expansions of two particles, returning a list of new fields that can be formed
-        from the products of the field representations.
-        """
-        if not isinstance(other, Particle):
-            raise TypeError(f"Expected a Particle instance, got {type(other)}")
-
-        if not self.fieldExpansion or not other.fieldExpansion:
-            raise ValueError("Both particles must have a field expansion to compute the product.")
-
-        expansion_product: List[fTerm] = []
-        for f1term in self.fieldExpansion:
-            for f2term in other.fieldExpansion:
-                # Product of field representations:
-                possible_field_reps = f1term.field.representationProduct(f2term.field)
-                for rep in possible_field_reps:
-                    new_field = Field(rep=BrokenRep.from_qnumbers(**rep),
-                                      label=f"F({self.label}*{other.label})")
-                    c_new = f1term.coeff * f2term.coeff
-                    for i, fterm in enumerate(expansion_product):
-                        if fterm.field.representation == new_field.representation:
-                            expansion_product[i] = fTerm(fterm.coeff + c_new, fterm.field)
-                            c_new = 0.0
-                            break
-                    if c_new != 0.0:
-                        expansion_product.append(fTerm(c_new, new_field))
-
-        return expansion_product
-
 
 def family_key(particle) -> tuple:
     '''Order of the members of a physical class (its family index): by mass, then PDG.'''

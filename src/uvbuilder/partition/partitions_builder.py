@@ -7,13 +7,12 @@
 
 import itertools
 from typing import List
-from uvbuilder.tools.reps import UnbrokenRep, BrokenRep, WEYL_RIGHT
+from uvbuilder.tools.reps import UnbrokenRep, BrokenRep
 import networkx as nx
 from networkx import DiGraph
 from collections import Counter
 from uvbuilder.models.particleModel import ParticleModel
-from uvbuilder.models.multipletModel import (MultipletModel, default_component_label,
-                                       multiplet_model_from_partition)
+from uvbuilder.models.multipletModel import (default_component_label, multiplet_model_from_partition)
 
 
 class PartitionsBuilder:

@@ -28,8 +28,8 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ```math
 \begin{array}{c|c}
- & \mathrm{ChiI2Ym3qm6} \\ \hline
-\mathrm{ChiI2Y3q6} & M_{\mathrm{ChiI2Y3ChiI2Ym3}} \\
+ & \mathrm{ChiI2Ym3qm3} \\ \hline
+\mathrm{ChiI2Y3q3} & M_{\mathrm{ChiI2Y3ChiI2Ym3}} \\
 \end{array}
 ```
 

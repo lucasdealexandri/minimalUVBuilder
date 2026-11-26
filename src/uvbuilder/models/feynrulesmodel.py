@@ -8,7 +8,7 @@
 """
 
 from __future__ import annotations  # To avoid "ParticleModel" string
-from typing import List, Dict, Tuple, Union, Optional
+from typing import List, Dict, Union, Optional
 from itertools import groupby
 from contextlib import contextmanager
 from dataclasses import replace
@@ -17,13 +17,11 @@ import os
 import re
 import warnings
 
-from uvbuilder.tools.reps import (U1Rep, SU2Rep, SU3Rep, DiracSpinor, Scalar, Vector,
-                        WeylSpinor, BrokenRep, UnbrokenRep, WEYL_LEFT, WEYL_RIGHT)
+from uvbuilder.tools.reps import (SU2Rep, SU3Rep, DiracSpinor, Scalar, Vector, WeylSpinor)
 from uvbuilder.models.multipletModel import MultipletModel, Multiplet
 from uvbuilder.models.particleModel import ParticleModel
-from uvbuilder.tools.operators import canonical_sort
 from uvbuilder.tools.fr_utils import (SECTORS, FRChunk, FRParameter, merge_chunks, formatVariable,
-                            formatClassBlock, chirality_suffix, toggle_dagger)
+                            chirality_suffix, toggle_dagger)
 from uvbuilder.tools.fr_names import (DEFAULT_SM_FILE, Renamer, SMClassMap, load_model,
                             reserved_names, particle_symbols, multiplet_symbols,
                             parameter_symbols)

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import numpy as np
 from collections import namedtuple
-import dataclasses
 from dataclasses import dataclass, replace
 from fractions import Fraction
 from typing import List, Tuple, Sequence
@@ -1006,6 +1005,5 @@ WEYL_LEFT =    WeylSpinor(left=(SU2Rep(1),SU2Rep(0)), right=())
 WEYL_RIGHT =   WeylSpinor(left=(), right=(SU2Rep(0),SU2Rep(1)))
 
 # Define Lorentz reps
-SU2SU2Rep = Sequence[Tuple[SU2Rep, SU2Rep]]
 LorentzRep = Union[DiracSpinor, WeylSpinor, Scalar, Vector]
 AllReps = Union[LorentzRep, SU3Rep, SU2Rep, U1Rep, int]

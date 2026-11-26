@@ -40,9 +40,9 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ```math
 \begin{array}{c|cc}
- & \mathrm{PhiI2Y3q6F1} & \mathrm{PhiI2Y3q6F2} \\ \hline
-\mathrm{PhiI2Y3q6F1bar} & M_{\mathrm{PhiI2Y3F1}}^{2} + \frac{\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F1barP1}} v^{2}}{4} + \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F1barP2}} v^{2}}{12} & \frac{v^{2} \left(- 3 i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} + 3 \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} - \sqrt{3} \left(i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}} - \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)\right)}{12} \\
-\mathrm{PhiI2Y3q6F2bar} & \frac{v^{2} \left(3 i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} + 3 \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} + \sqrt{3} \left(i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}} + \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)\right)}{12} & M_{\mathrm{PhiI2Y3F2}}^{2} + \frac{\lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2barP1}} v^{2}}{4} + \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2barP2}} v^{2}}{12} \\
+ & \mathrm{PhiI2Y3q3F1} & \mathrm{PhiI2Y3q3F2} \\ \hline
+\mathrm{PhiI2Y3q3F1bar} & M_{\mathrm{PhiI2Y3F1}}^{2} + \frac{\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F1barP1}} v^{2}}{4} + \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F1barP2}} v^{2}}{12} & \frac{v^{2} \left(- 3 i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} + 3 \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} - \sqrt{3} \left(i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}} - \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)\right)}{12} \\
+\mathrm{PhiI2Y3q3F2bar} & \frac{v^{2} \left(3 i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} + 3 \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP1}} + \sqrt{3} \left(i \mathrm{Im}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}} + \mathrm{Re}\,\lambda_{\mathrm{PhiI2Y3F1PhiI2Y3F2barP2}}\right)\right)}{12} & M_{\mathrm{PhiI2Y3F2}}^{2} + \frac{\lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2barP1}} v^{2}}{4} + \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3F2PhiI2Y3F2barP2}} v^{2}}{12} \\
 \end{array}
 ```
 

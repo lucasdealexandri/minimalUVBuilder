@@ -74,7 +74,7 @@ def su2_singlet_coeff(isospins: Tuple[SU2Rep, ...],
     Raw projection values (no field collapse / identical-multiplet rules; the
     Operator machinery applies those on its own). Nonzero only for m-tuples
     summing to zero. This is the numeric matrix declared in FeynRules via
-    ``fr_definition``.
+    ``fr_parameter``.
     '''
     j0 = isospins[0]
     state: Dict[Tuple[SU2Rep, U1Rep], Dict[Tuple[U1Rep, ...], sp.Expr]] = {
@@ -145,17 +145,12 @@ class CGTensor:
         '''FeynRules symbol of the tensor.'''
         return self.name
 
-    def fr_definition(self) -> str:
-        '''FeynRules definition of the symbol; empty for built-ins.'''
-        return ''
-
-
 class SU2CGTensor(CGTensor):
     '''SU(2) singlet CG tensor, ordered by isospin dimension ascending.
 
     The name follows the dim-sorted convention: isospins 4 5 2 2 2 3 give
     ``SU2CG222345``. Values are numeric (used for Python contractions) and
-    declared in FeynRules through ``fr_definition``. Slot/index assignment
+    declared in FeynRules through ``fr_parameter``. Slot/index assignment
     to fields is done by the Operator/FeynRulesModel. Two-index tensors are the
     plain invariant (entries +-1, e.g. X^dagger X); larger ones are unit-normalized.
     '''
@@ -218,12 +213,6 @@ class SU2CGTensor(CGTensor):
                    ('Definitions', '{' + ',\n '.join(entries) + '}'),
                    ('ComplexParameter', False))
         return FRParameter(self.name, 'CG', options, (self.name, 0))
-
-    def fr_definition(self) -> str:
-        '''Rendered entry of ``fr_parameter`` ('' for a trivial tensor).'''
-        parameter = self.fr_parameter()
-        return parameter.render() if parameter else ''
-
 
 class SU3CGTensor(CGTensor):
     '''FeynRules SU(3) color contraction, resolved from the color reps.
@@ -305,11 +294,6 @@ class SU3CGTensor(CGTensor):
                  for symbol, pins in data['factors']]
         body = ' '.join(parts)
         return f'{prefactor} {body}'.strip() if prefactor else body
-
-    def fr_definition(self) -> str:
-        '''SU(3) heads are FeynRules built-ins: no definition.'''
-        return ''
-
 
 # ----------------------------------------------------------------------
 # SU(3) contraction-head (FeynRules built-ins)

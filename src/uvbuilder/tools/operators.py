@@ -8,7 +8,6 @@
 import sympy as sp
 from sympy.printing.mathematica import mathematica_code
 from typing import NamedTuple, Tuple, Dict, List, Optional, Union
-import copy
 import dataclasses
 import warnings
 
@@ -502,11 +501,6 @@ class Operator:
         real = declared.selfConjugate and not declared.is_real_nontrivial
         left = symbol if real else symbol + DAGGER_SUFFIX
         return f'{mathematica_code(self.output_parameter(tracker))} {left}{idx} {symbol}{idx}'
-
-    def fr_definition(self, tracker=None) -> str:
-        '''FeynRules interaction definition for this operator (the term
-        string; the model supplies the index tracker for unique labels).'''
-        return self.fr_term(tracker)
 
     @property
     def sector(self) -> str:

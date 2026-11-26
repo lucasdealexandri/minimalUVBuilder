@@ -29,8 +29,8 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ```math
 \begin{array}{c|c}
- & \mathrm{PhiC3I1Y4q4} \\ \hline
-\mathrm{PhiC3I1Y4q4bar} & M_{\mathrm{PhiC3I1Y4}}^{2} + \frac{\lambda_{\mathrm{PhiC3I1Y4PhiC3I1Y4bar}} v^{2}}{2} \\
+ & \mathrm{PhiC3I1Y4q2} \\ \hline
+\mathrm{PhiC3I1Y4q2bar} & M_{\mathrm{PhiC3I1Y4}}^{2} + \frac{\lambda_{\mathrm{PhiC3I1Y4PhiC3I1Y4bar}} v^{2}}{2} \\
 \end{array}
 ```
 

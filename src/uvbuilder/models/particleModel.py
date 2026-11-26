@@ -8,7 +8,6 @@
 """
 
 
-from pyexpat import model
 from typing import List, Union, Dict
 from dataclasses import replace
 from uvbuilder.states.particle import Particle, family_key
@@ -21,7 +20,7 @@ from uvbuilder.tools.reps import (WEYL_LEFT, WEYL_RIGHT, DiracSpinor, WeylSpinor
 from uvbuilder.tools.components import WeylComponent, ScalarComponent
 from uvbuilder.tools.fr_utils import (LEFT_SUFFIX, RIGHT_SUFFIX, chirality_suffix,
                             formatVariable, formatClassBlock, fr_quantum_numbers,
-                            parameter_block, merge_chunks)
+                            merge_chunks)
 from uvbuilder.states.physicsUnits import GeV
 
 
@@ -302,19 +301,6 @@ class ParticleModel:
         return newModel
 
 
-    def getModelSize(self) -> int:
-        """
-        Compute the size of a ParticleModel based on the number
-        of defined attributes.
-        
-        """
-
-        n = 0
-        for ptc in self.pdgDict.values():
-            n += len(ptc) # the length of a particle corresponds to how many qnumbers have been set
-
-        return n
-    
     def hasQNumbers(self, ignoreSM=True) -> List[str]:
         """
         Returns a list of particle qnumbers which have been defined for ALL particles.
@@ -335,17 +321,6 @@ class ParticleModel:
         else:
             return sorted(list(qnumbers))
 
-    def diffAttrs(self, other : "ParticleModel") ->List[str]:
-        """
-        Return a list with the names of attributes which were
-        defined in self and not in other and vice-versa.
-        """
-        
-        m1_qnumbers = set(self.hasQNumbers())
-        m2_qnumbers = set(other.hasQNumbers())
-        diff_atts = (m1_qnumbers.symmetric_difference(m2_qnumbers))
-        return sorted(list(diff_atts))
-    
     def getParticles(self) -> List[Particle]:
         """
         Returns a list of all particles appearing in the model.

@@ -38,9 +38,9 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ```math
 \begin{array}{c|cc}
- & \mathrm{PhiI2Y3q6} & \mathrm{PhiI3Y0q6} \\ \hline
-\mathrm{PhiI2Y3q6bar} & M_{\mathrm{PhiI2Y3}}^{2} + \frac{\lambda_{\mathrm{PhiI2Y3PhiI2Y3barP1}} v^{2}}{4} + \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3PhiI2Y3barP2}} v^{2}}{12} & \frac{\sqrt{6} v \left(i \mathrm{Im}\,\mu_{\mathrm{PhiI2Y3PhiI3Y0}} - \mathrm{Re}\,\mu_{\mathrm{PhiI2Y3PhiI3Y0}}\right)}{6} \\
-\mathrm{PhiI3Y0q6bar} & - \frac{\sqrt{6} v \left(i \mathrm{Im}\,\mu_{\mathrm{PhiI2Y3PhiI3Y0}} + \mathrm{Re}\,\mu_{\mathrm{PhiI2Y3PhiI3Y0}}\right)}{6} & M_{\mathrm{PhiI3Y0}}^{2} - \frac{\sqrt{6} \lambda_{\mathrm{PhiI3Y0PhiI3Y0}} v^{2}}{6} \\
+ & \mathrm{PhiI2Y3q3} & \mathrm{PhiI3Y0q3} \\ \hline
+\mathrm{PhiI2Y3q3bar} & M_{\mathrm{PhiI2Y3}}^{2} + \frac{\lambda_{\mathrm{PhiI2Y3PhiI2Y3barP1}} v^{2}}{4} + \frac{\sqrt{3} \lambda_{\mathrm{PhiI2Y3PhiI2Y3barP2}} v^{2}}{12} & \frac{\sqrt{6} v \left(i \mathrm{Im}\,\mu_{\mathrm{PhiI2Y3PhiI3Y0}} - \mathrm{Re}\,\mu_{\mathrm{PhiI2Y3PhiI3Y0}}\right)}{6} \\
+\mathrm{PhiI3Y0q3bar} & - \frac{\sqrt{6} v \left(i \mathrm{Im}\,\mu_{\mathrm{PhiI2Y3PhiI3Y0}} + \mathrm{Re}\,\mu_{\mathrm{PhiI2Y3PhiI3Y0}}\right)}{6} & M_{\mathrm{PhiI3Y0}}^{2} - \frac{\sqrt{6} \lambda_{\mathrm{PhiI3Y0PhiI3Y0}} v^{2}}{6} \\
 \end{array}
 ```
 

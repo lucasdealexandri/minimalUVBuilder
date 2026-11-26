@@ -118,12 +118,12 @@ A multiplet name lists its quantum numbers, e.g. `ChiC3I1Y4Lw`, `PhiI2Y3`:
 | `C3`, `C3b`, ... | color representation (`b`: conjugate); absent for a singlet |
 | `I<n>` | SU(2) dimension |
 | `Y<k>` | hypercharge $k/6$; `m` stands for a minus sign (`Ym3`: $-1/2$) |
-| `B<k>`, `L<k>`, `D<k>` | global charges, when tracked (`-q`) |
+| `B<k>`, `L<k>`, `D<k>` | global charges, when tracked (`-q`): baryon number $k/3$, lepton number and dark charge $k$ (`Bm1`: $B = -1/3$) |
 | `F1`, `F2`, ... | copies of the same representation |
 | `Lw`, `Rw` | left- and right-handed Weyl spinor |
 
-A component adds its electric charge in units of 1/6, `q<k>` (`ChiI2Y3q6`: charge +1,
-`ChiI2Ym3qm6`: charge -1), and a conjugate field ends in `bar`. SM fields keep the names
+A component adds its electric charge in units of 1/3, `q<k>` (`ChiI2Y3q3`: charge +1,
+`ChiI2Ym3qm3`: charge -1), and a conjugate field ends in `bar`. SM fields keep the names
 of `SMMod.fr`: `Phi` is the Higgs doublet, `tRbar` the conjugate right-handed top.
 
 ### Parameter names

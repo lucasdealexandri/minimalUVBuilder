@@ -6,10 +6,10 @@
 .. moduleauthor:: Andre Lessa <lessa.a.p@gmail.com>
 """
 
-from typing import List, Sequence, Iterator, Union
+from typing import List, Sequence, Iterator
 
 from uvbuilder.states.particle import Particle
-from uvbuilder.tools.reps import spin_prod, LorentzRep, SU3Rep, SU2Rep, U1Rep, AllReps, GlobalU1s, VECTOR
+from uvbuilder.tools.reps import spin_prod, LorentzRep, SU3Rep, SU2Rep, U1Rep, AllReps, GlobalU1s
 from uvbuilder.models.particleModel import ParticleModel
 from uvbuilder.vertices.particleVertex import ParticleVertex
 

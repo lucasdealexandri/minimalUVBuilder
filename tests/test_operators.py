@@ -48,7 +48,7 @@ def test_mass_terms_of_the_singlet_doublet_model():
                 ('ChiI1Y0q0', 'ChiI2Ym3q0'): yd * v / sp.sqrt(2),
                 ('ChiI1Y0q0', 'ChiI2Y3q0'): -yu * v / sp.sqrt(2),
                 ('ChiI2Ym3q0', 'ChiI2Y3q0'): -mu,
-                ('ChiI2Ym3qm6', 'ChiI2Y3q6'): mu}
+                ('ChiI2Ym3qm3', 'ChiI2Y3q3'): mu}
     assert terms.keys() == expected.keys()
     assert all(sp.simplify(terms[key] - expected[key]) == 0 for key in expected)
 
@@ -73,7 +73,7 @@ def test_real_triplet_mass_term_is_positive_definite():
     the term fr_mass_term writes (the CG singlet has the opposite sign).'''
     M = sp.Symbol('MPhiI3Y0')
     op = _by_description(REAL_TRIPLET)['Mass of PhiI3Y0']
-    assert _terms(op.expand_singlets()) == {('PhiI3Y0qm6', 'PhiI3Y0q6'): -M**2,
+    assert _terms(op.expand_singlets()) == {('PhiI3Y0qm3', 'PhiI3Y0q3'): -M**2,
                                             ('PhiI3Y0q0', 'PhiI3Y0q0'): M**2 / 2}
     assert op.is_hermitian and op.lagrangian_terms() == op.expand_singlets()
 

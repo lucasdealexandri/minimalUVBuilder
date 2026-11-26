@@ -143,7 +143,7 @@ def build(args):
         print('no valid model (run with -v to see why the candidates were rejected)')
         return 1
     if args.out is None:
-        print('nothing written: use --out FOLDER to write the .fr, .pkl and .md files')
+        print("nothing written: use -o FOLDER to write each model's .fr, .pkl and .md")
     return 0
 
 

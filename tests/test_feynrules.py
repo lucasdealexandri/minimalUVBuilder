@@ -222,25 +222,6 @@ class TestOperatorTracker:
         assert Operator(A, B).fr_term(t) == '1 SU2CG22[i1, i2] A[i1] B[i2]'
         assert Operator(A, C).fr_term(t) == '1 SU2CG22[i1, i2] A[i1] C[i2]'
 
-    def test_fr_definition_alias(self):
-        t = IndexTracker()
-        A = self._multiplet('A', SU2Rep(1,), U1Rep(0,), 1)
-        B = self._multiplet('B', SU2Rep(1,), U1Rep(0,), 2)
-        op = Operator(A, B)
-        definition = op.fr_definition(t)
-        assert 'SU2CG22[i' in definition
-        assert 'A[i' in definition and 'B[i' in definition
-
-
-class TestMixingStub:
-
-    def test_generate_mixing_matrices_stub(self):
-        from uvbuilder.models.multipletModel import MultipletModel
-        m = Multiplet(BrokenRep(spin=SCALAR, colordim=SU3Rep(0, 0),
-                                isospin=SU2Rep(0,), hypercharge=U1Rep(0,)),
-                      label='X', fillMultiplet=True)
-        mm = MultipletModel((m,))
-        assert mm.generate_mixing_matrices(IndexTracker()) == []
 
 
 def _sddm_model():
@@ -644,7 +625,7 @@ def test_default_gauge_labels():
     doublet = BrokenRep(spin=SCALAR, colordim=SU3Rep(0, 0), isospin=SU2Rep(1,),
                         hypercharge=U1Rep(1, 2))
     assert fr_component_label(doublet) == 'PhiI2Y3'
-    assert fr_component_label(doublet, U1Rep(1, 2)) == 'PhiI2Y3q6'
+    assert fr_component_label(doublet, U1Rep(1, 2)) == 'PhiI2Y3q3'
     assert fr_component_label(doublet, family_index=2) == 'PhiI2Y3F2'
     quark = BrokenRep(spin=WEYL_LEFT, colordim=SU3Rep(1, 0), isospin=SU2Rep(0,),
                       hypercharge=U1Rep(2, 3), globalU1s=GlobalU1s(B=U1Rep(1, 3)))
@@ -794,3 +775,29 @@ def test_parameters_carry_block_and_order_block():
         ('MChiI1Y0', 'BSMMASS', 1, ''), ('MChiI2Y3ChiI2Ym3', 'BSMMASS', 2, ''),
         ('RyChiI1Y0ChiI2Y3', 'BSMYUKAWA', 1, 'R'), ('IyChiI1Y0ChiI2Y3', 'IMBSMYUKAWA', 1, 'I'),
         ('RyChiI1Y0ChiI2Ym3', 'BSMYUKAWA', 2, 'R'), ('IyChiI1Y0ChiI2Ym3', 'IMBSMYUKAWA', 2, 'I')]
+
+
+def test_renamed_multiplet_renames_its_conjugate_partner():
+    '''A multiplet whose label clashes with an SM name (here the Higgs doublet's, Phi) is
+    renamed in the output together with its conjugate-partner scalar, and the labels are
+    restored afterwards.'''
+    import re
+    import warnings
+    from uvbuilder.modelBuilder.modelBuilder import ModelBuilder
+    from uvbuilder.models.multipletModel import default_component_label
+    from uvbuilder.tools.reps import SCALAR
+    idm = {'masses': {1000022: 100., 1000023: 200., 1000024: 250.},
+           'decays': {1000022: {}, 1000023: {(1000022, 23): 1.0}, 1000024: {(1000022, 24): 1.0}}}
+
+    def labeler(rep, i3=None, family_index=None):
+        return default_component_label(rep, i3, family_index).replace('PhiI2Y3', 'Phi')
+
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        (fr,) = ModelBuilder(modelData=idm, possible_dm_reps={'spin': [SCALAR]}).generateFeynRulesModels(
+            name='idm', labeler=labeler)
+    doublet, partner = fr.multiplet_model.multiplets
+    assert fr.renames['multiplet'] == {'Phi': 'Phi1'}
+    classes = set(re.findall(r'ClassName\s*->\s*(\w+)', fr.to_feynrules()))
+    assert {'Phi1', 'Phi1tilde'} <= classes and 'Phi' not in classes
+    assert (doublet.label, partner.label) == ('Phi', 'Phibar')

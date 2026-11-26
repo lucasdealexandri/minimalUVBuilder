@@ -8,12 +8,12 @@
 import copy
 from typing import Union, Dict, Sequence, List, Optional, Tuple
 from uvbuilder.tools.reps import (LorentzRep, U1Rep, SU3Rep, SU2Rep, BrokenRep,
-                        WeylSpinor, DiracSpinor, Scalar, Vector, WEYL_LEFT, WEYL_RIGHT)
+                        WeylSpinor, Scalar, Vector, WEYL_LEFT)
 from uvbuilder.tools.fr_utils import (formatVariable, getGaugeDefinitions, getSU2Index,
                             DAGGER_SUFFIX, chirality_suffix, toggle_dagger)
 from uvbuilder.states.field import Field
 from uvbuilder.tools.reps import GlobalU1s, su2_conj_phase, su2_reality_phase
-from uvbuilder.partition.particle_mixing import ParticleMixing, MixingMatrix
+from uvbuilder.partition.particle_mixing import ParticleMixing
 
 
 class Multiplet(object):
@@ -406,22 +406,6 @@ class Multiplet(object):
 
     def items(self):
         return zip(self.keys(), self.values())
-
-    def Q(self, q_value: U1Rep) -> Union[Field, None]:
-        """
-        Returns component with electric charge Q, if such a charge
-        appears in the multiplet, otherwise returns None.
-        """
-        for field in self.fields:
-            if field.eCharge == q_value:
-                return field
-        return None
-
-    def get_conjugateMultiplet(self) -> "Multiplet":
-        """
-        Returns the conjugate multiplet (self if the multiplet is self-conjugate).
-        """
-        return self.conjugateMultiplet
 
     def is_filled(self) -> bool:
         '''True if every component has a field.'''

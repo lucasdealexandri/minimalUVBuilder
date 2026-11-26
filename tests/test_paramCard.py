@@ -21,3 +21,9 @@ def test_generator_fills_like_write_card_after_a_round_trip(tmp_path):
 def test_generator_needs_a_feynrules_model():
     with pytest.raises(TypeError, match='expected a FeynRulesModel'):
         ParamCardGenerator({'masses': {}})
+
+
+def test_spectrum_of_the_inputs():
+    masses, mixings = ParamCardGenerator(_sddm_model(MAJORANA)).spectrum(SDDM_POINT)
+    assert sorted(round(m, 6) for m in masses.values()) == [109.280731, 200.0, 289.839635, 430.558904]
+    assert set(mixings) == {'UMixMZ1Z2Z3'}

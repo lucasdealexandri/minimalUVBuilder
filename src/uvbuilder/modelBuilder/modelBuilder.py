@@ -8,7 +8,7 @@
 
 import os
 from dataclasses import replace
-from typing import Dict,Union,List,Iterator,Dict,Optional
+from typing import Dict,Union,List,Iterator,Optional
 from itertools import product, chain
 
 from uvbuilder.states.finalState import FinalState
@@ -16,7 +16,6 @@ from uvbuilder.states.particle import Particle
 from uvbuilder.states.stateDict import StateDict
 from uvbuilder.tools.reps import SCALAR,DIRAC_SPINOR,U1Rep,SU3Rep, AllReps, UnbrokenRep, GlobalU1s
 
-from uvbuilder.vertices.particleVertex import ParticleVertex
 
 from uvbuilder.models.finalStateModel import FinalStateModel
 from uvbuilder.models.particleModel import ParticleModel

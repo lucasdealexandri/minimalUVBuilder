@@ -7,7 +7,6 @@
 
 from uvbuilder.states.particle import Particle
 from typing import List,Dict
-from itertools import product
 from uvbuilder.tools.reps import AllReps
 
 

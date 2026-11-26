@@ -7,8 +7,7 @@
 
 import copy
 from typing import Union, Dict, List, Tuple, Optional
-from itertools import product
-from uvbuilder.tools.reps import DIRAC_SPINOR, SCALAR, LEFT_SPINOR, RIGHT_SPINOR, WEYL_LEFT, WEYL_RIGHT, VECTOR, LorentzRep, U1Rep, SU3Rep, SU2Rep, AllReps, BrokenRep
+from uvbuilder.tools.reps import LorentzRep, U1Rep, SU3Rep, SU2Rep, AllReps, BrokenRep
 from uvbuilder.tools.reps import GlobalU1s
 
 class Field(object):
@@ -290,44 +289,6 @@ class Field(object):
         """
 
         return Field(rep=self._rep, label=self._label, isSM=self._isSM)
-
-    def representationProduct(self, other: "Field") -> List[Dict[str, AllReps]]:
-        """
-        Returns the representation of the product of self and other.
-        """
-
-        repDict = {}
-        for qnumber in Field.QUANTUM_NUMBERS:
-            value1 = getattr(self, qnumber)
-            value2 = getattr(other, qnumber)
-            if value1 is not None and value2 is not None:
-                if isinstance(value1, (SU2Rep, SU3Rep, LorentzRep)):
-                    value_prod = value1 * value2
-                    # Make sure the product is always a list (even if it contains only one representation)
-                    if isinstance(value_prod, AllReps):
-                        value_prod = [value_prod]
-                    repDict[qnumber] = list(value_prod)
-                elif qnumber == 'i3' or isinstance(value1, U1Rep):
-                    # Handle the particular case where the product of quantum numbers is just the
-                    # sum of the charges (e.g. for U(1) representations)
-                    repDict[qnumber] = [value1 + value2]
-                elif isinstance(value1, GlobalU1s) and isinstance(value2, GlobalU1s):
-                    # This is the case when dealing with globalU1s
-                    repDict[qnumber] = [value1 + value2]
-                else:
-                    raise TypeError(f"Cannot compute representation product for qnumber {qnumber} with values {value1} and {value2}")
-            elif value1 is not None:
-                repDict[qnumber] = [value1]
-            elif value2 is not None:
-                repDict[qnumber] = [value2]
-
-        if not repDict:
-            return [repDict]
-
-        qnumbers = list(repDict.keys())
-        repProducts = product(*(repDict[qnumber] for qnumber in qnumbers))
-
-        return [dict(zip(qnumbers, repProduct)) for repProduct in repProducts]
 
     def __deepcopy__(self, memo):
         """

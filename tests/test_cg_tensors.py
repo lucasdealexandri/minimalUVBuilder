@@ -68,12 +68,12 @@ def test_su2_cg_drops_trivial_singlets():
     assert t.dims == ()
     assert t.name == ''
     assert t.render(()) == ''
-    assert t.fr_definition() == ''
+    assert t.fr_parameter() is None
     assert t.numeric == {}
     mixed = SU2CGTensor([SU2Rep(0,), SU2Rep(0,), SU2Rep(1,), SU2Rep(1,)])
     assert mixed.dims == (2, 2)
     assert mixed.name == 'SU2CG22'
-    assert 'SU2d1' not in mixed.fr_definition()
+    assert 'SU2d1' not in mixed.fr_parameter().render()
 
 
 def test_su2_cg_numeric_and_def():
@@ -82,7 +82,7 @@ def test_su2_cg_numeric_and_def():
     assert cg_block(SU2Rep(1,), SU2Rep(1,)) is not None
     # FR definition: rigid Internal parameter, matrix-style Definitions
     # (explicit non-zero entries, then a numeric-only default of 0)
-    d = t.fr_definition()
+    d = t.fr_parameter().render()
     assert d.startswith('  SU2CG22 == {')
     assert 'Index[SU2D]' in d
     assert 'ParameterType    -> Internal' in d
@@ -142,9 +142,7 @@ def test_su3_render_too_few_indices_raises():
 def test_su3_builtins_need_no_definition():
     k3 = SU3CGTensor([SU3Rep(1, 0), SU3Rep(1, 0), SU3Rep(1, 0)])
     assert k3.fr_symbol() == 'K3'
-    assert k3.fr_definition() == ''
-    k6bar = SU3CGTensor([SU3Rep(0, 1), SU3Rep(0, 1), SU3Rep(2, 0)])
-    assert k6bar.fr_definition() == ''
+    assert not hasattr(k3, 'fr_parameter')
 
 
 def test_su3_trivial_conjugate_pairs():
@@ -181,7 +179,7 @@ def test_su3_escape_warns():
 
 
 @pytest.mark.parametrize('dims', [(2, 2), (2, 2, 3), (2, 2, 3, 3), (3, 3), (2, 2, 2, 2)])
-def test_fr_definition_indexed_like_multiplet_components(dims):
+def test_fr_parameter_indexed_like_multiplet_components(dims):
     # the written tensor, at the component positions used in the class definitions
     # (getSU2Index), equals the numeric singlet; with odd sum of isospins a reversed
     # index order would flip its sign
@@ -194,7 +192,7 @@ def test_fr_definition_indexed_like_multiplet_components(dims):
     for path in (su2_singlet_paths(isospins) if len(dims) > 3 else [None]):
         t = SU2CGTensor(list(isospins), path=path)
         written = {tuple(map(int, k.split(', '))): v for k, v in
-                   re.findall(rf'{t.name}\[([\d, ]+)\] -> ([^,\n}}]+)', t.fr_definition())}
+                   re.findall(rf'{t.name}\[([\d, ]+)\] -> ([^,\n}}]+)', t.fr_parameter().render())}
         for ms, value in t.numeric.items():
             position = tuple(getSU2Index(SimpleNamespace(isospin=SU2Rep(d - 1), i3=m))
                              for m, d in zip(ms, t.dims))

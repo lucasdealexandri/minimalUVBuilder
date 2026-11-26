@@ -8,8 +8,7 @@
 """
 
 from collections import Counter
-from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Optional, Set
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, Set
 
 import itertools
 import warnings
@@ -17,7 +16,6 @@ import networkx as nx
 import sympy as sp
 from networkx import Graph
 
-from sympy.printing.mathematica import mathematica_code
 from uvbuilder.tools.operators import Operator
 from uvbuilder.tools.cg_tensors import SU2CGTensor, su2_singlet_paths
 from uvbuilder.models.particleModel import ParticleModel
@@ -26,28 +24,17 @@ from uvbuilder.states.multiplet import Multiplet
 from uvbuilder.states.particle import Particle
 from uvbuilder.states.SMfields import SM_MULTIPLETS, HiggsDoublet
 from uvbuilder.tools.reps import su2_conj_phase
-from uvbuilder.tools.reps import (BrokenRep, Scalar, U1Rep, UnbrokenRep, WEYL_LEFT,
-                        WEYL_RIGHT, SU3Rep, Vector, WeylSpinor, DiracSpinor)
-from uvbuilder.tools.fr_utils import (formatVariable, formatClassBlock, merge_chunks,
-                            getSU2Index, HIGGS_TILDE, toggle_dagger, DAGGER_SUFFIX,
-                            fr_quantum_numbers, RIGHT_SUFFIX)
-from uvbuilder.partition.particle_mixing import ParticleMixing, MixingMatrix
+from uvbuilder.tools.reps import (BrokenRep, Scalar, U1Rep, WEYL_LEFT, WEYL_RIGHT,
+                        SU3Rep, Vector, WeylSpinor, DiracSpinor)
+from uvbuilder.tools.fr_utils import (formatClassBlock, getSU2Index, HIGGS_TILDE,
+                            toggle_dagger, DAGGER_SUFFIX, fr_quantum_numbers, RIGHT_SUFFIX)
+from uvbuilder.partition.particle_mixing import ParticleMixing
 from uvbuilder.vertices.particleVertex import ParticleVertex
 
 
 # ----------------------------------------------------------------------
 # Default component naming (overridable at partition -> MultipletModel build)
 # ----------------------------------------------------------------------
-
-
-def _spin_letter(spin) -> str:
-    '''Spin letter of a default component label: S (scalar), V (vector), LW (Weyl).'''
-    name = type(spin).__name__.lower()
-    if 'scalar' in name:
-        return 'S'
-    if 'vector' in name:
-        return 'V'
-    return 'LW'
 
 
 def _spin_prefix(spin) -> str:
@@ -62,45 +49,13 @@ def _spin_prefix(spin) -> str:
     return 'Chi'
 
 
-def _default_charge_suffix(q: U1Rep) -> str:
-    '''Charge superscript of a default component label: ^0, ^+, ^{-2}, ^{+1/3}, ...'''
-    if q.numerator == 0:
-        return '^0'
-    sign = '+' if q.numerator > 0 else '-'
-    if q.denominator == 1:
-        if abs(q.numerator) == 1: return f'^{sign}'
-        return f'^{{{sign}{abs(q.numerator)}}}'
-    return f'^{{{sign}{abs(q.numerator)}/{q.denominator}}}'
-
-
-def sympy_component_label(
-        rep: BrokenRep, 
-        i3: Optional[U1Rep] = None, 
-        family_index: Optional[int] = None) -> str:
-    '''Human-readable gauge-field label for one component, e.g. LW2(-1/2)0.
-    Not a valid bare Mathematica symbol (contains '(', ')', '^', ...); use
-    fr_component_label for labels that port directly to FeynRules.'''
-    colorname = f'[{rep.colordim}]' if rep.colordim != SU3Rep(0,0) else ''
-    base = f'{_spin_letter(rep.spin)}{colorname}{rep.isospin.dim}({rep.hypercharge})'
-    suffix = f'_{family_index}' if family_index is not None else ''
-    if not rep.globalU1s.is_zero: base += f'{rep.globalU1s}'
-    if i3 is None: return base + suffix
-    else:
-        q = U1Rep(i3) + rep.hypercharge
-        return f'{base}{_default_charge_suffix(q)}{suffix}'
-
-
-def _int_charge(q: U1Rep) -> int:
-    '''Electric charge / hypercharge scaled by 3, so values like +/-1/2, +/-, 1/3
-    all map onto distinct integers (e.g. 6q).'''
-    assert 6 * q == (6*q).numerator, f'Not integer charge {6*q}'
-    return 6 * q
-
-
-def _charge_tag(q: U1Rep) -> str:
-    '''Mathematica-valid scalar charge tag: y0, y3, ym3, ... (hypercharge) or
-    q0, q6, qm3, ... (electric charge). Values scaled by 6 to stay integer.'''
-    n = _int_charge(q)
+def _charge_tag(q: U1Rep, scale: int) -> str:
+    '''Charge tag of a label, scale times the charge: 0, 3, m3, ... (m for a minus sign).
+    Hypercharges are scaled by 6, electric charges by 3.'''
+    n = scale * U1Rep(q)
+    if n.denominator != 1:
+        raise ValueError(f'charge {q} is not a multiple of 1/{scale}')
+    n = n.numerator
     if n == 0:
         return '0'
     if n < 0:
@@ -108,7 +63,6 @@ def _charge_tag(q: U1Rep) -> str:
     return f'{n}'
 
 
-_UQN_PREFIX = {'L': 'L', 'B': 'B', 'D': 'D'}
 _UQN_SCALE = {'B': 3}
 
 
@@ -120,12 +74,11 @@ def _global_u1_tag(uqn) -> str:
     for name, charge in uqn.items():
         if charge == 0:
             continue
-        prefix = _UQN_PREFIX.get(name, name.lower())
         val = charge * _UQN_SCALE.get(name, 1)
         if val < 0:
-            tag += f'{prefix}m{abs(val)}'
+            tag += f'{name}m{abs(val)}'
         else:
-            tag += f'{prefix}{val}'
+            tag += f'{name}{val}'
     return tag
 
 
@@ -140,10 +93,10 @@ def fr_component_label(
     added by Multiplet.fr_symbol), color (dimension, conjugate marked with 'b',
     omitted for singlets), isospin dimension, hypercharge, non-zero tracked
     global charges (B scaled by 3), the family index and the component electric
-    charge q = i3 + Y (charges scaled by 6, 'm' = minus). The result is a valid
+    charge q = i3 + Y (Y scaled by 6, q by 3, 'm' = minus). The result is a valid
     bare Mathematica symbol: only ASCII letters and digits. Example labels::
 
-        PhiI2Y3       # scalar doublet, Y = 1/2 (component PhiI2Y3q6: q = 1)
+        PhiI2Y3       # scalar doublet, Y = 1/2 (component PhiI2Y3q3: q = 1)
         ChiC3I1Y4B1   # fermion, color 3, singlet, Y = 2/3, B = 1/3
         ChiC3bI1Ym4Bm1  # its conjugate rep (color 3bar, Y = -2/3, B = -1/3)
         PhiI1Y0F2     # second family of a real singlet
@@ -157,7 +110,7 @@ def fr_component_label(
         color = f'C{rep.colordim.dim}{bar}'
 
     isospin = f'I{rep.isospin.dim}'
-    hyper = f'Y{_charge_tag(rep.hypercharge)}'
+    hyper = f'Y{_charge_tag(rep.hypercharge, 6)}'
 
     family = f'F{family_index}' if family_index is not None else ''
 
@@ -167,7 +120,7 @@ def fr_component_label(
     if i3 is None:
         return base + family
     q = U1Rep(i3) + rep.hypercharge
-    return f'{base}q{_charge_tag(q)}{family}'
+    return f'{base}q{_charge_tag(q, 3)}{family}'
 
 
 default_component_label = fr_component_label
@@ -584,7 +537,7 @@ class MultipletModel:
         and F classes) and the operators (interaction terms, couplings, CG
         tensor definitions).'''
 
-        from uvbuilder.tools.fr_utils import merge_chunks, formatClassBlock
+        from uvbuilder.tools.fr_utils import merge_chunks
 
         chunks = []
         emitted = set()
@@ -692,15 +645,6 @@ class MultipletModel:
         default label of the conjugate rep + Rw, e.g. ChiC3bI1Ym4Bm1 -> ChiC3I1Y4B1Rw.'''
         family = m.index if self.counter[m.rep] > 1 else None
         return fr_component_label(m.rep.conjRep, family_index=family) + RIGHT_SUFFIX
-
-    def generate_mixing_matrices(self, tracker=None) -> list:
-        '''FeynRules mixing/mass definitions between physical (mass) and
-        gauge (flavor) eigenstates.
-
-        Placeholder: the mixing machinery will live here (the index
-        ``tracker`` is duck-typed, as in ``Multiplet.generate_fr_kinetic``).
-        '''
-        return []
 
     @property
     def non_conjugated_multiplets(self) -> List[Multiplet]:

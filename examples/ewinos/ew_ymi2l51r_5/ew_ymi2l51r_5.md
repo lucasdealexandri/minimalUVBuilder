@@ -35,9 +35,9 @@ Inputs for `uvbuilder fill`. Conventions: `docs/conventions.md` (uvbuilder repos
 
 ```math
 \begin{array}{c|cc}
- & \mathrm{ChiI2Ym3qm6} & \mathrm{ChiI3Y0qm6} \\ \hline
-\mathrm{ChiI2Y3q6} & M_{\mathrm{ChiI2Y3ChiI2Ym3}} & \frac{\sqrt{6} v y_{\mathrm{ChiI2Y3ChiI3Y0}}}{6} \\
-\mathrm{ChiI3Y0q6} & \frac{\sqrt{6} v y_{\mathrm{ChiI2Ym3ChiI3Y0}}}{6} & - M_{\mathrm{ChiI3Y0}} \\
+ & \mathrm{ChiI2Ym3qm3} & \mathrm{ChiI3Y0qm3} \\ \hline
+\mathrm{ChiI2Y3q3} & M_{\mathrm{ChiI2Y3ChiI2Ym3}} & \frac{\sqrt{6} v y_{\mathrm{ChiI2Y3ChiI3Y0}}}{6} \\
+\mathrm{ChiI3Y0q3} & \frac{\sqrt{6} v y_{\mathrm{ChiI2Ym3ChiI3Y0}}}{6} & - M_{\mathrm{ChiI3Y0}} \\
 \end{array}
 ```
 
