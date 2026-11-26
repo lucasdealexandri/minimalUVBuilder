@@ -262,3 +262,6 @@ $RECYCLE.BIN/
 *.fls
 *.log
 *.synctex.gz
+
+# local pyenv environment
+.python-version

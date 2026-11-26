@@ -25,6 +25,6 @@ def test_example_is_reproduced(protomodel, tmp_path):
     assert built == stored
     for name in built:
         for suffix in ('.fr', '.md'):
-            new = (tmp_path / name / f'{name}{suffix}').read_text()
-            old = (protomodel.parent / name / f'{name}{suffix}').read_text()
+            new = (tmp_path / name / f'{name}{suffix}').read_text(encoding='utf-8')
+            old = (protomodel.parent / name / f'{name}{suffix}').read_text(encoding='utf-8')
             assert _undated(new) == _undated(old), f'{name}{suffix}'

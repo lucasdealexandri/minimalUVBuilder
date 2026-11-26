@@ -548,7 +548,7 @@ class FeynRulesModel(object):
         if os.path.dirname(self.output_file):
             os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
 
-        with open(self.output_file, 'w') as f:
+        with open(self.output_file, 'w', encoding='utf-8') as f:
             f.write(self.to_feynrules())
 
     def save2pickle(self, path: Optional[str] = None) -> str:
@@ -566,7 +566,10 @@ class FeynRulesModel(object):
         '''Model saved by save2pickle.'''
         import pickle
         with open(path, 'rb') as f:
-            model = pickle.load(f)
+            try:
+                model = pickle.load(f)
+            except (pickle.UnpicklingError, EOFError) as error:
+                raise ValueError(f'{path} is not a model written by uvbuilder build: {error}') from None
         if not isinstance(model, cls):
             raise TypeError(f'{path} holds a {type(model).__name__}, not a {cls.__name__}')
         return model

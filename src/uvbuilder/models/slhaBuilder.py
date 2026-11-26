@@ -207,7 +207,7 @@ def write_card(fr_model, card, path=None, values=None) -> Path:
         headers[p.block.upper()] = (f'{_ROWS}{" ".join(map(str, rows))}; '
                                     f'columns (mass): {" ".join(label[q.label] for q in m.particles)}')
 
-    lines = card.read_text().splitlines()
+    lines = card.read_text(encoding='utf-8').splitlines()
     found, wrong, block, gf = {}, [], None, None
     for n, line in enumerate(lines):
         fields = line.split('#', 1)[0].split()
@@ -261,5 +261,5 @@ def write_card(fr_model, card, path=None, values=None) -> Path:
         if block == 'DECAY' and fields:
             continue
         out.append(replace.get(n, line))
-    path.write_text('\n'.join(out) + '\n')
+    path.write_text('\n'.join(out) + '\n', encoding='utf-8')
     return path

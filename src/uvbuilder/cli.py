@@ -28,7 +28,7 @@ def _protomodel(path: Path) -> dict:
     if path.suffix != '.dict':
         raise ValueError(f'{path}: the protomodel is a .dict file')
     try:
-        data = ast.literal_eval(path.read_text())
+        data = ast.literal_eval(path.read_text(encoding='utf-8'))
     except (SyntaxError, ValueError) as error:
         raise ValueError(f'{path} is not a dictionary literal: {error}') from None
     if not isinstance(data, dict):
@@ -154,7 +154,7 @@ def build(args):
             fr_model.save2file()
             pickle = Path(fr_model.save2pickle())
             report = pickle.with_suffix('.md')
-            report.write_text(model_report(fr_model))
+            report.write_text(model_report(fr_model), encoding='utf-8')
             print(f'{folder}/  {Path(fr_model.output_file).name}  {pickle.name}  {report.name}  [{multiplets}]')
         count += 1
     if not count:
@@ -177,12 +177,17 @@ def fill(args):
 def main(argv=None) -> int:
     '''Entry point of the `uvbuilder` command. Returns the exit code; errors in the input
     are printed, not raised.'''
-    parser = argparse.ArgumentParser(prog='uvbuilder', usage=USAGE,
-                                     description='Minimal UV Lagrangians from protomodels.')
+    parser = argparse.ArgumentParser(prog='uvbuilder', epilog='commands:' + USAGE,
+                                     description='Minimal UV Lagrangians from protomodels.',
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('-v', '--verbose', action='store_true', help='debug messages')
+    # -v also after the command (uvbuilder build x.dict -v); SUPPRESS keeps the value given before it
+    verbose = argparse.ArgumentParser(add_help=False)
+    verbose.add_argument('-v', '--verbose', action='store_true', default=argparse.SUPPRESS,
+                         help='debug messages, e.g. why candidate models were rejected')
     commands = parser.add_subparsers(dest='command', required=True)
 
-    p = commands.add_parser('build', help='FeynRules models of a protomodel')
+    p = commands.add_parser('build', help='FeynRules models of a protomodel', parents=[verbose])
     p.add_argument('protomodel', type=Path,
                    help='.dict file with the protomodel')
     p.add_argument('--name', help='model name (default: the protomodel file name)')
@@ -198,7 +203,7 @@ def main(argv=None) -> int:
                         '(charges not given are not tracked); repeat for alternatives')
     p.set_defaults(run=build)
 
-    p = commands.add_parser('fill', help='fill a param_card from its inputs')
+    p = commands.add_parser('fill', help='fill a param_card from its inputs', parents=[verbose])
     p.add_argument('model', type=Path, help='.pkl file written by build')
     p.add_argument('card', type=Path, help='param_card with the inputs set')
     p.add_argument('-o', '--output', default=None, help='default: over the card')

@@ -1,5 +1,7 @@
 """Command line interface (cli.py)."""
 
+import pytest
+
 from uvbuilder.cli import main
 from uvbuilder.models.feynrulesmodel import FeynRulesModel
 from uvbuilder.paramCard import ParamCardGenerator
@@ -132,6 +134,38 @@ def test_fill_rejects_a_pickle_of_another_object(tmp_path, capsys):
     (tmp_path / 'other.pkl').write_bytes(pickle.dumps({'masses': {}}))
     assert main(['fill', str(tmp_path / 'other.pkl'), str(tmp_path / 'card.dat')]) == 1
     assert 'holds a dict, not a FeynRulesModel' in capsys.readouterr().err
+    (tmp_path / 'text.pkl').write_text(repr(PROTOMODEL_DICT))
+    assert main(['fill', str(tmp_path / 'text.pkl'), str(tmp_path / 'card.dat')]) == 1
+    assert 'is not a model written by uvbuilder build' in capsys.readouterr().err
+
+
+def test_build_explains_protomodels_it_cannot_use(tmp_path, capsys):
+    stop = {1000006: {(1000022, 6): 1.0}}
+    cases = {
+        'dm_only': ({'masses': {1000022: 100.}, 'decays': {1000022: {}}},
+                    'no decay involves the DM candidate 1000022'),
+        'sm_decay': ({'masses': {1000022: 100., 1000006: 500.}, 'decays': {1000006: {(5, 24): 1.0}}},
+                     'no decay involves the DM candidate 1000022'),
+        'no_mass': ({'masses': {1000022: 100.}, 'decays': stop}, 'X1000006 (1000006) needs a positive mass'),
+        'negative': ({'masses': {1000022: -100., 1000006: 500.}, 'decays': stop},
+                     'X1000022 (1000022) needs a positive mass'),
+    }
+    for name, (data, message) in cases.items():
+        (tmp_path / f'{name}.dict').write_text(repr(data))
+        assert main(['build', str(tmp_path / f'{name}.dict')]) == 1, name
+        assert message in capsys.readouterr().err, name
+    (tmp_path / 'heavier.dict').write_text(repr({'masses': {1000022: 600., 1000006: 500.}, 'decays': stop}))
+    with pytest.warns(UserWarning, match='X1000006 decays into the heavier X1000022'):
+        assert main(['build', str(tmp_path / 'heavier.dict')]) == 0
+
+
+def test_verbose_build_says_which_decays_a_rejected_model_misses(tmp_path, caplog):
+    import logging
+    (tmp_path / 'photon.dict').write_text(repr(
+        {'masses': {1000022: 100., 1000023: 200.}, 'decays': {1000023: {(1000022, 22): 1.0}}}))
+    caplog.set_level(logging.DEBUG)
+    assert main(['build', str(tmp_path / 'photon.dict'), '-v']) == 1      # -v after the command
+    assert 'rejected: no tree-level coupling for X1000023 -> photon,X1000022' in caplog.text
 
 
 def test_report_writes_real_scalar_blocks_in_the_card_entries():

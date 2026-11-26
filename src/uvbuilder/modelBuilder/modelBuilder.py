@@ -7,6 +7,7 @@
 """
 
 import os
+import warnings
 from dataclasses import replace
 from typing import Dict,Union,List,Iterator,Optional
 from itertools import product, chain
@@ -100,6 +101,28 @@ class ModelBuilder(object):
             self.finalStateModel = modelData
         else:
             raise ValueError(f'modelData ({type(modelData)}) should be a dictionary or FinalStateModel object')
+        self._check_protomodel()
+
+    def _check_protomodel(self):
+        '''Errors for a protomodel the builder cannot use: the DM candidate must appear in a
+        decay and every new state needs a positive mass. A decay into a heavier new state is
+        only warned about, since validity does not check the masses.'''
+        from uvbuilder.states.physicsUnits import GeV
+        vertices = self.finalStateModel.vertices
+        bsm = {p.pdg: p for v in vertices for fs in [v.mother] + list(v.daughters)
+               for p in fs.getParticles() if not p.isSM}
+        for pdg, p in sorted(bsm.items()):
+            if p.mass is None or p.mass.asNumber(GeV) <= 0:
+                raise ValueError(f'{p.label} ({pdg}) needs a positive mass in masses')
+        if not any(abs(pdg) == abs(self.dm_pdg) for pdg in bsm):
+            raise ValueError(f'no decay involves the DM candidate {self.dm_pdg} '
+                             '(decays to SM particles only are skipped)')
+        for v in vertices:
+            mother = v.mother.getParticles()[0]
+            heavier = [p.label for d in v.daughters for p in d.getParticles()
+                       if not p.isSM and p.mass.asNumber(GeV) > mother.mass.asNumber(GeV)]
+            if heavier:
+                warnings.warn(f'{mother.label} decays into the heavier {", ".join(heavier)}')
 
     def __repr__(self):
         return f'ModelBuilder for {self.finalStateModel}'
@@ -306,6 +329,10 @@ class ModelBuilder(object):
                 multipletModel = multiplet_model_from_partition(partition, particle_model=particleModel)
                 valid = multipletModel.is_valid
                 if validOnly and not valid:
+                    if logger.isEnabledFor(logging.DEBUG):
+                        names = ', '.join(sorted(m.fr_symbol() for m in multipletModel.non_conjugated_multiplets))
+                        decays = '; '.join(str(v) for v in multipletModel.unrealized_decays())
+                        logger.debug(f'[{names}] rejected: no tree-level coupling for {decays}')
                     continue
                 if valid and labeler is not default_component_label:
                     multipletModel = multiplet_model_from_partition(partition, labeler=labeler,

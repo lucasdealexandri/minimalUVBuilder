@@ -518,6 +518,16 @@ class MultipletModel:
 
         return all_mixings
 
+    def unrealized_decays(self) -> List[ParticleVertex]:
+        '''The decays left unrealized by the assignment of particles to mixing blocks that
+        realizes the most of them (empty for a valid model); shown by `uvbuilder -v`.'''
+        best = []
+        for possibility in self._match_clusters(self.mass_clusters, self.particle_model.bsm_particles):
+            realized = self.valid_decays(self._to_mixings(possibility))
+            if len(realized) > len(best):
+                best = realized
+        return [v for v in self.particle_model.vertices if v not in best]
+
     @property
     def is_valid(self) -> bool:
         '''True if a mixing realizes every decay with tree-level couplings

@@ -39,7 +39,7 @@ LABELS = {1000022: 'N1', 1000023: 'N2', 1000025: 'N3', 1000035: 'N4',
 def read_slha(path):
     '''({pdg: mass}, {pdg: [(br, daughters)]}) of the MASS block and DECAY tables.'''
     masses, decays, block, mother = {}, {}, None, None
-    for line in Path(path).read_text().splitlines():
+    for line in Path(path).read_text(encoding='utf-8').splitlines():
         fields = line.split('#', 1)[0].split()
         if not fields:
             continue
@@ -110,7 +110,7 @@ def write_dict(data, path):
     lines += ['    },', '    "labels": {']
     lines += [f'        {p}: {label!r},' for p, label in data['labels'].items()]
     lines += ['    }', '}']
-    Path(path).write_text('\n'.join(lines) + '\n')
+    Path(path).write_text('\n'.join(lines) + '\n', encoding='utf-8')
 
 
 def main():
