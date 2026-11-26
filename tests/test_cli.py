@@ -168,6 +168,19 @@ def test_verbose_build_says_which_decays_a_rejected_model_misses(tmp_path, caplo
     assert 'rejected: no tree-level coupling for X1000023 -> photon,X1000022' in caplog.text
 
 
+def test_verbose_build_says_when_a_charge_cannot_be_conserved(tmp_path, caplog):
+    import logging
+    # N3 decays to C1 and to its antiparticle: it is self-conjugate, so it cannot carry D
+    (tmp_path / 'majorana.dict').write_text(repr(
+        {'masses': {1000022: 100., 1000024: 200., 1000025: 400.},
+         'decays': {1000024: {(1000022, 24): 1.0},
+                    1000025: {(1000022, 23): 0.5, (-1000024, 24): 0.25, (1000024, -24): 0.25}}}))
+    caplog.set_level(logging.DEBUG)
+    assert main(['build', str(tmp_path / 'majorana.dict'), '-q', 'D=1']) == 1
+    assert 'rejected: the global charges (D) cannot be assigned consistently' in caplog.text
+    assert main(['build', str(tmp_path / 'majorana.dict')]) == 0         # no charge tracked
+
+
 def test_report_writes_real_scalar_blocks_in_the_card_entries():
     from uvbuilder.report import model_report
     from tests.test_slhaBuilder import _sddm_model

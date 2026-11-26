@@ -33,6 +33,16 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _logged_if_empty(items, reason):
+    '''The items, logging reason (debug, shown by uvbuilder -v) when there are none.'''
+    empty = True
+    for item in items:
+        empty = False
+        yield item
+    if empty:
+        logger.debug(reason)
+
+
 # TODO: WHEN SETTING SPIN, SELECT ONLY SCALAR or DIRAC_SPINOR for BSM particles. Erro pra setar rep do modelo padrão
 
 
@@ -255,9 +265,13 @@ class ModelBuilder(object):
         for eChargeRes in eChargeResults:
             model, conserved = self._project_global_u1s(eChargeRes)
             filled = fillGlobalU1s(model) if conserved else [model]
-            for globalU1Res in filled:
-                for colorRes in explodeColordim(globalU1Res):
-                    for model in explodeSpin(colorRes):
+            charges = ', '.join(sorted(conserved))
+            for globalU1Res in _logged_if_empty(filled, f'{particleModel} rejected: the global '
+                                                f'charges ({charges}) cannot be assigned consistently to the decays'):
+                for colorRes in _logged_if_empty(explodeColordim(globalU1Res), f'{particleModel} '
+                                                 'rejected: no color assignment consistent with the decays'):
+                    for model in _logged_if_empty(explodeSpin(colorRes), f'{particleModel} '
+                                                  'rejected: no spin assignment consistent with the decays'):
                         assert isinstance(model, ParticleModel)
                         yield model
 
