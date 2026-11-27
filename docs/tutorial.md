@@ -343,8 +343,14 @@ single parameter fixes every mass,
 so H0 and A0 are degenerate, and Hp has the same mass: two doublets with opposite
 hypercharge have no renormalizable coupling to the Higgs that would split them. The
 model is valid, since validity checks the couplings at tree level and not the masses,
-but `fill` stops:
+but `fill` warns:
 
 ```
-uvbuilder fill: UMixMH0A0: degenerate masses (100, 100 GeV)
+uvbuilder fill idm_2/idm_2.pkl idm_2/idm_2_UFO/param_card.dat
+uvbuilder fill: warning: UMixMH0A0: degenerate masses (100, 100 GeV): the mixing matrix is not unique
 ```
+
+It still writes the card, with H0, A0 and Hp all at |M| = 100 GeV: the two neutral
+Majorana states together form one Dirac fermion, and any rotation between them
+diagonalizes the mass matrix equally well, so the mixing matrix written is one choice
+among many. With these masses the decay A0 -> H0 Z is closed.

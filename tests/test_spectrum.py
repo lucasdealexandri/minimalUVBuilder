@@ -75,8 +75,17 @@ def test_takagi_near_degenerate_is_accepted():
     assert np.allclose(U.T @ M @ U, np.diag(m), atol=1e-9) and np.all(np.diff(m) > 1e-3)
 
 
+def test_degenerate_masses_are_diagonalized_with_a_warning():
+    M = np.array([[0, 1], [1, 0]], dtype=complex)       # Haber, eq. (167): a Dirac pair
+    with pytest.warns(UserWarning, match='degenerate masses'):
+        m, U = takagi(M)
+    assert np.allclose(m, [1, 1]) and np.allclose(U.T @ M @ U, np.diag(m), atol=1e-12)
+    with pytest.warns(UserWarning, match='degenerate masses'):
+        m, U = diagonalize_complex_scalar(np.diag([4.0, 4.0]))
+    assert np.allclose(m, [2, 2])
+
+
 @pytest.mark.parametrize('M, message', [
-    ([[0, 1], [1, 0]], 'degenerate'),          # Haber, eq. (167)
     ([[1, 1j], [1j, -1]], 'zero mass'),        # Haber, eqs. (157)-(158)
     ([[1, 2], [3, 4]], 'not symmetric'),
 ])
@@ -90,7 +99,5 @@ def test_scalar_rejections():
         diagonalize_real_scalar(np.diag([-4.0, 9.0]))
     with pytest.raises(ValueError, match='imaginary part'):
         diagonalize_real_scalar(np.array([[4, 1j], [-1j, 9]]))
-    with pytest.raises(ValueError, match='degenerate'):
-        diagonalize_complex_scalar(np.diag([4.0, 4.0]))
     with pytest.raises(ValueError, match='zero mass'):
         diagonalize_dirac(np.diag([0.0, 3.0]))

@@ -25,9 +25,9 @@ Block MASS
    15 1.777000e+00 # MTA 
    23 9.118760e+01 # MZ 
    25 1.250000e+02 # MH 
-  1000022 1.000000e+02 # MH0 
-  1000023 2.000000e+02 # MA0 
-  1000024 2.500000e+02 # MHp 
+  1000022 9.9999999999999972e+01 # MH0 
+  1000023 9.9999999999999972e+01 # MA0 
+  1000024 1.0000000000000000e+02 # MHp 
 ##  Not dependent paramater.
 ## Those values should be edited following analytical the 
 ## analytical expression. Some generator could simply ignore 
@@ -51,9 +51,9 @@ DECAY   6 1.508336e+00
 DECAY  23 2.495200e+00 
 DECAY  24 2.085000e+00 
 DECAY  25 4.070000e-03 
-DECAY 1000022 0.000000e+00 
-DECAY 1000023 2.000000e+00 
-DECAY 1000024 2.500000e+00 
+DECAY 1000022 Auto 
+DECAY 1000023 Auto 
+DECAY 1000024 Auto 
 ##  Not dependent paramater.
 ## Those values should be edited following analytical the 
 ## analytical expression. Some generator could simply ignore 
@@ -90,19 +90,21 @@ Block CKMBLOCK
 ## INFORMATION FOR IMUMIXMH0A0
 ###################################
 Block IMUMIXMH0A0 
-    1   1 0.000000e+00 # IUMixMH0A01x1 
-    1   2 0.000000e+00 # IUMixMH0A01x2 
-    2   1 0.000000e+00 # IUMixMH0A02x1 
-    2   2 0.000000e+00 # IUMixMH0A02x2 
+# rows (gauge): ChiI2Y3q0 ChiI2Ym3q0; columns (mass): H0 A0
+    1   1 0.0000000000000000e+00 # IUMixMH0A01x1 
+    1   2 7.0710678118654746e-01 # IUMixMH0A01x2 
+    2   1 -0.0000000000000000e+00 # IUMixMH0A02x1 
+    2   2 7.0710678118654746e-01 # IUMixMH0A02x2 
 
 ###################################
 ## INFORMATION FOR UMIXMH0A0
 ###################################
 Block UMIXMH0A0 
-    1   1 1.000000e+00 # RUMixMH0A01x1 
-    1   2 0.000000e+00 # RUMixMH0A01x2 
-    2   1 0.000000e+00 # RUMixMH0A02x1 
-    2   2 1.000000e+00 # RUMixMH0A02x2 
+# rows (gauge): ChiI2Y3q0 ChiI2Ym3q0; columns (mass): H0 A0
+    1   1 7.0710678118654746e-01 # RUMixMH0A01x1 
+    1   2 -4.3297802811774658e-17 # RUMixMH0A01x2 
+    2   1 -7.0710678118654746e-01 # RUMixMH0A02x1 
+    2   2 -4.3297802811774658e-17 # RUMixMH0A02x2 
 
 ###################################
 ## INFORMATION FOR YUKAWA

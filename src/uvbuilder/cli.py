@@ -10,6 +10,7 @@ import ast
 import logging
 import re
 import sys
+import warnings
 from pathlib import Path
 
 USAGE = '''
@@ -212,6 +213,8 @@ def main(argv=None) -> int:
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.WARNING,
                         format='%(levelname)s %(name)s: %(message)s')
+    # warnings on one line, like the errors
+    warnings.formatwarning = lambda message, *_, **__: f'uvbuilder {args.command}: warning: {message}\n'
     try:
         return args.run(args)
     except (FileNotFoundError, ValueError, TypeError) as error:

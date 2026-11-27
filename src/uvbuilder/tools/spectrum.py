@@ -5,6 +5,8 @@
 .. moduleauthor:: Lucas Heck <lucasdealexandri.heck@gmail.com>
 """
 
+import warnings
+
 import numpy as np
 
 TOLERANCE = 1e-8
@@ -33,13 +35,15 @@ def _phases(U, sign_only=False) -> np.ndarray:
 
 
 def _check_masses(masses, block) -> None:
-    '''Positive and non-degenerate masses (relative tolerance TOLERANCE).'''
+    '''Positive masses (relative tolerance TOLERANCE); degenerate ones are only warned
+    about, since their mixing matrix is then not unique.'''
     scale = max(float(np.max(masses)), 1.0)
     if masses[0] <= TOLERANCE * scale:
         raise ValueError(f'{block}: zero mass ({masses[0]:.3e} GeV)')
     for low, high in zip(masses[:-1], masses[1:]):
         if high - low <= TOLERANCE * scale:
-            raise ValueError(f'{block}: degenerate masses ({low:.10g}, {high:.10g} GeV)')
+            warnings.warn(f'{block}: degenerate masses ({low:.10g}, {high:.10g} GeV): '
+                          'the mixing matrix is not unique')
 
 
 def _scalar_masses(squared, block) -> np.ndarray:

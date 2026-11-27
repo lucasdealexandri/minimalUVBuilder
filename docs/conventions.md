@@ -83,7 +83,8 @@ and negative inputs are absorbed into the mass eigenstates:
   counting from 1, as the param_card entries (`i j`, row $i$, column $j$) and the
   FeynRules family indices do, column $j$ is the $j$-th lightest state. Each column is rephased so that its entry of
   largest modulus is real and positive (real scalars and Majorana fermions: only a sign
-  is free). Masses must be positive and non-degenerate within a block.
+  is free). Masses must be positive; degenerate masses within a block are accepted with
+  a warning, since their mixing matrix is then not unique.
 - A state alone in its block has mass $|M|$ (fermions) or $\sqrt{M^2}$ (scalars); for
   fermions the sign of $M$ goes into the phase $P$ above. Its param_card entry is only
   its MASS.
